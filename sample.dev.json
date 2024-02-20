@@ -1,0 +1,11 @@
+{
+  "commands": [
+    "ping"
+  ],
+  "events": [
+    "messageCreate"
+  ],
+  "tasks": [
+    "task1"
+  ]
+}
