@@ -4,21 +4,27 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint ./src",
+    "lint:fix": "eslint ./src --fix"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@discordjs/builders": "^1.7.0",
     "cron": "^3.1.6",
     "dayjs": "^1.11.10",
+    "discord-api-types": "^0.37.70",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.5",
     "prisma": "^5.10.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@arcoz/eslint-config": "^1.1.0",
+    "@types/node": "^20.11.24",
     "eslint": "^8.56.0",
     "vitest": "^1.3.1"
   }

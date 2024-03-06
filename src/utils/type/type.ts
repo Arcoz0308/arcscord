@@ -1,0 +1,1 @@
+export type UObject = {[key: string]: unknown}
