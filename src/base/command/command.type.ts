@@ -1,7 +1,8 @@
-import type { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import type { ChatInputCommandInteraction } from "discord.js";
 import type { UserCommandBuilder } from "#/utils/discord/builder/user_command.class";
 import type { MessageCommandBuilder } from "#/utils/discord/builder/message_command.class";
 import type { UObject } from "#/utils/type/type";
+import type { SlashCmdBuilder } from "#/utils/discord/builder/slash_cmd.class";
 
 export type CommandRunContext<E extends UObject|null = null> = {
   interaction: ChatInputCommandInteraction;
@@ -9,7 +10,7 @@ export type CommandRunContext<E extends UObject|null = null> = {
 }
 
 export type SlashCommand = {
-  slashBuilder: SlashCommandBuilder;
+  slashBuilder: SlashCmdBuilder;
 }
 
 export type UserCommand = {
