@@ -1,1 +1,1 @@
-export type UObject = {[key: string]: unknown}
+export type UObject = Record<string, unknown>
