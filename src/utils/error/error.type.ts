@@ -5,6 +5,8 @@ import type {
   MessageContextMenuCommandInteraction,
   UserContextMenuCommandInteraction
 } from "discord.js";
+import type { Command, CommandRunContext } from "#/base/command";
+import type { SubCommand } from "#/base/sub_command/sub_command.class";
 
 export type ErrorOptions = {
   message?: string;
@@ -21,4 +23,6 @@ export type InteractionErrorOptions = ErrorOptions & {
 
 export type CommandErrorOptions = InteractionErrorOptions & {
   interaction: ChatInputCommandInteraction|MessageContextMenuCommandInteraction|UserContextMenuCommandInteraction;
+  context: CommandRunContext;
+  command: Command|SubCommand;
 }
