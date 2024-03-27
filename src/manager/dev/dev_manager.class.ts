@@ -1,12 +1,12 @@
 import { env, isDev } from "#/utils/config/env";
-import type { z } from "zod";
 import { devConfigSchema } from "#/manager/dev/dev.z";
 import { readFileSync } from "fs";
 import { DEFAULT_DEV_CONFIG_FILE_PATH } from "#/manager/dev/dev.const";
+import type { DevConfig, DevConfigKey } from "#/manager/dev/dev.type";
 
 export class DevManager {
 
-  config?: z.infer<typeof devConfigSchema>;
+  config?: DevConfig;
 
   constructor() {
     if (isDev) {
@@ -26,6 +26,10 @@ export class DevManager {
       throw ok.error;
     }
     this.config = ok.data;
+  }
+
+  isDevEnable(name: string, type: DevConfigKey): boolean {
+    return this.config?.[type]?.includes(name) ?? false;
   }
 
 }
