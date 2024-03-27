@@ -6,7 +6,7 @@ import type {
 } from "discord.js";
 import type { CommandErrorOptions, DebugValueString } from "#/utils/error/error.type";
 import type { Command, CommandRunContext } from "#/base/command";
-import { commandTypeToString, subCommandNameToString } from "#/base/command";
+import { commandTypeToString } from "#/base/command";
 import { SubCommand } from "#/base/sub_command/sub_command.class";
 
 export class CommandError extends InteractionError {
@@ -28,7 +28,7 @@ export class CommandError extends InteractionError {
   getDebugsString(): DebugValueString[] {
     const debugs: DebugValueString[] = [];
     if (this.command instanceof SubCommand) {
-      debugs.push(["Command name", subCommandNameToString(this.command)]);
+      debugs.push(["Command name", this.command.fullName()]);
     } else {
       debugs.push(["Command name", this.interaction.commandName]);
     }
