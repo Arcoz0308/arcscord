@@ -8,6 +8,12 @@ import type {
 import type { Command, CommandRunContext } from "#/base/command";
 import type { SubCommand } from "#/base/sub_command/sub_command.class";
 
+export type ResultOk<T> = [T, true];
+export type ResultError<E> = [E, false];
+
+export type Result<T, E> = ResultOk<T>|ResultError<E>;
+
+
 export type ErrorOptions = {
   message?: string;
   baseError?: BaseError|Error;
