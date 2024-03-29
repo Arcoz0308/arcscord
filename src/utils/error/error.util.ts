@@ -1,4 +1,5 @@
-import type { DebugValueString } from "#/utils/error/error.type";
+import type { DebugValueString, Result } from "#/utils/error/error.type";
+import { undefined } from "zod";
 
 export const stringifyDebugValue = (key: string, value: unknown): DebugValueString => {
   if (typeof value === "string") {
@@ -17,7 +18,17 @@ export const stringifyDebugValue = (key: string, value: unknown): DebugValueStri
   } else if (typeof value === "boolean") {
     return [key, value.toString()];
 
+  } else if (value === undefined) {
+    return [key, "undefined"];
   } else {
     return [key, `${!value}`];
   }
+};
+
+export const ok = <T, E>(value: T): Result<T, E> => {
+  return [value, true];
+};
+
+export const error = <T, E>(error: E): Result<T, E> => {
+  return [error, false];
 };
