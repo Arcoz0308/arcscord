@@ -26,7 +26,7 @@ export type MessageCommand = Command & {
 export type SubSlashCommandList = Record<string, SubCommand|Record<string, SubCommand>>
 
 export type SlashCommandWithSubs = SlashCommand & {
-  subsCommand: SubSlashCommandList;
+  subsCommands: SubSlashCommandList;
 }
 
 
