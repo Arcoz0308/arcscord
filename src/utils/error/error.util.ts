@@ -1,4 +1,4 @@
-import type { DebugValueString, Result } from "#/utils/error/error.type";
+import type { DebugValues, DebugValueString, Result } from "#/utils/error/error.type";
 import { undefined } from "zod";
 
 export const stringifyDebugValue = (key: string, value: unknown): DebugValueString => {
@@ -23,6 +23,12 @@ export const stringifyDebugValue = (key: string, value: unknown): DebugValueStri
   } else {
     return [key, `${!value}`];
   }
+};
+
+export const stringifyDebugValues = (debug: DebugValues): DebugValueString[] => {
+
+  return Object.entries(debug).map(([key, value]) => stringifyDebugValue(key, value));
+
 };
 
 export const ok = <T, E>(value: T): Result<T, E> => {
