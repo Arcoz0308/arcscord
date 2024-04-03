@@ -6,4 +6,4 @@ export type DevFacultative = {
 }
 
 export type DevConfig = z.infer<typeof devConfigSchema>
-export type DevConfigKey = keyof DevConfig;
+export type DevConfigKey = Exclude<keyof DevConfig, "config">;
