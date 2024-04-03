@@ -42,8 +42,11 @@ export class Logger {
     }
   }
 
-  fatal(message: string): never {
+  fatal(message: string, debugs: (string|DebugValueString)[] = []): never {
     this.log("fatal", message);
+    for (const debug of debugs) {
+      this.loggerFunction(formatShortDebug(debug));
+    }
     return process.exit(1);
   }
 
