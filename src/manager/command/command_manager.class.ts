@@ -2,11 +2,12 @@ import type { Client } from "#/base/client/client.class";
 import type { Command } from "#/base/command/command.class";
 import { Logger } from "#/utils/logger/logger.class";
 import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
-import { Routes } from "discord-api-types/v10";
+import { ApplicationCommandType } from "discord-api-types/v10";
 import { isDev } from "#/utils/config/env";
 import { isMessageCommand, isSlashCommand, isUserCommand } from "#/base/command";
 import { anyToError } from "#/utils/error/error.util";
 import { globalCommands } from "#/manager/command/command_manager.util";
+import type { ApplicationCommand, ApplicationCommandDataResolvable } from "discord.js";
 
 export class CommandManager {
 
@@ -104,46 +105,41 @@ export class CommandManager {
     return commandsBody;
   }
 
-  async pushGlobalCommands(commands: RESTPostAPIApplicationCommandsJSONBody[]): Promise<void> {
-    const clientId = this.client.user?.id;
-    if (!clientId) {
-      return this.logger.fatal("no client id found for register global commands");
+  async pushGlobalCommands(commands: ApplicationCommandDataResolvable[]): Promise<ApplicationCommand[]> {
+
+    if (!this.client.application) {
+      return this.logger.fatal("no application found !");
     }
 
-    const route = Routes.applicationCommands(clientId);
-
     try {
-      await this.client.rest.put(route, {
-        body: commands,
-      });
+
+      const data = await this.client.application.commands.set(commands);
+      this.logger.info(`loaded ${commands.length} commands builders globally with success !`);
+      return data.map((cmd) => cmd);
     } catch (e) {
       return this.logger.fatal("failed to load commands globally", {
         baseError: anyToError(e).message,
       });
     }
 
-    return this.logger.info(`loaded ${commands.length} commands builders globally with success !`);
   }
 
-  async pushGuildCommands(guildId: string, commands: RESTPostAPIApplicationCommandsJSONBody[]): Promise<void> {
-    const clientId = this.client.user?.id;
-    if (!clientId) {
-      return this.logger.fatal("no client id found for register guild commands");
+  async pushGuildCommands(guildId: string, commands: RESTPostAPIApplicationCommandsJSONBody[]): Promise<ApplicationCommand[]> {
+
+    const guild = this.client.guilds.cache.get(guildId);
+    if (!guild) {
+      return this.logger.fatal(`guild ${guildId} not found`);
     }
 
-    const route = Routes.applicationGuildCommands(clientId, guildId);
-
     try {
-      await this.client.rest.put(route, {
-        body: commands,
-      });
+      const data = await guild.commands.set(commands);
+      this.logger.info(`loaded ${commands.length} commands builders for guild ${guildId} with success !`);
+      return data.map((cmd) => cmd);
     } catch (e) {
       return this.logger.fatal(`failed to load commands for guild ${guildId}`, {
         baseError: anyToError(e).message,
       });
     }
-
-    return this.logger.info(`loaded ${commands.length} commands builders for guild ${guildId} with success !`);
   }
 
   isCommandEnableInDev(command: Command): boolean {
@@ -151,6 +147,50 @@ export class CommandManager {
       return true;
     }
     return this.client.devManager.isDevEnable(command.name, "commands");
+  }
+
+  resolveCommand(command: Command, apiCommands: ApplicationCommand[]): void {
+
+    //as are here for eslint fix
+    if (isSlashCommand(command)) {
+      const apiCommand = apiCommands.find((cmd) => cmd.type as ApplicationCommandType === ApplicationCommandType.ChatInput);
+      if (!apiCommand) {
+        this.logger.warning(`slash command "${command.name}" not found in API`);
+      } else {
+        this.commands.set(this.resolveCommandName(apiCommand), command);
+      }
+    }
+
+    if (isMessageCommand(command)) {
+      const apiCommand = apiCommands.find((cmd) => cmd.type as ApplicationCommandType === ApplicationCommandType.Message);
+      if (!apiCommand) {
+        this.logger.warning(`message command "${command.name}" not found in API`);
+      } else {
+        this.commands.set(this.resolveCommandName(apiCommand), command);
+      }
+    }
+
+    if (isUserCommand(command)) {
+      const apiCommand = apiCommands.find((cmd) => cmd.type as ApplicationCommandType === ApplicationCommandType.User);
+      if (!apiCommand) {
+        this.logger.warning(`user command "${command.name}" not found in API`);
+      } else {
+        this.commands.set(this.resolveCommandName(apiCommand), command);
+      }
+    }
+  }
+
+  resolveCommands(commands: Command[], apiCommands: ApplicationCommand[]): void {
+    for (const command of commands) {
+      this.resolveCommand(command, apiCommands.filter((cmd) => cmd.name === command.name));
+    }
+  }
+
+  resolveCommandName(apiCommand: ApplicationCommand): string {
+    if (apiCommand.guildId) {
+      return "g_" + apiCommand.id + "_" + apiCommand.name;
+    }
+    return apiCommand.id + "_" + apiCommand.name;
   }
 
 }
