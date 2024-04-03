@@ -1,7 +1,8 @@
 import type { LogLevel } from "#/utils/logger/logger.type";
 import { colorDebugValue, formatLog, formatShortDebug } from "#/utils/logger/logger.util";
 import * as process from "process";
-import type { DebugValueString } from "#/utils/error/error.type";
+import type { DebugValues, DebugValueString } from "#/utils/error/error.type";
+import { stringifyDebugValues } from "#/utils/error/error.util";
 
 
 export class Logger {
@@ -35,15 +36,25 @@ export class Logger {
     this.log("warning", message);
   }
 
-  error(message: string, debugs: (string|DebugValueString)[] = []): void {
+  error(message: string, debugs: (string|DebugValueString)[]|DebugValues = []): void {
     this.log("error", message);
+
+    if (!Array.isArray(debugs)) {
+      debugs = stringifyDebugValues(debugs);
+    }
+
     for (const debug of debugs) {
       this.loggerFunction(formatShortDebug(debug));
     }
   }
 
-  fatal(message: string, debugs: (string|DebugValueString)[] = []): never {
+  fatal(message: string, debugs: (string|DebugValueString)[]|DebugValues = []): never {
     this.log("fatal", message);
+
+    if (!Array.isArray(debugs)) {
+      debugs = stringifyDebugValues(debugs);
+    }
+
     for (const debug of debugs) {
       this.loggerFunction(formatShortDebug(debug));
     }
