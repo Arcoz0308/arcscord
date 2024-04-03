@@ -38,3 +38,15 @@ export const ok = <T, E>(value: T): Result<T, E> => {
 export const error = <T, E>(error: E): Result<T, E> => {
   return [error, false];
 };
+
+export const anyToError = (e: unknown): Error => {
+  if (e instanceof Error) {
+    return e;
+  }
+
+  if (typeof e === "string") {
+    return new Error(e);
+  }
+
+  return new Error(String(e));
+};
