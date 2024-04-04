@@ -37,9 +37,9 @@ export const formatLog = (logLevel: LogLevel, message: string, processName = "ma
   return prefix + middle + separator + text;
 };
 
-export const colorDebugValue = (debug: DebugValueString): string => {
+export const colorDebugValue = ([key, value]: DebugValueString): string => {
   const reset = effectReset.all;
-  return `${reset}${DEBUG_KEY_COLOR}${debug[0]} : ${reset}${DEBUG_VALUE_COLOR}${debug[1]}`;
+  return `${reset}${DEBUG_KEY_COLOR}${key} : ${reset}${DEBUG_VALUE_COLOR}${value}`;
 };
 
 export const formatShortDebug = (message: string|DebugValueString): string => {
