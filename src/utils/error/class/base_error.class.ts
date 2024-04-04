@@ -22,6 +22,12 @@ export class BaseError extends Error {
         debugs.push(stringifyDebugValue(key, value));
       }
     }
+    if (this.origin) {
+      debugs.push(["originError", this.origin.message]);
+      if (this.origin instanceof BaseError) {
+        debugs.push(...this.origin.getDebugsString());
+      }
+    }
     return debugs;
   }
 
