@@ -5,10 +5,12 @@ import type { UObject } from "#/utils/type/type";
 import type { SlashCmdBuilder } from "#/utils/discord/builder/slash_cmd.class";
 import type { Command } from "#/base/command/command.class";
 import type { SubCommand } from "#/base/sub_command/sub_command.class";
+import type { Result } from "#/utils/error/error.type";
+import type { CommandError } from "#/utils/error/class/command_error.class";
 
-export type CommandRunContext<E extends UObject|null = null> = {
+export type CommandRunContext = {
   interaction: ChatInputCommandInteraction;
-  additionalInfos: E;
+  additionalInfos: UObject;
 }
 
 export type SlashCommand = Command & {
@@ -29,7 +31,10 @@ export type SlashCommandWithSubs = SlashCommand & {
   subsCommands: SubSlashCommandList;
 }
 
+export type CommandRunResult = Result<boolean, CommandError>;
+export type CommandPreRunResult = Result<false|CommandRunContext, CommandError>
 
-export type PreRunCommand<E extends UObject|null = null, T extends UObject|null = E> = {
-  preRun: (ctx: CommandRunContext<E>) => Promise<CommandRunContext<T>>;
+
+export type PreRunCommand = {
+  preRun: (ctx: CommandRunContext) => Promise<CommandPreRunResult>;
 }
