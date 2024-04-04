@@ -3,6 +3,7 @@ import { colorDebugValue, formatLog, formatShortDebug } from "#/utils/logger/log
 import * as process from "process";
 import type { DebugValues, DebugValueString } from "#/utils/error/error.type";
 import { stringifyDebugValues } from "#/utils/error/error.util";
+import { isDebug } from "#/utils/config/env";
 
 
 export class Logger {
@@ -17,7 +18,9 @@ export class Logger {
   }
 
   trace(message: string): void {
-    this.log("trace", message);
+    if (isDebug) {
+      this.log("trace", message);
+    }
   }
 
   debug(message: string|DebugValueString): void {
