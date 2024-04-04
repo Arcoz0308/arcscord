@@ -1,13 +1,20 @@
 import type { Client } from "#/base/client/client.class";
 import type { Command } from "#/base/command/command.class";
-import { Logger } from "#/utils/logger/logger.class";
+import { logger, Logger } from "#/utils/logger/logger.class";
 import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import { ApplicationCommandType } from "discord-api-types/v10";
 import { isDev } from "#/utils/config/env";
-import { isMessageCommand, isSlashCommand, isUserCommand } from "#/base/command";
+import { commandTypeToString, hasPreRun, isMessageCommand, isSlashCommand, isUserCommand } from "#/base/command";
 import { anyToError } from "#/utils/error/error.util";
 import { globalCommands } from "#/manager/command/command_manager.util";
-import type { ApplicationCommand, ApplicationCommandDataResolvable } from "discord.js";
+import type {
+  ApplicationCommand,
+  ApplicationCommandDataResolvable,
+  CommandInteraction,
+  EmbedBuilder
+} from "discord.js";
+import { CommandError } from "#/utils/error/class/command_error.class";
+import { internalErrorEmbed } from "#/utils/discord/embed/embed.const";
 
 export class CommandManager {
 
@@ -26,6 +33,12 @@ export class CommandManager {
     } else {
       await this.pushGlobalCommands(commands);
     }
+
+    this.client.on("interactionCreate", (interaction) => {
+      if (interaction.isCommand()) {
+        void this.handleInteraction(interaction);
+      }
+    });
   }
 
   loadCommands(commands: Command[], group = "globalCommands"): RESTPostAPIApplicationCommandsJSONBody[] {
@@ -191,6 +204,118 @@ export class CommandManager {
       return "g_" + apiCommand.id + "_" + apiCommand.name;
     }
     return apiCommand.id + "_" + apiCommand.name;
+  }
+
+  async handleInteraction(interaction: CommandInteraction): Promise<void> {
+    if (!interaction.command) {
+      this.logger.warning(`no command object found for interaction with ${interaction.commandName}`);
+      return;
+    }
+
+    const resolvedCommandName = this.resolveCommandName(interaction.command);
+    const command = this.commands.get(resolvedCommandName);
+    if (!command) {
+      this.logger.error("no found command");
+      return;
+    }
+
+    const defer = command.defaultReplyOptions.preReply;
+
+    if (defer) {
+      try {
+        await interaction.deferReply({
+          ephemeral: command.defaultReplyOptions.ephemeral,
+        });
+      } catch (e) {
+        const error = new CommandError({
+          message: "failed to pre run defer reply ",
+          interaction: interaction,
+          command: command,
+          context: { interaction },
+          debugs: { ephemeral: command.defaultReplyOptions.ephemeral },
+          baseError: anyToError(e),
+        }).generateId();
+        this.logger.error(error.message, error.getDebugsString());
+
+        return this.sendInternalError(interaction, internalErrorEmbed(error.id));
+      }
+    }
+
+    let ctx = {
+      interaction,
+    };
+
+    if (hasPreRun(command)) {
+      try {
+        const [result, err] = await command.preRun(ctx);
+        if (err !== null) {
+          err.generateId();
+          this.logger.error(err.message, err.getDebugsString());
+          return this.sendInternalError(interaction, internalErrorEmbed(err.id), defer);
+        }
+
+        if (!result) {
+          return;
+        }
+
+        ctx = result;
+      } catch (e) {
+        const error = new CommandError({
+          message: `failed to pre run command : ${anyToError(e).message}`,
+          interaction: interaction,
+          command: command,
+          context: { interaction },
+          baseError: anyToError(e),
+        }).generateId();
+        this.logger.error(error.message, error.getDebugsString());
+
+        return this.sendInternalError(interaction, internalErrorEmbed(error.id), defer);
+      }
+    }
+
+    try {
+      const [result, err] = await command.run(ctx);
+      if (err !== null) {
+        err.generateId();
+        this.logger.error(err.message, err.getDebugsString());
+        return this.sendInternalError(interaction, internalErrorEmbed(err.id), defer);
+      }
+
+      logger.info(`${interaction.user.username} used command ${command.name}`
+        +  `(${commandTypeToString(interaction.commandType)}). Result : `
+      + (typeof result === "string" ? result : "success"));
+
+    } catch (e) {
+      const error = new CommandError({
+        message: `failed to run command : ${anyToError(e).message}`,
+        interaction: interaction,
+        command: command,
+        context: { interaction },
+        baseError: anyToError(e),
+      }).generateId();
+      this.logger.error(error.message, error.getDebugsString());
+
+      return this.sendInternalError(interaction, internalErrorEmbed(error.id), defer);
+    }
+  }
+
+  async sendInternalError(interaction: CommandInteraction, embed: EmbedBuilder, defer: boolean = false): Promise<void> {
+    try {
+      if (defer) {
+        await interaction.editReply({
+          embeds: [embed],
+        });
+      } else {
+        await interaction.reply({
+          embeds: [embed],
+          ephemeral: true,
+        });
+      }
+    } catch (e) {
+      this.logger.error("failed to send internal error message", {
+        baseError: anyToError(e).message,
+      });
+    }
   }
 
 }
