@@ -31,7 +31,7 @@ export type SlashCommandWithSubs = SlashCommand & {
   subsCommands: SubSlashCommandList;
 }
 
-export type CommandRunResult = Result<boolean, CommandError>;
+export type CommandRunResult = Result<string|true, CommandError>;
 export type CommandPreRunResult = Result<false|CommandRunContext, CommandError>
 
 
