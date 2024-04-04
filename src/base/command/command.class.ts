@@ -1,10 +1,9 @@
-import type { CommandRunContext } from "#/base/command/command.type";
-import type { UObject } from "#/utils/type/type";
+import type { CommandRunContext, CommandRunResult } from "#/base/command/command.type";
 import { InteractionBase } from "#/base/interaction/interaction.class";
 
-export abstract class Command<E extends UObject|null = null> extends InteractionBase {
+export abstract class Command extends InteractionBase {
 
 
-  abstract run(ctx: CommandRunContext<E>): Promise<void>
+  abstract run(ctx: CommandRunContext): Promise<CommandRunResult>
 
 }
