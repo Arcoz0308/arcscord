@@ -1,9 +1,5 @@
 import { InteractionError } from "#/utils/error/class/interaction_error.class";
-import type {
-  ChatInputCommandInteraction,
-  MessageContextMenuCommandInteraction,
-  UserContextMenuCommandInteraction
-} from "discord.js";
+import type { CommandInteraction } from "discord.js";
 import type { CommandErrorOptions, DebugValueString } from "#/utils/error/error.type";
 import type { Command, CommandRunContext } from "#/base/command";
 import { commandTypeToString } from "#/base/command";
@@ -11,7 +7,7 @@ import { SubCommand } from "#/base/sub_command/sub_command.class";
 
 export class CommandError extends InteractionError {
 
-  interaction: ChatInputCommandInteraction|MessageContextMenuCommandInteraction|UserContextMenuCommandInteraction;
+  interaction: CommandInteraction;
 
   context: CommandRunContext;
 

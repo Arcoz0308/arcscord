@@ -1,15 +1,10 @@
 import type { BaseError } from "#/utils/error/class/base_error.class";
-import type {
-  BaseInteraction,
-  ChatInputCommandInteraction,
-  MessageContextMenuCommandInteraction,
-  UserContextMenuCommandInteraction
-} from "discord.js";
+import type { BaseInteraction, CommandInteraction } from "discord.js";
 import type { Command, CommandRunContext } from "#/base/command";
 import type { SubCommand } from "#/base/sub_command/sub_command.class";
 
-export type ResultOk<T> = [T, true];
-export type ResultError<E> = [E, false];
+export type ResultOk<T> = [T, null];
+export type ResultError<E> = [null, E];
 
 export type Result<T, E> = ResultOk<T>|ResultError<E>;
 
@@ -28,7 +23,7 @@ export type InteractionErrorOptions = ErrorOptions & {
 }
 
 export type CommandErrorOptions = InteractionErrorOptions & {
-  interaction: ChatInputCommandInteraction|MessageContextMenuCommandInteraction|UserContextMenuCommandInteraction;
+  interaction: CommandInteraction;
   context: CommandRunContext;
   command: Command|SubCommand;
 }
