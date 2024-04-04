@@ -32,11 +32,11 @@ export const stringifyDebugValues = (debug: DebugValues): DebugValueString[] => 
 };
 
 export const ok = <T, E>(value: T): Result<T, E> => {
-  return [value, true];
+  return [value, null];
 };
 
 export const error = <T, E>(error: E): Result<T, E> => {
-  return [error, false];
+  return [null, error];
 };
 
 export const anyToError = (e: unknown): Error => {
