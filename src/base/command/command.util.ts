@@ -20,7 +20,7 @@ export const isMessageCommand = (cmd: Command): cmd is MessageCommand => {
   return "messageBuilder" in cmd;
 };
 
-export const isCommandWithSubs = (cmd: Command): cmd is SlashCommandWithSubs => {
+export const isCommandWithSubs = (cmd: SlashCommand): cmd is SlashCommandWithSubs => {
   return "subsCommands" in cmd;
 };
 
