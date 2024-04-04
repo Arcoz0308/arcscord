@@ -1,4 +1,10 @@
-import type { MessageCommand, SlashCommand, SlashCommandWithSubs, UserCommand } from "#/base/command/command.type";
+import type {
+  MessageCommand,
+  PreRunCommand,
+  SlashCommand,
+  SlashCommandWithSubs,
+  UserCommand
+} from "#/base/command/command.type";
 import type { Command } from "#/base/command/command.class";
 import { ApplicationCommandType } from "discord-api-types/v10";
 
@@ -16,6 +22,10 @@ export const isMessageCommand = (cmd: Command): cmd is MessageCommand => {
 
 export const isCommandWithSubs = (cmd: SlashCommand): cmd is SlashCommandWithSubs => {
   return "subsCommands" in cmd;
+};
+
+export const hasPreRun = (cmd: Command): cmd is PreRunCommand => {
+  return "preRun" in cmd;
 };
 
 export const commandTypeToString = (type: ApplicationCommandType): string => {
