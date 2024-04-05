@@ -173,6 +173,7 @@ export class CommandManager {
       if (!apiCommand) {
         this.logger.warning(`slash command "${command.name}" not found in API`);
       } else {
+        this.logger.trace(`resolve slash command ${command.name} (${apiCommand.id}) !`);
         this.commands.set(this.resolveCommandName(apiCommand), command);
       }
     }
@@ -182,6 +183,7 @@ export class CommandManager {
       if (!apiCommand) {
         this.logger.warning(`message command "${command.name}" not found in API`);
       } else {
+        this.logger.trace(`resolve message command ${command.name} (${apiCommand.id}) !`);
         this.commands.set(this.resolveCommandName(apiCommand), command);
       }
     }
@@ -191,6 +193,7 @@ export class CommandManager {
       if (!apiCommand) {
         this.logger.warning(`user command "${command.name}" not found in API`);
       } else {
+        this.logger.trace(`resolve user command ${command.name} (${apiCommand.id}) !`);
         this.commands.set(this.resolveCommandName(apiCommand), command);
       }
     }
@@ -325,7 +328,10 @@ export class CommandManager {
   }
 
   checkCommandsInDev(commands: Command[]): Command[] {
-    return commands.filter(command => this.isCommandEnableInDev(command));
+    this.logger.trace(`filter commands for dev mode (full list : ${commands.map((cmd) => cmd.name).join(", ")})`);
+    const commands2 = commands.filter(command => this.isCommandEnableInDev(command));
+    this.logger.trace(`commands for dev mode filtered ! (enable commands : ${commands2.map((cmd) => cmd.name).join(", ")})`);
+    return commands2;
   }
 
 }
