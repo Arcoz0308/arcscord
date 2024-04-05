@@ -10,6 +10,7 @@ import type { CommandError } from "#/utils/error/class/command_error.class";
 
 export type CommandRunContext = {
   interaction: CommandInteraction;
+  defer: boolean;
   additionalInfos?: UObject;
 }
 

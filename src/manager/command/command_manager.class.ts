@@ -231,7 +231,7 @@ export class CommandManager {
           message: "failed to pre run defer reply ",
           interaction: interaction,
           command: command,
-          context: { interaction },
+          context: { interaction, defer: false },
           debugs: { ephemeral: command.defaultReplyOptions.ephemeral },
           baseError: anyToError(e),
         }).generateId();
@@ -243,6 +243,7 @@ export class CommandManager {
 
     let ctx = {
       interaction,
+      defer: defer,
     };
 
     if (hasPreRun(command)) {
@@ -264,7 +265,7 @@ export class CommandManager {
           message: `failed to pre run command : ${anyToError(e).message}`,
           interaction: interaction,
           command: command,
-          context: { interaction },
+          context: ctx,
           baseError: anyToError(e),
         }).generateId();
         this.logger.error(error.message, error.getDebugsString());
@@ -290,7 +291,7 @@ export class CommandManager {
         message: `failed to run command : ${anyToError(e).message}`,
         interaction: interaction,
         command: command,
-        context: { interaction },
+        context: ctx,
         baseError: anyToError(e),
       }).generateId();
       this.logger.error(error.message, error.getDebugsString());
