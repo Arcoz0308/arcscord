@@ -1,9 +1,10 @@
 import type { CommandRunContext, CommandRunResult, SubSlashCommandList } from "#/base/command/command.type";
 import { InteractionBase } from "#/base/interaction/interaction.class";
 import { isCommandWithSubs, isSlashCommand } from "#/base/command/command.util";
-import { error } from "#/utils/error/error.util";
+import { anyToError, error, ok } from "#/utils/error/error.util";
 import { CommandError } from "#/utils/error/class/command_error.class";
 import { SubCommand } from "#/base/sub_command/sub_command.class";
+import type { InteractionEditReplyOptions, InteractionReplyOptions, MessagePayload } from "discord.js";
 
 export abstract class Command extends InteractionBase {
 
@@ -92,6 +93,36 @@ export abstract class Command extends InteractionBase {
     }
 
     return sub.run(ctx);
+  }
+
+  async reply(ctx: CommandRunContext,  message: string | MessagePayload | InteractionReplyOptions): Promise<CommandRunResult> {
+    try {
+      await ctx.interaction.reply(message);
+      return ok(true);
+    } catch (e) {
+      return error(new CommandError({
+        interaction: ctx.interaction,
+        command: this,
+        context: ctx,
+        message: `failed to reply to interaction : ${anyToError(e).message}`,
+        baseError: anyToError(e),
+      }));
+    }
+  }
+
+  async editReply(ctx: CommandRunContext,  message: string | MessagePayload | InteractionEditReplyOptions): Promise<CommandRunResult> {
+    try {
+      await ctx.interaction.editReply(message);
+      return ok(true);
+    } catch (e) {
+      return error(new CommandError({
+        interaction: ctx.interaction,
+        command: this,
+        context: ctx,
+        message: `failed to edit reply to interaction : ${anyToError(e).message}`,
+        baseError: anyToError(e),
+      }));
+    }
   }
 
 }
