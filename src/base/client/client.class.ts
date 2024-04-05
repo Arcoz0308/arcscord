@@ -32,6 +32,10 @@ export class Client extends DJSClient {
     this.rest = new REST({
       version: "10",
     }).setToken(token);
+
+    this.on("ready", () => {
+      void this.commandManager.load();
+    });
   }
 
 }
