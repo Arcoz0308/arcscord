@@ -1,8 +1,8 @@
 import type { Command, CommandRunContext, CommandRunResult } from "#/base/command";
 import type { Client } from "#/base/client/client.class";
-import { InteractionBase } from "#/base/interaction/interaction.class";
+import type { InteractionEditReplyOptions, InteractionReplyOptions, MessagePayload } from "discord.js";
 
-export abstract class SubCommand extends InteractionBase {
+export abstract class SubCommand {
 
   baseCommand: Command;
 
@@ -10,8 +10,12 @@ export abstract class SubCommand extends InteractionBase {
 
   subGroup: string|null = null;
 
+  client: Client;
+
+  name: string = "no_name";
+
   constructor(client: Client, baseCommand: Command) {
-    super(client);
+    this.client = client;
 
     this.baseCommand = baseCommand;
     this.setName();
@@ -28,6 +32,14 @@ export abstract class SubCommand extends InteractionBase {
       return `${this.name}-${this.subGroup}-${this.subName}`;
     }
     return `${this.name}-${this.subName}`;
+  }
+
+  reply(ctx: CommandRunContext,  message: string | MessagePayload | InteractionReplyOptions): Promise<CommandRunResult> {
+    return this.baseCommand.reply(ctx, message);
+  }
+
+  editReply(ctx: CommandRunContext,  message: string | MessagePayload | InteractionEditReplyOptions): Promise<CommandRunResult> {
+    return this.baseCommand.editReply(ctx, message);
   }
 
 }

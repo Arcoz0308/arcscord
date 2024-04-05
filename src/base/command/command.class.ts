@@ -81,7 +81,7 @@ export abstract class Command extends InteractionBase {
     }
 
     const sub = list[subCommandName];
-    if (!(sub instanceof SubCommand)) {
+    if (!(sub instanceof SubCommand) || !sub) {
       return error(new CommandError({
         message: `subCommand ${subCommandName} don't have class SubCommand`,
         interaction: ctx.interaction,
