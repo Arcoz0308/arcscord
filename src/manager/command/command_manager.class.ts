@@ -26,12 +26,15 @@ export class CommandManager {
   }
 
   async load(): Promise<void> {
-    const commands = this.loadCommands(globalCommands);
+    const commands = globalCommands(this.client);
+    const commandsBuilders = this.loadCommands(commands);
 
     if (isDev) {
-      await this.pushGuildCommands(this.client.devManager.config?.config.devGuildId || "no_found", commands);
+      const data = await this.pushGuildCommands(this.client.devManager.config?.config.devGuildId || "no_found", commandsBuilders);
+      this.resolveCommands(commands, data);
     } else {
-      await this.pushGlobalCommands(commands);
+      const data = await this.pushGlobalCommands(commandsBuilders);
+      this.resolveCommands(commands, data);
     }
 
     this.client.on("interactionCreate", (interaction) => {
@@ -215,7 +218,9 @@ export class CommandManager {
     const resolvedCommandName = this.resolveCommandName(interaction.command);
     const command = this.commands.get(resolvedCommandName);
     if (!command) {
-      this.logger.error("no found command");
+      this.logger.error(`no command found with full id ${resolvedCommandName}`, {
+        commandsList: this.commands.keys(),
+      });
       return;
     }
 

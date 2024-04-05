@@ -13,7 +13,7 @@ export abstract class InteractionBase implements DevFacultative {
     ephemeral: true,
   };
 
-  protected constructor(public client: Client) {
+  constructor(public client: Client) {
   }
 
 }

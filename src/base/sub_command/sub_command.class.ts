@@ -1,7 +1,8 @@
-import { Command } from "#/base/command";
+import type { Command, CommandRunContext, CommandRunResult } from "#/base/command";
 import type { Client } from "#/base/client/client.class";
+import { InteractionBase } from "#/base/interaction/interaction.class";
 
-export abstract class SubCommand extends Command {
+export abstract class SubCommand extends InteractionBase {
 
   baseCommand: Command;
 
@@ -9,12 +10,14 @@ export abstract class SubCommand extends Command {
 
   subGroup: string|null = null;
 
-  protected constructor(client: Client, baseCommand: Command) {
+  constructor(client: Client, baseCommand: Command) {
     super(client);
 
     this.baseCommand = baseCommand;
     this.setName();
   }
+
+  abstract run(ctx: CommandRunContext): Promise<CommandRunResult>
 
   setName(): void {
     this.name = this.baseCommand.name;
