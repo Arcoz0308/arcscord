@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "npx nodemon --exec node -r @swc-node/register -r tsconfig-paths/register ./src/index.ts dev",
+    "debug": "npx nodemon --exec node -r @swc-node/register -r tsconfig-paths/register ./src/index.ts dev debug",
     "start": "node -r @swc-node/register -r tsconfig-paths/register ./src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ./src",

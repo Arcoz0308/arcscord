@@ -1,6 +1,6 @@
 import type { Client } from "#/base/client/client.class";
 import type { Command } from "#/base/command/command.class";
-import { logger, Logger } from "#/utils/logger/logger.class";
+import { Logger } from "#/utils/logger/logger.class";
 import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import { ApplicationCommandType } from "discord-api-types/v10";
 import { isDev } from "#/utils/config/env";
@@ -26,7 +26,11 @@ export class CommandManager {
   }
 
   async load(): Promise<void> {
-    const commands = globalCommands(this.client);
+    let commands = globalCommands(this.client);
+    if (isDev) {
+      commands = this.checkCommandsInDev(commands);
+    }
+
     const commandsBuilders = this.loadCommands(commands);
 
     if (isDev) {
@@ -54,10 +58,6 @@ export class CommandManager {
 
 
     for (const command of commands) {
-      if (isDev && !this.isCommandEnableInDev(command)) {
-        this.logger.trace(`skip loading command "${command.name}" (no enable in dev) in group ${group}`);
-        continue;
-      }
       let hasPush = false;
 
       if (isSlashCommand(command)) {
@@ -287,7 +287,7 @@ export class CommandManager {
         return this.sendInternalError(interaction, internalErrorEmbed(err.id), defer);
       }
 
-      logger.info(`${interaction.user.username} used command ${command.name}`
+      this.logger.info(`${interaction.user.username} used command ${command.name}`
         +  `(${commandTypeToString(interaction.commandType)}). Result : `
       + (typeof result === "string" ? result : "success"));
 
@@ -322,6 +322,10 @@ export class CommandManager {
         baseError: anyToError(e).message,
       });
     }
+  }
+
+  checkCommandsInDev(commands: Command[]): Command[] {
+    return commands.filter(command => this.isCommandEnableInDev(command));
   }
 
 }

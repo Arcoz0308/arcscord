@@ -15,7 +15,7 @@ export type CommandRunContext = {
 }
 
 export type SlashCommand = Command & {
-  slashBuilder: SlashCmdBuilder;
+  slashBuilder: SlashCmdBuilder| Omit<SlashCmdBuilder, "addSubcommand" | "addSubcommandGroup">;
 }
 
 export type UserCommand = Command & {
