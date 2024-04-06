@@ -34,8 +34,13 @@ export class Client extends DJSClient {
     }).setToken(token);
 
     this.on("ready", () => {
+      this.logger.info("bot connected...");
       void this.commandManager.load();
     });
+  }
+
+  async preLoad(): Promise<void> {
+
   }
 
 }

@@ -1,8 +1,22 @@
 import { Client } from "#/base/client/client.class";
-import { env } from "#/utils/config/env";
+import { env, isDev } from "#/utils/config/env";
+import { logger } from "#/utils/logger/logger.class";
 
-export const client = new Client(env.TOKEN);
+const main = async(): Promise<void> => {
 
-if ((!process.argv.includes("script"))) {
-  void client.login();
-}
+  logger.info("loading bot...");
+  const client = new Client(env.TOKEN);
+  await client.preLoad();
+  logger.info("bot loaded");
+
+  if ((!process.argv.includes("script"))) {
+
+    if (isDev) {
+      logger.info("DEV MODE : ENABLED");
+    }
+
+    logger.info("bot connecting...");
+    await client.login();
+  }
+};
+void main();
