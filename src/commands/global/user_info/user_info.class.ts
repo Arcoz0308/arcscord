@@ -1,6 +1,6 @@
 import type { CommandRunContext, CommandRunResult, SlashCommand, UserCommand } from "#/base/command";
 import { Command } from "#/base/command";
-import { slashUserInfoBuilder, userUserInfoBuilder } from "#/commnds/global/user_info/user_info.builder";
+import { slashUserInfoBuilder, userUserInfoBuilder } from "#/commands/global/user_info/user_info.builder";
 
 export class UserInfoCommand extends Command implements UserCommand, SlashCommand {
 
