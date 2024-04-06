@@ -5,7 +5,7 @@ import { ok } from "../error.util";
 describe("ok function", () => {
   it("should return a ResultOk for any value", () => {
     const value = "any value";
-    const expected: ResultOk<string> = [value, true];
+    const expected: ResultOk<string> = [value, null];
     const result = ok(value);
     expect(result).toEqual(expected);
   });

@@ -7,7 +7,7 @@ describe("error function test", () => {
     class CustomError extends Error {}
 
     const customError = new CustomError("Test error");
-    const expectedOutput: Result<unknown, CustomError> = [customError, false];
+    const expectedOutput: Result<unknown, CustomError> = [null, customError];
 
     const output = error<unknown, CustomError>(customError);
 
