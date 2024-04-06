@@ -2,12 +2,15 @@ import { Client as DJSClient, IntentsBitField, REST } from "discord.js";
 import { CommandManager } from "#/manager/command/command_manager.class";
 import { DevManager } from "#/manager/dev";
 import { logger } from "#/utils/logger/logger.class";
+import { EventManager } from "#/manager/event/event_manager.class";
 
 export class Client extends DJSClient {
 
   commandManager = new CommandManager(this);
 
   devManager = new DevManager();
+
+  eventManager = new EventManager(this);
 
   logger = logger;
 
@@ -40,7 +43,7 @@ export class Client extends DJSClient {
   }
 
   async preLoad(): Promise<void> {
-
+    this.eventManager.load();
   }
 
 }
