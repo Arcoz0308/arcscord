@@ -3,6 +3,7 @@ import type { BaseInteraction, ClientEvents, CommandInteraction } from "discord.
 import type { Command, CommandRunContext } from "#/base/command";
 import type { SubCommand } from "#/base/sub_command/sub_command.class";
 import type { Event } from "#/base/event/event.class";
+import type { Task } from "#/base/task/task.class";
 
 export type ResultOk<T> = [T, null];
 export type ResultError<E> = [null, E];
@@ -31,4 +32,8 @@ export type CommandErrorOptions = InteractionErrorOptions & {
 
 export type EventErrorOptions = ErrorOptions & {
   event: Event<keyof ClientEvents>;
+}
+
+export type TaskErrorOptions = ErrorOptions & {
+  task: Task;
 }
