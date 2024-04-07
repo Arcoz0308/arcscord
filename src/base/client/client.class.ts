@@ -16,6 +16,8 @@ export class Client extends DJSClient {
 
   rest: REST;
 
+  ready = false;
+
   constructor(token: string) {
     super({
       intents: [
@@ -37,6 +39,7 @@ export class Client extends DJSClient {
     }).setToken(token);
 
     this.on("ready", () => {
+      this.ready = true;
       this.logger.info("bot connected...");
       void this.commandManager.load();
     });
@@ -44,6 +47,25 @@ export class Client extends DJSClient {
 
   async preLoad(): Promise<void> {
     this.eventManager.load();
+  }
+
+  waitReady(delay = 500): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (this.ready) {
+        return resolve();
+      }
+
+      setTimeout(() => {
+        if (this.ready) {
+          return resolve();
+        }
+
+        // delay : 0.5s, 1s, 2s, 4s, 8s, 5s, 10s and repeat infinity last two
+        return this.waitReady(delay <= 5000 ? delay * 2 : 5000);
+
+      }, delay);
+
+    });
   }
 
 }
