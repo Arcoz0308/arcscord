@@ -1,6 +1,6 @@
 import type { DevFacultative } from "#/manager/dev";
 import type { Client } from "#/base/client/client.class";
-import type { TaskType } from "#/base/task/task.type";
+import type { TaskResult, TaskType } from "#/base/task/task.type";
 
 export abstract class Task implements DevFacultative {
 
@@ -14,8 +14,12 @@ export abstract class Task implements DevFacultative {
 
   abstract interval: number|string|string[]
 
+  needReady: boolean = false;
+
   constructor(client: Client) {
     this.client = client;
   }
+
+  abstract run(): TaskResult | Promise<TaskResult>
 
 }
