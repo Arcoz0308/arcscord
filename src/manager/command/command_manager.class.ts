@@ -1,6 +1,4 @@
-import type { Client } from "#/base/client/client.class";
 import type { Command } from "#/base/command/command.class";
-import { Logger } from "#/utils/logger/logger.class";
 import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import { ApplicationCommandType } from "discord-api-types/v10";
 import { isDev } from "#/utils/config/env";
@@ -15,20 +13,19 @@ import type {
 } from "discord.js";
 import { CommandError } from "#/utils/error/class/command_error.class";
 import { internalErrorEmbed } from "#/utils/discord/embed/embed.const";
+import { BaseManager } from "#/base/manager/manager.class";
 
-export class CommandManager {
+export class CommandManager extends BaseManager {
 
   commands: Map<string, Command> = new Map();
 
-  logger = new Logger("command");
+  name = "command";
 
-  constructor(public client: Client) {
-  }
 
   async load(): Promise<void> {
     let commands = globalCommands(this.client);
     if (isDev) {
-      commands = this.checkCommandsInDev(commands);
+      commands = this.checkInDev(commands);
     }
 
     const commandsBuilders = this.loadCommands(commands);
@@ -156,13 +153,6 @@ export class CommandManager {
         baseError: anyToError(e).message,
       });
     }
-  }
-
-  isCommandEnableInDev(command: Command): boolean {
-    if (command.isEnableInDev) {
-      return true;
-    }
-    return this.client.devManager.isDevEnable(command.name, "commands");
   }
 
   resolveCommand(command: Command, apiCommands: ApplicationCommand[]): void {
@@ -327,11 +317,5 @@ export class CommandManager {
     }
   }
 
-  checkCommandsInDev(commands: Command[]): Command[] {
-    this.logger.trace(`filter commands for dev mode (full list : ${commands.map((cmd) => cmd.name).join(", ")})`);
-    const commands2 = commands.filter(command => this.isCommandEnableInDev(command));
-    this.logger.trace(`commands for dev mode filtered ! (enable commands : ${commands2.map((cmd) => cmd.name).join(", ")})`);
-    return commands2;
-  }
 
 }
