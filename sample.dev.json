@@ -6,6 +6,9 @@
     "messageCreate"
   ],
   "tasks": [
-    "task1"
-  ]
+    "test"
+  ],
+  "config": {
+    "devGuildId": ""
+  }
 }
