@@ -6,15 +6,21 @@ export abstract class BaseManager {
 
   client: Client;
 
-  name = "undefined";
-
-  logger: Logger;
+  abstract name: string;
 
   devConfigKey: DevConfigKey|null = null;
 
   constructor(client: Client) {
     this.client = client;
-    this.logger = new Logger(this.name);
+  }
+
+  _logger?: Logger;
+
+  get logger(): Logger {
+    if (!this._logger) {
+      this._logger = new Logger(this.name);
+    }
+    return this._logger;
   }
 
 
