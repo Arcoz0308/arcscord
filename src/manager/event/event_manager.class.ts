@@ -1,25 +1,18 @@
-import type { Client } from "#/base/client/client.class";
 import type { Event } from "#/base/event/event.class";
 import type { ClientEvents } from "discord.js";
-import { Logger } from "#/utils/logger/logger.class";
 import { anyToError } from "#/utils/error/error.util";
 import { eventHandlers } from "#/manager/event/event_manager.util";
 import { isDev } from "#/utils/config/env";
+import { BaseManager } from "#/base/manager/manager.class";
 
-export class EventManager {
+export class EventManager extends BaseManager {
 
-  client: Client;
-
-  logger: Logger = new Logger("event");
-
-  constructor(client: Client) {
-    this.client = client;
-  }
+  name = "event";
 
   load(): void {
     let events = eventHandlers(this.client);
     if (isDev) {
-      events = this.checkEventInDev(events);
+      events = this.checkInDev(events);
     }
     let i = 0;
     for (const event of events) {
@@ -47,18 +40,5 @@ export class EventManager {
     });
   }
 
-  isEventEnableInDev(event: Event<keyof ClientEvents>): boolean {
-    if (event.isEnableInDev) {
-      return true;
-    }
-    return this.client.devManager.isDevEnable(event.name, "events");
-  }
-
-  checkEventInDev(events: Event<keyof ClientEvents>[]): Event<keyof ClientEvents>[] {
-    this.logger.trace(`Filter events for dev mode (full list : ${events.map((evt) => evt.name).join(", ")})`);
-    const events2 = events.filter(event => this.isEventEnableInDev(event));
-    this.logger.trace(`Events for dev mode filtered ! (enabled events : ${events2.map((evt) => evt.name).join(", ")})`);
-    return events2;
-  }
 
 }
