@@ -4,10 +4,13 @@ import { anyToError } from "#/utils/error/error.util";
 import { eventHandlers } from "#/manager/event/event_manager.util";
 import { isDev } from "#/utils/config/env";
 import { BaseManager } from "#/base/manager/manager.class";
+import type { DevConfigKey } from "#/manager/dev";
 
 export class EventManager extends BaseManager {
 
   name = "event";
+
+  devConfigKey: DevConfigKey = "events";
 
   load(): void {
     let events = eventHandlers(this.client);

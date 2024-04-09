@@ -14,6 +14,7 @@ import type {
 import { CommandError } from "#/utils/error/class/command_error.class";
 import { internalErrorEmbed } from "#/utils/discord/embed/embed.const";
 import { BaseManager } from "#/base/manager/manager.class";
+import type { DevConfigKey } from "#/manager/dev";
 
 export class CommandManager extends BaseManager {
 
@@ -21,6 +22,7 @@ export class CommandManager extends BaseManager {
 
   name = "command";
 
+  devConfigKey: DevConfigKey = "commands";
 
   async load(): Promise<void> {
     let commands = globalCommands(this.client);
