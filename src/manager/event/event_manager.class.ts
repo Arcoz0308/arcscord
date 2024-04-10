@@ -19,15 +19,18 @@ export class EventManager extends BaseManager {
     }
     let i = 0;
     for (const event of events) {
-      this.loadEvent(event);
+      void this.loadEvent(event);
       i++;
     }
 
     this.logger.info(`loaded ${i} event handlers !`);
   }
 
-  loadEvent(event: Event<keyof ClientEvents>): void {
+  async loadEvent(event: Event<keyof ClientEvents>): Promise<void> {
     this.logger.trace(`bind event ${event.event} for ${event.name} handler !`);
+    if (event.waitReady) {
+      await this.client.waitReady();
+    }
     this.client.on(event.event, async(...args) => {
       try {
         const [result, error] = await event.handle(...args);

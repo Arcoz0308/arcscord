@@ -13,6 +13,8 @@ export abstract class Event<E extends keyof ClientEvents> implements DevFacultat
 
   abstract name: string;
 
+  waitReady: boolean = false;
+
   constructor(client: Client) {
     this.client = client;
   }
