@@ -3,6 +3,7 @@ import { CommandManager } from "#/manager/command/command_manager.class";
 import { DevManager } from "#/manager/dev";
 import { logger } from "#/utils/logger/logger.class";
 import { EventManager } from "#/manager/event/event_manager.class";
+import { TaskManager } from "#/manager/task/task_manager";
 
 export class Client extends DJSClient {
 
@@ -11,6 +12,8 @@ export class Client extends DJSClient {
   devManager = new DevManager();
 
   eventManager = new EventManager(this);
+
+  taskManager = new TaskManager(this);
 
   logger = logger;
 
@@ -47,10 +50,11 @@ export class Client extends DJSClient {
 
   async preLoad(): Promise<void> {
     this.eventManager.load();
+    this.taskManager.load();
   }
 
   waitReady(delay = 500): Promise<void> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (this.ready) {
         return resolve();
       }
