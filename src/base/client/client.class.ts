@@ -59,6 +59,7 @@ export class Client extends DJSClient {
         return resolve();
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       setTimeout(() => {
         if (this.ready) {
           return resolve();
