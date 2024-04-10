@@ -53,7 +53,7 @@ export class Client extends DJSClient {
     this.taskManager.load();
   }
 
-  waitReady(delay = 500): Promise<void> {
+  waitReady(delay = 50): Promise<void> {
     return new Promise((resolve) => {
       if (this.ready) {
         return resolve();
@@ -65,8 +65,8 @@ export class Client extends DJSClient {
           return resolve();
         }
 
-        // delay : 0.5s, 1s, 2s, 4s, 8s, 5s, 10s and repeat infinity last two
-        return this.waitReady(delay <= 5000 ? delay * 2 : 5000);
+        // delay : 0.05s, 0.1s, 0.2s 0.4s, 0.8s, 0.5s, 1s, and repeat infinity last two
+        return this.waitReady(delay <= 500 ? delay * 2 : 500);
 
       }, delay);
 
