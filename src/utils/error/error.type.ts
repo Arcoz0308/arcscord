@@ -1,5 +1,13 @@
 import type { BaseError } from "#/utils/error/class/base_error.class";
-import type { BaseInteraction, ClientEvents, CommandInteraction } from "discord.js";
+import type {
+  BaseInteraction,
+  ButtonInteraction,
+  ClientEvents,
+  CommandInteraction,
+  MessageComponentInteraction,
+  ModalSubmitInteraction,
+  SelectMenuInteraction
+} from "discord.js";
 import type { Command, CommandRunContext } from "#/base/command";
 import type { SubCommand } from "#/base/sub_command/sub_command.class";
 import type { Event } from "#/base/event/event.class";
@@ -28,6 +36,22 @@ export type CommandErrorOptions = InteractionErrorOptions & {
   interaction: CommandInteraction;
   context: CommandRunContext;
   command: Command|SubCommand;
+}
+
+export type ComponentErrorOptions = InteractionErrorOptions & {
+  interaction: MessageComponentInteraction|ModalSubmitInteraction;
+}
+
+export type ButtonErrorOptions = ComponentErrorOptions & {
+  interaction: ButtonInteraction;
+}
+
+export type SelectMenuErrorOptions = ComponentErrorOptions & {
+  interaction: SelectMenuInteraction;
+}
+
+export type TextInputErrorOptions = ComponentErrorOptions & {
+  interaction: ModalSubmitInteraction;
 }
 
 export type EventErrorOptions = ErrorOptions & {
