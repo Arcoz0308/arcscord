@@ -50,7 +50,7 @@ export type SelectMenuErrorOptions = ComponentErrorOptions & {
   interaction: SelectMenuInteraction;
 }
 
-export type TextInputErrorOptions = ComponentErrorOptions & {
+export type ModalInputErrorOptions = ComponentErrorOptions & {
   interaction: ModalSubmitInteraction;
 }
 
