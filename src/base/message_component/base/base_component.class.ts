@@ -1,5 +1,5 @@
 import { InteractionBase } from "#/base/interaction/interaction.class";
-import type { ComponentType } from "#/base/message_component/base/base_component.type";
+import type { ComponentBuilderField, ComponentType } from "#/base/message_component/base/base_component.type";
 
 export abstract class BaseComponent extends InteractionBase {
 
@@ -8,5 +8,7 @@ export abstract class BaseComponent extends InteractionBase {
   abstract customId: string;
 
   abstract type: ComponentType;
+
+  abstract builder: ComponentBuilderField;
 
 }
