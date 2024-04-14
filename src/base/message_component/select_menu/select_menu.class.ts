@@ -20,6 +20,8 @@ export abstract class SelectMenu extends BaseComponent {
 
   abstract selectType: SelectMenuType
 
+  authorOnly = false;
+
   abstract run(ctx: SelectMenuRunContext): Promise<SelectMenuRunResult>;
 
   isChannelSelect(): this is ChannelSelectMenuClass {
