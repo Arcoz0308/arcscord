@@ -16,6 +16,7 @@ import type {
   UserSelectMenuInteraction
 } from "discord.js";
 import type { selectMenuTypes } from "#/base/message_component/select_menu/select_menu.enum";
+import type { SelectMenu } from "#/base/message_component/select_menu/select_menu.class";
 
 export type AnySelectMenuBuilder = ChannelSelectMenuBuilder|MentionableSelectMenuBuilder|RoleSelectMenuBuilder|
   StringSelectMenuBuilder|UserSelectMenuBuilder;
@@ -56,3 +57,6 @@ export type UserSelectMenuClass = {
 
 export type AnySelectMenuClass = ChannelSelectMenuClass|MentionableSelectMenuClass|RoleSelectMenuClass|
   StringSelectMenuClass|UserSelectMenuClass;
+
+export type AnySelectMenu = SelectMenu<ChannelSelectMenuClass>|SelectMenu<MentionableSelectMenuClass>|SelectMenu<RoleSelectMenuClass>|
+  SelectMenu<StringSelectMenuClass>|SelectMenu<UserSelectMenuClass>
