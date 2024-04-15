@@ -1,47 +1,43 @@
 import { BaseComponent } from "#/base/message_component/base/base_component.class";
-import type { ComponentBuilderField, ComponentType } from "#/base/message_component/base/base_component.type";
+import type { ComponentType } from "#/base/message_component/base/base_component.type";
 import type {
-  AnySelectMenuBuilder,
+  AnySelectMenuClass,
   ChannelSelectMenuClass,
   MentionableSelectMenuClass,
   RoleSelectMenuClass,
-  SelectMenuRunContext,
-  SelectMenuRunResult,
-  SelectMenuType,
   StringSelectMenuClass,
   UserSelectMenuClass
 } from "#/base/message_component/select_menu/select_menu.type";
+import { ComponentType as DJSComponentType } from "discord-api-types/v10";
 
-export abstract class SelectMenu extends BaseComponent {
+export abstract class SelectMenu<T extends AnySelectMenuClass> extends BaseComponent {
 
   type: ComponentType = "selectMenu";
 
-  abstract builder: ComponentBuilderField<AnySelectMenuBuilder>;
-
-  abstract selectType: SelectMenuType
+  abstract builder: T["builder"];
 
   authorOnly = false;
 
-  abstract run(ctx: SelectMenuRunContext): Promise<SelectMenuRunResult>;
+  abstract run(ctx: Parameters<T["run"]>): ReturnType<T["run"]>
 
   isChannelSelect(): this is ChannelSelectMenuClass {
-    return this.selectType === "channel";
+    return this.builder.data.type as DJSComponentType === DJSComponentType.ChannelSelect;
   }
 
   isMentionableSelect(): this is MentionableSelectMenuClass {
-    return this.selectType === "mentionable";
+    return this.builder.data.type as DJSComponentType === DJSComponentType.MentionableSelect;
   }
 
   isRoleSelect(): this is RoleSelectMenuClass {
-    return this.selectType === "role";
+    return this.builder.data.type as DJSComponentType === DJSComponentType.RoleSelect;
   }
 
   isStringSelect(): this is StringSelectMenuClass {
-    return this.selectType === "string";
+    return this.builder.data.type as DJSComponentType === DJSComponentType.StringSelect;
   }
 
   isUserSelect(): this is UserSelectMenuClass {
-    return this.selectType === "user";
+    return this.builder.data.type as DJSComponentType === DJSComponentType.UserSelect;
   }
 
 
