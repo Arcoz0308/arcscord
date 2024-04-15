@@ -18,7 +18,7 @@ export abstract class SelectMenu<T extends AnySelectMenuClass> extends BaseCompo
 
   authorOnly = false;
 
-  abstract run(ctx: Parameters<T["run"]>): ReturnType<T["run"]>
+  abstract run(ctx: Parameters<T["run"]>[0]): ReturnType<T["run"]>
 
   isChannelSelect(): this is ChannelSelectMenuClass {
     return this.builder.data.type as DJSComponentType === DJSComponentType.ChannelSelect;
