@@ -29,38 +29,29 @@ export type SelectMenuRunContext<T extends AnySelectMenuInteraction = AnySelectM
 
 export type SelectMenuType = keyof typeof selectMenuTypes;
 
-type BaseSelectMenuClass = {
-  selectType: SelectMenuType;
-}
-
-export type ChannelSelectMenuClass = BaseSelectMenuClass & {
+export type ChannelSelectMenuClass = {
   builder: ChannelSelectMenuBuilder;
   run: (ctx: SelectMenuRunContext<ChannelSelectMenuInteraction>) => Promise<SelectMenuRunResult>;
-  selectType: "channel";
 }
 
-export type MentionableSelectMenuClass = BaseSelectMenuClass & {
+export type MentionableSelectMenuClass = {
   builder: MentionableSelectMenuBuilder;
   run: (ctx: SelectMenuRunContext<MentionableSelectMenuInteraction>) => Promise<SelectMenuRunResult>;
-  selectType: "mentionable";
 }
 
-export type RoleSelectMenuClass = BaseSelectMenuClass & {
+export type RoleSelectMenuClass = {
   builder: RoleSelectMenuBuilder;
   run: (ctx: SelectMenuRunContext<RoleSelectMenuInteraction>) => Promise<SelectMenuRunResult>;
-  selectType: "role";
 }
 
-export type StringSelectMenuClass = BaseSelectMenuClass & {
+export type StringSelectMenuClass = {
   builder: StringSelectMenuBuilder;
   run: (ctx: SelectMenuRunContext<StringSelectMenuInteraction>) => Promise<SelectMenuRunResult>;
-  selectType: "string";
 }
 
-export type UserSelectMenuClass = BaseSelectMenuClass & {
+export type UserSelectMenuClass = {
   builder: UserSelectMenuBuilder;
   run: (ctx: SelectMenuRunContext<UserSelectMenuInteraction>) => Promise<SelectMenuRunResult>;
-  selectType: "user";
 }
 
 export type AnySelectMenuClass = ChannelSelectMenuClass|MentionableSelectMenuClass|RoleSelectMenuClass|
