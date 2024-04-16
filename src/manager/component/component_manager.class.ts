@@ -30,16 +30,30 @@ export class ComponentManager extends BaseManager {
   }
 
   loadButton(component: ButtonComponent): void {
+    if (this.buttons.has(component.name)) {
+      return this.logger.warning(`Button component ${component.name} already exists/registered`);
+    }
 
+    this.logger.trace(`loaded button component ${component.name}`);
+    this.buttons.set(component.name, component);
   }
 
   loadModalSubmit(component: ModalSubmitComponent): void {
+    if (this.modalSubmit.has(component.name)) {
+      return this.logger.warning(`Modal submit component ${component.name} already exists/registered`);
+    }
 
+    this.logger.trace(`loaded modal submit component ${component.name}`);
+    this.modalSubmit.set(component.name, component);
   }
 
   loadSelectMenu(component: AnySelectMenu): void {
+    if (this.selectMenus.has(component.name)) {
+      return this.logger.warning(`Select menu component ${component.name} already exists/registered`);
+    }
 
+    this.logger.trace(`loaded select menu component ${component.name}`);
+    this.selectMenus.set(component.name, component);
   }
-
 
 }
