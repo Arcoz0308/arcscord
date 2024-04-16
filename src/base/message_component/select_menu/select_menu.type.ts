@@ -17,6 +17,7 @@ import type {
 } from "discord.js";
 import type { selectMenuTypes } from "#/base/message_component/select_menu/select_menu.enum";
 import type { SelectMenu } from "#/base/message_component/select_menu/select_menu.class";
+import type { ComponentBuilderField } from "#/base/message_component/base/base_component.type";
 
 export type AnySelectMenuBuilder = ChannelSelectMenuBuilder|MentionableSelectMenuBuilder|RoleSelectMenuBuilder|
   StringSelectMenuBuilder|UserSelectMenuBuilder;
@@ -31,27 +32,27 @@ export type SelectMenuRunContext<T extends AnySelectMenuInteraction = AnySelectM
 export type SelectMenuType = keyof typeof selectMenuTypes;
 
 export type ChannelSelectMenuClass = {
-  builder: ChannelSelectMenuBuilder;
+  builder: ComponentBuilderField<ChannelSelectMenuBuilder>;
   run: (ctx: SelectMenuRunContext<ChannelSelectMenuInteraction>) => Promise<SelectMenuRunResult>;
 }
 
 export type MentionableSelectMenuClass = {
-  builder: MentionableSelectMenuBuilder;
+  builder: ComponentBuilderField<MentionableSelectMenuBuilder>;
   run: (ctx: SelectMenuRunContext<MentionableSelectMenuInteraction>) => Promise<SelectMenuRunResult>;
 }
 
 export type RoleSelectMenuClass = {
-  builder: RoleSelectMenuBuilder;
+  builder: ComponentBuilderField<RoleSelectMenuBuilder>;
   run: (ctx: SelectMenuRunContext<RoleSelectMenuInteraction>) => Promise<SelectMenuRunResult>;
 }
 
 export type StringSelectMenuClass = {
-  builder: StringSelectMenuBuilder;
+  builder: ComponentBuilderField<StringSelectMenuBuilder>;
   run: (ctx: SelectMenuRunContext<StringSelectMenuInteraction>) => Promise<SelectMenuRunResult>;
 }
 
 export type UserSelectMenuClass = {
-  builder: UserSelectMenuBuilder;
+  builder: ComponentBuilderField<UserSelectMenuBuilder>;
   run: (ctx: SelectMenuRunContext<UserSelectMenuInteraction>) => Promise<SelectMenuRunResult>;
 }
 
