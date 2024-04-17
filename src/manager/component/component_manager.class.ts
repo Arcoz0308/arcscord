@@ -4,6 +4,7 @@ import { ModalSubmitComponent } from "#/base/message_component/modal_submit/moda
 import type { AnySelectMenu } from "#/base/message_component/select_menu/select_menu.type";
 import type { Component } from "#/base/message_component/base/base_component.type";
 import { SelectMenu } from "#/base/message_component/select_menu/select_menu.class";
+import { getComponents } from "#/manager/component/component_manager.util";
 
 export class ComponentManager extends BaseManager {
 
@@ -14,6 +15,15 @@ export class ComponentManager extends BaseManager {
   selectMenus: Map<string, AnySelectMenu> = new Map();
 
   modalSubmit: Map<string, ModalSubmitComponent> = new Map();
+
+  load(): void {
+    const components = getComponents(this.client);
+    for (const component of components) {
+      this.loadComponent(component);
+    }
+    this.logger.info(`loaded ${components.length} components (${this.buttons.size} buttons,`
+      + `${this.selectMenus.size} selectMenus, ${this.modalSubmit.size} modalSubmit)`);
+  }
 
   loadComponent(component: Component): void {
     if (component.type === "button" && component instanceof ButtonComponent) {
