@@ -6,6 +6,7 @@ import type { Component } from "#/base/message_component/base/base_component.typ
 import { SelectMenu } from "#/base/message_component/select_menu/select_menu.class";
 import { getComponents } from "#/manager/component/component_manager.util";
 import type { AnySelectMenuInteraction, ButtonInteraction, Interaction, ModalSubmitInteraction } from "discord.js";
+import { CUSTOM_ID_SEPARATOR } from "#/base/message_component/base/base_component.const";
 
 export class ComponentManager extends BaseManager {
 
@@ -31,6 +32,11 @@ export class ComponentManager extends BaseManager {
   }
 
   loadComponent(component: Component): void {
+    if (typeof this.validCustomID(component.customId) === "string") {
+      return this.logger.error(`component ${component.name} (${component.type}) don't have a valid id : ${this.validCustomID(component.customId)}`);
+    }
+
+
     if (component.type === "button" && component instanceof ButtonComponent) {
       return this.loadButton(component);
     }
@@ -93,6 +99,17 @@ export class ComponentManager extends BaseManager {
 
   handleModalSubmit(interaction: ModalSubmitInteraction): void {
 
+  }
+
+  validCustomID(id: string): true|string {
+    if (id.includes(CUSTOM_ID_SEPARATOR)) {
+      return `id ${id} include id separator ${CUSTOM_ID_SEPARATOR}`;
+    }
+
+    if (id.length > 50) {
+      return `id ${id} is too long, it should be less than or equal to 50 characters`;
+    }
+    return true;
   }
 
 }
