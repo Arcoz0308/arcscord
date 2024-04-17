@@ -5,6 +5,7 @@ import type { AnySelectMenu } from "#/base/message_component/select_menu/select_
 import type { Component } from "#/base/message_component/base/base_component.type";
 import { SelectMenu } from "#/base/message_component/select_menu/select_menu.class";
 import { getComponents } from "#/manager/component/component_manager.util";
+import type { AnySelectMenuInteraction, ButtonInteraction, Interaction, ModalSubmitInteraction } from "discord.js";
 
 export class ComponentManager extends BaseManager {
 
@@ -23,6 +24,10 @@ export class ComponentManager extends BaseManager {
     }
     this.logger.info(`loaded ${components.length} components (${this.buttons.size} buttons,`
       + `${this.selectMenus.size} selectMenus, ${this.modalSubmit.size} modalSubmit)`);
+
+    this.client.on("interactionCreate", (interaction) => {
+      this.handleInteraction(interaction);
+    });
   }
 
   loadComponent(component: Component): void {
@@ -64,6 +69,30 @@ export class ComponentManager extends BaseManager {
 
     this.logger.trace(`loaded select menu component ${component.name}`);
     this.selectMenus.set(component.name, component);
+  }
+
+  handleInteraction(interaction: Interaction): void {
+    if (interaction.isButton()) {
+      this.handleButton(interaction);
+    }
+    if (interaction.isAnySelectMenu()) {
+      this.handleSelectMenu(interaction);
+    }
+    if (interaction.isModalSubmit()) {
+      this.handleModalSubmit(interaction);
+    }
+  }
+
+  handleButton(interaction: ButtonInteraction): void {
+
+  }
+
+  handleSelectMenu(interaction: AnySelectMenuInteraction): void {
+
+  }
+
+  handleModalSubmit(interaction: ModalSubmitInteraction): void {
+
   }
 
 }
