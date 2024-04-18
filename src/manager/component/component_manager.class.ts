@@ -5,7 +5,13 @@ import type { AnySelectMenu } from "#/base/message_component/select_menu/select_
 import type { Component } from "#/base/message_component/base/base_component.type";
 import { SelectMenu } from "#/base/message_component/select_menu/select_menu.class";
 import { getComponents } from "#/manager/component/component_manager.util";
-import type { AnySelectMenuInteraction, ButtonInteraction, Interaction, ModalSubmitInteraction } from "discord.js";
+import type {
+  AnySelectMenuInteraction,
+  ButtonInteraction,
+  Interaction,
+  MessageComponentInteraction,
+  ModalSubmitInteraction
+} from "discord.js";
 import { CUSTOM_ID_SEPARATOR } from "#/base/message_component/base/base_component.const";
 
 export class ComponentManager extends BaseManager {
@@ -90,7 +96,6 @@ export class ComponentManager extends BaseManager {
   }
 
   handleButton(interaction: ButtonInteraction): void {
-
   }
 
   handleSelectMenu(interaction: AnySelectMenuInteraction): void {
@@ -110,6 +115,10 @@ export class ComponentManager extends BaseManager {
       return `id ${id} is too long, it should be less than or equal to 50 characters`;
     }
     return true;
+  }
+
+  getCustomID(interaction: MessageComponentInteraction|ModalSubmitInteraction): string {
+    return interaction.customId.split(CUSTOM_ID_SEPARATOR)[0];
   }
 
 }
