@@ -14,6 +14,9 @@ import type {
   ModalSubmitInteraction
 } from "discord.js";
 import { CUSTOM_ID_SEPARATOR } from "#/base/message_component/base/base_component.const";
+import { anyToError } from "#/utils/error/error.util";
+import { authorOnly, internalErrorEmbed } from "#/utils/discord/embed/embed.const";
+import { ButtonError } from "#/utils/error/class/button_error.class";
 
 export class ComponentManager extends BaseManager {
 
@@ -86,7 +89,7 @@ export class ComponentManager extends BaseManager {
 
   handleInteraction(interaction: Interaction): void {
     if (interaction.isButton()) {
-      this.handleButton(interaction);
+      void this.handleButton(interaction);
     }
     if (interaction.isAnySelectMenu()) {
       this.handleSelectMenu(interaction);
@@ -96,7 +99,68 @@ export class ComponentManager extends BaseManager {
     }
   }
 
-  handleButton(interaction: ButtonInteraction): void {
+  async handleButton(interaction: ButtonInteraction): Promise<void> {
+    const customId = this.getCustomID(interaction);
+    const button = this.buttons.get(customId);
+    if (!button) {
+      this.logger.warning(`Button component ${customId} does not exist/registered`);
+      await this.sendError(interaction, internalErrorEmbed());
+      return;
+    }
+
+    if (button.authorOnly && interaction.message.interaction) {
+      if (interaction.user.id !== interaction.message.interaction.user.id) {
+        this.logger.trace(`${interaction.user.username} (${interaction.user.id}) run button for `
+          + `${interaction.message.interaction.user.id}, ${interaction.user.id} that are author only`);
+      }
+      await this.sendError(interaction, authorOnly());
+    }
+
+    const defer = button.defaultReplyOptions.preReply;
+    if (defer) {
+      try {
+        await interaction.deferReply({
+          ephemeral: button.defaultReplyOptions.ephemeral,
+        });
+      } catch (e) {
+        const error = new ButtonError({
+          message: "failed to pre run defer reply",
+          interaction: interaction,
+          debugs: { ephemeral: button.defaultReplyOptions.ephemeral },
+          baseError: anyToError(e),
+        }).generateId();
+        this.logger.error(error.message, error.getDebugsString());
+
+        void this.sendError(interaction, internalErrorEmbed(error.id));
+        return;
+      }
+    }
+
+    try {
+      const [result, err] = await button.run({
+        interaction: interaction,
+        defer: defer,
+      });
+
+      if (err) {
+        err.generateId();
+        this.logger.error(err.message, err.getDebugsString());
+        void this.sendError(interaction, internalErrorEmbed(err.id), defer);
+        return;
+      }
+
+      this.logger.info(`${interaction.user.username} used button ${button.name}`
+        +  `(${interaction.customId}). Result : `
+        + (typeof result === "string" ? result : "success"));
+    } catch (e) {
+      const error = new ButtonError({
+        message: "failed to handle button interaction",
+        interaction: interaction,
+        baseError: anyToError(e),
+      }).generateId();
+      this.logger.error(error.message, error.getDebugsString());
+      void this.sendError(interaction, internalErrorEmbed(error.id), defer);
+    }
   }
 
   handleSelectMenu(interaction: AnySelectMenuInteraction): void {
@@ -122,7 +186,7 @@ export class ComponentManager extends BaseManager {
     return interaction.customId.split(CUSTOM_ID_SEPARATOR)[0];
   }
 
-  async sendInternalError(interaction: MessageComponentInteraction|ModalSubmitInteraction, embed: EmbedBuilder, defer: boolean = false):
+  async sendError(interaction: MessageComponentInteraction|ModalSubmitInteraction, embed: EmbedBuilder, defer: boolean = false):
     Promise<void> {
     try {
       if (defer) {
@@ -136,7 +200,7 @@ export class ComponentManager extends BaseManager {
         });
       }
     } catch (e) {
-      this.logger.error("failed to send internal error message", {
+      this.logger.error("failed to send error message", {
         baseError: anyToError(e).message,
       });
     }
