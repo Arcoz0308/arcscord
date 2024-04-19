@@ -8,6 +8,7 @@ import { getComponents } from "#/manager/component/component_manager.util";
 import type {
   AnySelectMenuInteraction,
   ButtonInteraction,
+  EmbedBuilder,
   Interaction,
   MessageComponentInteraction,
   ModalSubmitInteraction
@@ -119,6 +120,26 @@ export class ComponentManager extends BaseManager {
 
   getCustomID(interaction: MessageComponentInteraction|ModalSubmitInteraction): string {
     return interaction.customId.split(CUSTOM_ID_SEPARATOR)[0];
+  }
+
+  async sendInternalError(interaction: MessageComponentInteraction|ModalSubmitInteraction, embed: EmbedBuilder, defer: boolean = false):
+    Promise<void> {
+    try {
+      if (defer) {
+        await interaction.editReply({
+          embeds: [embed],
+        });
+      } else {
+        await interaction.reply({
+          embeds: [embed],
+          ephemeral: true,
+        });
+      }
+    } catch (e) {
+      this.logger.error("failed to send internal error message", {
+        baseError: anyToError(e).message,
+      });
+    }
   }
 
 }
