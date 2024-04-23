@@ -34,26 +34,31 @@ export type SelectMenuType = keyof typeof selectMenuTypes;
 export type ChannelSelectMenuClass = {
   builder: ComponentBuilderField<ChannelSelectMenuBuilder>;
   run: (ctx: SelectMenuRunContext<ChannelSelectMenuInteraction>) => Promise<SelectMenuRunResult>;
+  type: typeof selectMenuTypes.channel;
 }
 
 export type MentionableSelectMenuClass = {
   builder: ComponentBuilderField<MentionableSelectMenuBuilder>;
   run: (ctx: SelectMenuRunContext<MentionableSelectMenuInteraction>) => Promise<SelectMenuRunResult>;
+  type: typeof selectMenuTypes.mentionable;
 }
 
 export type RoleSelectMenuClass = {
   builder: ComponentBuilderField<RoleSelectMenuBuilder>;
   run: (ctx: SelectMenuRunContext<RoleSelectMenuInteraction>) => Promise<SelectMenuRunResult>;
+  type: typeof selectMenuTypes.role;
 }
 
 export type StringSelectMenuClass = {
   builder: ComponentBuilderField<StringSelectMenuBuilder>;
   run: (ctx: SelectMenuRunContext<StringSelectMenuInteraction>) => Promise<SelectMenuRunResult>;
+  type: typeof selectMenuTypes.string;
 }
 
 export type UserSelectMenuClass = {
   builder: ComponentBuilderField<UserSelectMenuBuilder>;
   run: (ctx: SelectMenuRunContext<UserSelectMenuInteraction>) => Promise<SelectMenuRunResult>;
+  type: typeof selectMenuTypes.user;
 }
 
 export type AnySelectMenuClass = ChannelSelectMenuClass|MentionableSelectMenuClass|RoleSelectMenuClass|

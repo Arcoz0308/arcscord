@@ -8,6 +8,8 @@ export abstract class SelectMenu<T extends AnySelectMenuClass> extends BaseCompo
 
   abstract builder: T["builder"];
 
+  abstract selectType: T["type"];
+
   authorOnly = false;
 
   abstract run(ctx: Parameters<T["run"]>[0]): ReturnType<T["run"]>
