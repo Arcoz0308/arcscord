@@ -1,18 +1,20 @@
 import { BaseComponent } from "#/base/message_component/base/base_component.class";
 import type { ComponentType } from "#/base/message_component/base/base_component.type";
-import type { AnySelectMenuClass } from "#/base/message_component/select_menu/select_menu.type";
+import type {
+  AnySelectMenuBuilder,
+  SelectMenuRunContext,
+  SelectMenuRunResult
+} from "#/base/message_component/select_menu/select_menu.type";
 
-export abstract class SelectMenu<T extends AnySelectMenuClass> extends BaseComponent {
+export abstract class SelectMenu extends BaseComponent {
 
   type: ComponentType = "selectMenu";
 
-  abstract builder: T["builder"];
 
-  abstract selectType: T["type"];
+  abstract builder: AnySelectMenuBuilder;
 
-  authorOnly = false;
+  authorOnly: boolean = false;
 
-  abstract run(ctx: Parameters<T["run"]>[0]): ReturnType<T["run"]>
-
+  abstract run(ctx: SelectMenuRunContext): Promise<SelectMenuRunResult>
 
 }
