@@ -4,6 +4,7 @@ import * as process from "process";
 import type { DebugValues, DebugValueString } from "#/utils/error/error.type";
 import { stringifyDebugValues } from "#/utils/error/error.util";
 import { isDebug } from "#/utils/config/env";
+import type { BaseError } from "#/utils/error/class/base_error.class";
 
 
 export class Logger {
@@ -49,6 +50,10 @@ export class Logger {
     for (const debug of debugs) {
       this.loggerFunction(formatShortDebug(debug));
     }
+  }
+
+  logError(error: BaseError): void {
+    this.error(error.fullMessage(), error.getDebugsString());
   }
 
   fatal(message: string, debugs: (string|DebugValueString)[]|DebugValues = []): never {
