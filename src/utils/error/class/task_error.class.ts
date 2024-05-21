@@ -9,6 +9,8 @@ export class TaskError extends BaseError {
   constructor(options: TaskErrorOptions) {
     super(options);
 
+    this.name = "TaskError";
+
     this.task = options.task;
   }
 

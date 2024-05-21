@@ -9,6 +9,8 @@ export class ButtonError extends ComponentError {
   constructor(options: ButtonErrorOptions) {
     super(options);
 
+    this.name = "ButtonError";
+
     this.interaction = options.interaction;
   }
 

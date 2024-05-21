@@ -9,6 +9,8 @@ export class SelectMenuError extends ComponentError {
   constructor(options: SelectMenuErrorOptions) {
     super(options);
 
+    this.name = "SelectMenuError";
+
     this.interaction = options.interaction;
   }
 

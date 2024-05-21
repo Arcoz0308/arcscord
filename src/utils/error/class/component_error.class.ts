@@ -8,6 +8,9 @@ export class ComponentError extends InteractionError {
 
   constructor(options: ComponentErrorOptions) {
     super(options);
+
+    this.name = "ComponentError";
+
     this.interaction = options.interaction;
   }
 

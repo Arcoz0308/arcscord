@@ -10,6 +10,8 @@ export class EventError extends BaseError {
   constructor(options: EventErrorOptions) {
     super(options);
 
+    this.name = "EventError";
+
     this.event = options.event;
   }
 

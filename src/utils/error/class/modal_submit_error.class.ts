@@ -10,6 +10,8 @@ export class ModalSubmitError extends ComponentError {
   constructor(options: ModalSubmitErrorOptions) {
     super(options);
 
+    this.name = "ModalSubmitError";
+
     this.interaction = options.interaction;
 
   }

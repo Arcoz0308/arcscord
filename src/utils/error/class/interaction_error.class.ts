@@ -9,6 +9,8 @@ export class InteractionError extends BaseError {
   constructor(options: InteractionErrorOptions) {
     super(options);
 
+    this.name = "InteractionError";
+
     this.interaction = options.interaction;
   }
 

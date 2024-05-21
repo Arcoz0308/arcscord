@@ -16,6 +16,8 @@ export class CommandError extends InteractionError {
   constructor(options: CommandErrorOptions) {
     super(options);
 
+    this.name = "CommandError";
+
     this.interaction = options.interaction;
     this.context = options.context;
     this.command = options.command;

@@ -13,6 +13,8 @@ export class BaseError extends Error {
   constructor(options: ErrorOptions) {
     super(options.message);
 
+    this.name = "BaseError";
+
     this.origin = options.baseError;
     this.debugs = options.debugs;
   }
