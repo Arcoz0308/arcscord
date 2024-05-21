@@ -31,10 +31,31 @@ export class BaseError extends Error {
         debugs.push(stringifyDebugValue(key, value));
       }
     }
+
+    if (this.stack) {
+      let i = 1;
+      for (const stack of this.stack.split("\n")) {
+        debugs.push([`stack ${i}.`, stack.trim()]);
+
+        i++;
+      }
+    }
+
     if (this.origin) {
-      debugs.push(["originError", this.origin.message]);
+
       if (this.origin instanceof BaseError) {
+        debugs.push(["originError", this.origin.fullMessage()]);
         debugs.push(...this.origin.getDebugsString());
+      } else {
+        debugs.push(["originError", this.origin.message]);
+        if (this.origin.stack) {
+          let i = 1;
+          for (const stack of this.origin.stack.split("\n")) {
+            debugs.push([`stack ${i}.`, stack.trim()]);
+
+            i++;
+          }
+        }
       }
     }
 
@@ -44,6 +65,10 @@ export class BaseError extends Error {
   generateId(): this {
     this.id = new ShortUniqueId().stamp(16);
     return this;
+  }
+
+  fullMessage(): string {
+    return `${this.name}: ${this.message}`;
   }
 
 }
