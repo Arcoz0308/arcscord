@@ -22,6 +22,10 @@ export class BaseError extends Error {
   getDebugsString(): DebugValueString[] {
     const debugs: DebugValueString[] = [];
 
+    if (this.id) {
+      debugs.push(["id", this.id]);
+    }
+
     if (this.debugs) {
       for (const [key, value] of Object.entries(this.debugs)) {
         debugs.push(stringifyDebugValue(key, value));
@@ -33,6 +37,7 @@ export class BaseError extends Error {
         debugs.push(...this.origin.getDebugsString());
       }
     }
+
     return debugs;
   }
 

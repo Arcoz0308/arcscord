@@ -24,10 +24,6 @@ export class InteractionError extends BaseError {
       debugs.push(["channel", "in dm"]);
     }
 
-    if (this.id) {
-      debugs.push(["id", this.id]);
-    }
-
     debugs.push(...super.getDebugsString());
     return debugs;
   }
