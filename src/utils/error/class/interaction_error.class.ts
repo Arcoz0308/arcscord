@@ -1,13 +1,10 @@
 import { BaseError } from "#/utils/error/class/base_error.class";
 import type { DebugValueString, InteractionErrorOptions } from "#/utils/error/error.type";
 import type { BaseInteraction } from "discord.js";
-import ShortUniqueId from "short-unique-id";
 
 export class InteractionError extends BaseError {
 
   interaction: BaseInteraction;
-
-  id?: string;
 
   constructor(options: InteractionErrorOptions) {
     super(options);
@@ -31,11 +28,6 @@ export class InteractionError extends BaseError {
 
     debugs.push(...super.getDebugsString());
     return debugs;
-  }
-
-  generateId(): this {
-    this.id = new ShortUniqueId().stamp(16);
-    return this;
   }
 
 }
