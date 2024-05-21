@@ -1,7 +1,6 @@
 import { BaseManager } from "#/base/manager/manager.class";
 import { ButtonComponent } from "#/base/message_component/button/button.class";
 import { ModalSubmitComponent } from "#/base/message_component/modal_submit/modal_submit.class";
-import type { AnySelectMenu } from "#/base/message_component/select_menu/select_menu.type";
 import type { Component } from "#/base/message_component/base/base_component.type";
 import { SelectMenu } from "#/base/message_component/select_menu/select_menu.class";
 import { getComponents } from "#/manager/component/component_manager.util";
@@ -17,6 +16,7 @@ import { CUSTOM_ID_SEPARATOR } from "#/base/message_component/base/base_componen
 import { anyToError } from "#/utils/error/error.util";
 import { authorOnly, internalErrorEmbed } from "#/utils/discord/embed/embed.const";
 import { ButtonError } from "#/utils/error/class/button_error.class";
+import { SelectMenuError } from "#/utils/error/class/select_menu_error.class";
 
 export class ComponentManager extends BaseManager {
 
@@ -24,7 +24,7 @@ export class ComponentManager extends BaseManager {
 
   buttons: Map<string, ButtonComponent> = new Map();
 
-  selectMenus: Map<string, AnySelectMenu> = new Map();
+  selectMenus: Map<string, SelectMenu> = new Map();
 
   modalSubmit: Map<string, ModalSubmitComponent> = new Map();
 
@@ -78,7 +78,7 @@ export class ComponentManager extends BaseManager {
     this.modalSubmit.set(component.name, component);
   }
 
-  loadSelectMenu(component: AnySelectMenu): void {
+  loadSelectMenu(component: SelectMenu): void {
     if (this.selectMenus.has(component.name)) {
       return this.logger.warning(`Select menu component ${component.name} already exists/registered`);
     }
@@ -92,7 +92,7 @@ export class ComponentManager extends BaseManager {
       void this.handleButton(interaction);
     }
     if (interaction.isAnySelectMenu()) {
-      this.handleSelectMenu(interaction);
+      void this.handleSelectMenu(interaction);
     }
     if (interaction.isModalSubmit()) {
       this.handleModalSubmit(interaction);
@@ -114,6 +114,7 @@ export class ComponentManager extends BaseManager {
           + `${interaction.message.interaction.user.id}, ${interaction.user.id} that are author only`);
       }
       await this.sendError(interaction, authorOnly());
+      return;
     }
 
     const defer = button.defaultReplyOptions.preReply;
@@ -163,7 +164,71 @@ export class ComponentManager extends BaseManager {
     }
   }
 
-  handleSelectMenu(interaction: AnySelectMenuInteraction): void {
+  async handleSelectMenu(interaction: AnySelectMenuInteraction): Promise<void> {
+    const customId = this.getCustomID(interaction);
+    const selectMenu = this.selectMenus.get(customId);
+    if (!selectMenu) {
+      this.logger.warning(`Select menu component ${customId} does not exist/registered`);
+      await this.sendError(interaction, internalErrorEmbed());
+      return;
+    }
+
+    if (selectMenu.authorOnly && interaction.message.interaction) {
+      if (selectMenu.authorOnly && interaction.message.interaction) {
+        if (interaction.user.id !== interaction.message.interaction.user.id) {
+          this.logger.trace(`${interaction.user.username} (${interaction.user.id}) run select menu for `
+            + `${interaction.message.interaction.user.id}, ${interaction.user.id} that are author only`);
+        }
+        await this.sendError(interaction, authorOnly());
+        return;
+      }
+    }
+
+    const defer = selectMenu.defaultReplyOptions.preReply;
+    if (defer) {
+      try {
+        await interaction.deferReply({
+          ephemeral: selectMenu.defaultReplyOptions.ephemeral,
+        });
+      } catch (e) {
+        const error = new SelectMenuError({
+          message: "failed to pre run defer reply",
+          interaction: interaction,
+          debugs: { ephemeral: selectMenu.defaultReplyOptions.ephemeral },
+          baseError: anyToError(e),
+        }).generateId();
+        this.logger.error(error.message, error.getDebugsString());
+
+        void this.sendError(interaction, internalErrorEmbed(error.id));
+        return;
+      }
+    }
+
+    try {
+      const [result, err] = await selectMenu.run({
+        interaction: interaction,
+        defer: defer,
+      });
+
+      if (err) {
+        err.generateId();
+        this.logger.error(err.message, err.getDebugsString());
+        await this.sendError(interaction, internalErrorEmbed(err.id), defer);
+        return;
+      }
+
+      this.logger.info(`${interaction.user.username} used select menu ${selectMenu.name}`
+        +  `(${interaction.customId}). Result : `
+        + (typeof result === "string" ? result : "success"));
+    } catch (e) {
+      const error = new SelectMenuError({
+        message: "failed to handle button interaction",
+        interaction: interaction,
+        baseError: anyToError(e),
+      }).generateId();
+      this.logger.error(error.message, error.getDebugsString());
+      void this.sendError(interaction, internalErrorEmbed(error.id), defer);
+    }
 
   }
 
