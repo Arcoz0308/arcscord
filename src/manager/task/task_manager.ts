@@ -56,7 +56,8 @@ export class TaskManager extends BaseManager {
     try {
       const [result, err] = await task.run();
       if (err) {
-        return this.logger.error(err.message, err.getDebugsString());
+        err.generateId();
+        return this.logger.logError(err);
       }
 
       this.logger.trace(`executed task ${task.name} with result : ${result}`);

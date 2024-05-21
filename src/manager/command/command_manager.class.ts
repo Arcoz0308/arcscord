@@ -235,7 +235,7 @@ export class CommandManager extends BaseManager {
           debugs: { ephemeral: command.defaultReplyOptions.ephemeral },
           baseError: anyToError(e),
         }).generateId();
-        this.logger.error(error.message, error.getDebugsString());
+        this.logger.logError(error);
 
         return this.sendInternalError(interaction, internalErrorEmbed(error.id));
       }
@@ -251,7 +251,7 @@ export class CommandManager extends BaseManager {
         const [result, err] = await command.preRun(ctx);
         if (err !== null) {
           err.generateId();
-          this.logger.error(err.message, err.getDebugsString());
+          this.logger.logError(err);
           return this.sendInternalError(interaction, internalErrorEmbed(err.id), defer);
         }
 
@@ -268,7 +268,7 @@ export class CommandManager extends BaseManager {
           context: ctx,
           baseError: anyToError(e),
         }).generateId();
-        this.logger.error(error.message, error.getDebugsString());
+        this.logger.logError(error);
 
         return this.sendInternalError(interaction, internalErrorEmbed(error.id), defer);
       }
@@ -278,7 +278,7 @@ export class CommandManager extends BaseManager {
       const [result, err] = await command.run(ctx);
       if (err !== null) {
         err.generateId();
-        this.logger.error(err.message, err.getDebugsString());
+        this.logger.logError(err);
         return this.sendInternalError(interaction, internalErrorEmbed(err.id), defer);
       }
 
@@ -294,7 +294,7 @@ export class CommandManager extends BaseManager {
         context: ctx,
         baseError: anyToError(e),
       }).generateId();
-      this.logger.error(error.message, error.getDebugsString());
+      this.logger.logError(error);
 
       return this.sendInternalError(interaction, internalErrorEmbed(error.id), defer);
     }

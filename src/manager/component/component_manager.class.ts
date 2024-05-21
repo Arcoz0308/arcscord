@@ -130,7 +130,7 @@ export class ComponentManager extends BaseManager {
           debugs: { ephemeral: button.defaultReplyOptions.ephemeral },
           baseError: anyToError(e),
         }).generateId();
-        this.logger.error(error.message, error.getDebugsString());
+        this.logger.logError(error);
 
         void this.sendError(interaction, internalErrorEmbed(error.id));
         return;
@@ -145,7 +145,7 @@ export class ComponentManager extends BaseManager {
 
       if (err) {
         err.generateId();
-        this.logger.error(err.message, err.getDebugsString());
+        this.logger.logError(err);
         void this.sendError(interaction, internalErrorEmbed(err.id), defer);
         return;
       }
@@ -159,7 +159,7 @@ export class ComponentManager extends BaseManager {
         interaction: interaction,
         baseError: anyToError(e),
       }).generateId();
-      this.logger.error(error.message, error.getDebugsString());
+      this.logger.logError(error);
       void this.sendError(interaction, internalErrorEmbed(error.id), defer);
     }
   }
@@ -197,7 +197,7 @@ export class ComponentManager extends BaseManager {
           debugs: { ephemeral: selectMenu.defaultReplyOptions.ephemeral },
           baseError: anyToError(e),
         }).generateId();
-        this.logger.error(error.message, error.getDebugsString());
+        this.logger.logError(error);
 
         void this.sendError(interaction, internalErrorEmbed(error.id));
         return;
@@ -212,7 +212,7 @@ export class ComponentManager extends BaseManager {
 
       if (err) {
         err.generateId();
-        this.logger.error(err.message, err.getDebugsString());
+        this.logger.logError(err);
         await this.sendError(interaction, internalErrorEmbed(err.id), defer);
         return;
       }
@@ -226,7 +226,7 @@ export class ComponentManager extends BaseManager {
         interaction: interaction,
         baseError: anyToError(e),
       }).generateId();
-      this.logger.error(error.message, error.getDebugsString());
+      this.logger.logError(error);
       void this.sendError(interaction, internalErrorEmbed(error.id), defer);
     }
 
