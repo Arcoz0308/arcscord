@@ -34,7 +34,7 @@ export class BaseError extends Error {
 
     if (this.stack) {
       let i = 1;
-      for (const stack of this.stack.split("\n")) {
+      for (const stack of this.stack.split("\n").slice(1)) {
         debugs.push([`stack ${i}.`, stack.trim()]);
 
         i++;
@@ -50,7 +50,7 @@ export class BaseError extends Error {
         debugs.push(["originError", this.origin.message]);
         if (this.origin.stack) {
           let i = 1;
-          for (const stack of this.origin.stack.split("\n")) {
+          for (const stack of this.origin.stack.split("\n").slice(1)) {
             debugs.push([`stack ${i}.`, stack.trim()]);
 
             i++;
