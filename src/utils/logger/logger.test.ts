@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { formatLog } from "#/utils/logger/logger.util";
 import * as console from "console";
 import { logger } from "#/utils/logger/logger.class";
+import { BaseError } from "#/utils/error/class/base_error.class";
 
 describe("logs texts", () => {
   it("some logs tests", () => {
@@ -21,6 +22,14 @@ describe("logs texts", () => {
       ["server", "test"],
       ["command", "testing"],
     ]);
+
+    try {
+      throw new BaseError({ message: "oook" });
+    } catch (error) {
+      if (error instanceof BaseError) {
+        logger.logError(error);
+      }
+    }
     expect(0).toBe(0);
   });
 });
