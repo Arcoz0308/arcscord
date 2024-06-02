@@ -1,7 +1,6 @@
 import type { CommandInteraction } from "discord.js";
 import type { UserCommandBuilder } from "#/utils/discord/builder/user_command.class";
 import type { MessageCommandBuilder } from "#/utils/discord/builder/message_command.class";
-import type { UObject } from "#/utils/type/type";
 import type { SlashCmdBuilder } from "#/utils/discord/builder/slash_cmd.class";
 import type { Command } from "#/base/command/command.class";
 import type { SubCommand } from "#/base/sub_command/sub_command.class";
@@ -11,7 +10,7 @@ import type { CommandError } from "#/utils/error/class/command_error.class";
 export type CommandRunContext = {
   interaction: CommandInteraction;
   defer: boolean;
-  additionalInfos?: UObject;
+  additionalInfos?: Record<string, unknown>;
 }
 
 export type SlashCommand = Command & {
