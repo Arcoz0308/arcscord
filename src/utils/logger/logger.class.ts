@@ -4,7 +4,7 @@ import * as process from "process";
 import type { DebugValues, DebugValueString } from "#/utils/error/error.type";
 import { stringifyDebugValues } from "#/utils/error/error.util";
 import { isDebug } from "#/utils/config/env";
-import type { BaseError } from "#/utils/error/class/base_error.class";
+import type { BaseError } from "#/utils/error/class/base_error";
 
 
 export class ArcLogger implements LoggerInterface {
@@ -75,4 +75,4 @@ export class ArcLogger implements LoggerInterface {
 
 }
 
-export const logger = new ArcLogger("main");
+export const defaultLogger = new ArcLogger("main");
