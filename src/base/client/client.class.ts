@@ -59,7 +59,7 @@ export class ArcClient extends DJSClient {
     });
   }
 
-  async preLoad(): Promise<void> {
+  preLoad(): void {
     this.eventManager.load();
     this.taskManager.load();
   }
