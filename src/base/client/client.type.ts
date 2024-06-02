@@ -12,9 +12,9 @@ export type ArcClientLoggerOptions = {
    * Change the logger used by the framework, need a constructor, not a class !
    * @default ArcLogger
    */
-  logger?: LoggerConstructor;
+  customLogger?: LoggerConstructor;
 }
 
 export type ArcClientOptions = ClientOptions & {
-
+  logger?: ArcClientLoggerOptions;
 }

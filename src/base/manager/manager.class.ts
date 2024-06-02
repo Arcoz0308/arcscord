@@ -2,6 +2,7 @@ import type { ArcClient } from "#/base/client/client.class";
 import { ArcLogger } from "#/utils/logger/logger.class";
 import type { DevConfigKey, DevFacultative } from "#/manager/dev";
 import { LoggerInterface } from "#/utils/logger/logger.type";
+import { createLogger } from "#/utils/logger/logger.util";
 
 export abstract class BaseManager {
 
@@ -15,11 +16,18 @@ export abstract class BaseManager {
     this.client = client;
   }
 
-  _logger?: ArcLogger;
+  _logger?: LoggerInterface;
 
   get logger(): LoggerInterface {
     if (!this._logger) {
-      this._logger = new ArcLogger(this.name);
+      const options = this.client.arcOptions;
+
+      if (options.logger?.customLogger) {
+        this._logger = createLogger(options.logger.customLogger, this.name, options.logger.loggerFunc);
+      } else {
+        this._logger = createLogger(ArcLogger, this.name, options.logger?.loggerFunc)
+      }
+      
     }
     return this._logger;
   }

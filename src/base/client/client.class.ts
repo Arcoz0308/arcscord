@@ -1,10 +1,12 @@
 import { Client as DJSClient, REST } from "discord.js";
 import { CommandManager } from "#/manager/command/command_manager.class";
 import { DevManager } from "#/manager/dev";
-import { logger } from "#/utils/logger/logger.class";
+import { ArcLogger } from "#/utils/logger/logger.class";
 import { EventManager } from "#/manager/event/event_manager.class";
 import { TaskManager } from "#/manager/task/task_manager";
 import { ArcClientOptions } from "#/base/client/client.type";
+import { LoggerInterface } from "#/utils/logger/logger.type";
+import { createLogger } from "#/utils/logger/logger.util";
 
 export class ArcClient extends DJSClient {
 
@@ -16,11 +18,13 @@ export class ArcClient extends DJSClient {
 
   taskManager = new TaskManager(this);
 
-  logger = logger;
+  logger: LoggerInterface;
 
   rest: REST;
 
   ready = false;
+
+  arcOptions: ArcClientOptions;
 
   /**
    * Constructor for creating an instance of the ArcClient class.
@@ -30,6 +34,15 @@ export class ArcClient extends DJSClient {
    */
   constructor(token: string, options: ArcClientOptions) {
     super(options);
+
+    this.arcOptions = options;
+
+    if (options.logger?.customLogger) {
+      this.logger = createLogger(options.logger.customLogger, "main", options.logger.loggerFunc);
+    } else {
+      this.logger = createLogger(ArcLogger, "main", options.logger?.loggerFunc)
+    }
+
 
     this.token = token;
 
