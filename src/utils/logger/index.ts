@@ -2,9 +2,9 @@ export {
   ArcLogger,
   defaultLogger
 } from "./logger.class";
-export {
+export type {
   LogLevel,
   LogFunc,
   LoggerInterface,
   LoggerConstructor
-} from "./logger.type"
+} from "./logger.type";

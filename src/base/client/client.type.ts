@@ -1,5 +1,5 @@
-import { ClientOptions } from "discord.js";
-import { LoggerConstructor } from "#/utils/logger/logger.type";
+import type { ClientOptions } from "discord.js";
+import type { LoggerConstructor } from "#/utils/logger/logger.type";
 
 /**
  * Represents the options for configuring the ArcClient Logger.

@@ -1,4 +1,5 @@
-import { BaseError, ErrorOptions } from "#/utils/error/class/base_error";
+import type { ErrorOptions } from "#/utils/error/class/base_error";
+import { BaseError } from "#/utils/error/class/base_error";
 import type { DebugValueString } from "#/utils/error/error.type";
 import type { Event } from "#/base/event/event.class";
 import type { ClientEvents } from "discord.js";

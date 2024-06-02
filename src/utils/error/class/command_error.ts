@@ -1,4 +1,5 @@
-import { InteractionError, InteractionErrorOptions } from "#/utils/error/class/interaction_error";
+import type { InteractionErrorOptions } from "#/utils/error/class/interaction_error";
+import { InteractionError } from "#/utils/error/class/interaction_error";
 import type { CommandInteraction } from "discord.js";
 import type { DebugValueString } from "#/utils/error/error.type";
 import type { Command, CommandRunContext } from "#/base/command";

@@ -60,4 +60,4 @@ export const formatShortDebug = (message: string|DebugValueString): string => {
 
 export const createLogger = (construct: LoggerConstructor, name: string, logFunc?: LogFunc): LoggerInterface => {
   return new construct(name, logFunc);
-}
+};

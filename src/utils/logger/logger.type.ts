@@ -13,25 +13,25 @@ export type LogLevel = keyof typeof logLevels;
 
 export type LogFunc = (...data: unknown[]) => void;
 
-export interface LoggerInterface {
+export type LoggerInterface = {
 
-  trace(message: string): void;
+  trace: (message: string) => void;
 
-  debug(message: string | DebugValueString): void;
+  debug: (message: string | DebugValueString) => void;
 
-  info(message: string): void;
+  info: (message: string) => void;
 
-  warning(message: string): void;
+  warning: (message: string) => void;
 
-  error(message: string, debugs?: (string | DebugValueString)[] | DebugValues): void;
+  error: (message: string, debugs?: (string | DebugValueString)[] | DebugValues) => void;
 
-  logError(error: BaseError): void;
+  logError: (error: BaseError) => void;
 
-  fatal(message: string, debugs?: (string | DebugValueString)[] | DebugValues): never;
+  fatal: (message: string, debugs?: (string | DebugValueString)[] | DebugValues) => never;
 
-  log(level: LogLevel, message: string): void;
+  log: (level: LogLevel, message: string) => void;
 }
 
-export interface LoggerConstructor {
+export type LoggerConstructor = {
   new (name: string, logFunc?: LogFunc): LoggerInterface;
 }

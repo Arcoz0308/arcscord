@@ -1,7 +1,7 @@
 export {
   ArcClient
 } from "./client.class";
-export {
+export type {
   ArcClientOptions,
   ArcClientLoggerOptions
-} from "./client.type"
+} from "./client.type";

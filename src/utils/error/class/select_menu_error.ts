@@ -1,4 +1,5 @@
-import { ComponentError, ComponentErrorOptions } from "#/utils/error/class/component_error";
+import type { ComponentErrorOptions } from "#/utils/error/class/component_error";
+import { ComponentError } from "#/utils/error/class/component_error";
 import type { AnySelectMenuInteraction } from "discord.js";
 import type { DebugValueString } from "#/utils/error/error.type";
 
