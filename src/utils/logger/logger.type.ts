@@ -23,11 +23,11 @@ export interface LoggerInterface {
 
   warning(message: string): void;
 
-  error(message: string, debugs: (string | DebugValueString)[] | DebugValues): void;
+  error(message: string, debugs?: (string | DebugValueString)[] | DebugValues): void;
 
   logError(error: BaseError): void;
 
-  fatal(message: string, debugs: (string | DebugValueString)[] | DebugValues): never;
+  fatal(message: string, debugs?: (string | DebugValueString)[] | DebugValues): never;
 
   log(level: LogLevel, message: string): void;
 }
