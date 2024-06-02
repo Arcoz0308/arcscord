@@ -1,6 +1,9 @@
 import { ClientOptions } from "discord.js";
 import { LoggerConstructor } from "#/utils/logger/logger.type";
 
+/**
+ * Represents the options for configuring the ArcClient Logger.
+ */
 export type ArcClientLoggerOptions = {
   /**
    * If you want to use another logger that console.log
@@ -15,6 +18,14 @@ export type ArcClientLoggerOptions = {
   customLogger?: LoggerConstructor;
 }
 
+
+/**
+ * Represents options for an ArcClient.
+ */
 export type ArcClientOptions = ClientOptions & {
+
+  /**
+   * Options for configuring the logger.
+   */
   logger?: ArcClientLoggerOptions;
 }
