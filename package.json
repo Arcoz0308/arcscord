@@ -28,7 +28,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@arcoz/eslint-config": "^1.1.0",
+    "@arcoz/eslint-config": "^1.1.1",
     "@swc-node/core": "^1.13.0",
     "@swc-node/register": "^1.9.0",
     "@types/node": "^20.11.24",
