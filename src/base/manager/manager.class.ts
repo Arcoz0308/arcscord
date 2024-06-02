@@ -1,6 +1,7 @@
 import type { ArcClient } from "#/base/client/client.class";
-import { Logger } from "#/utils/logger/logger.class";
+import { ArcLogger } from "#/utils/logger/logger.class";
 import type { DevConfigKey, DevFacultative } from "#/manager/dev";
+import { LoggerInterface } from "#/utils/logger/logger.type";
 
 export abstract class BaseManager {
 
@@ -14,11 +15,11 @@ export abstract class BaseManager {
     this.client = client;
   }
 
-  _logger?: Logger;
+  _logger?: ArcLogger;
 
-  get logger(): Logger {
+  get logger(): LoggerInterface {
     if (!this._logger) {
-      this._logger = new Logger(this.name);
+      this._logger = new ArcLogger(this.name);
     }
     return this._logger;
   }

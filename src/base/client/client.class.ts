@@ -1,9 +1,10 @@
-import { Client as DJSClient, IntentsBitField, REST } from "discord.js";
+import { Client as DJSClient, REST } from "discord.js";
 import { CommandManager } from "#/manager/command/command_manager.class";
 import { DevManager } from "#/manager/dev";
 import { logger } from "#/utils/logger/logger.class";
 import { EventManager } from "#/manager/event/event_manager.class";
 import { TaskManager } from "#/manager/task/task_manager";
+import { ArcClientOptions } from "#/base/client/client.type";
 
 export class ArcClient extends DJSClient {
 
@@ -21,19 +22,14 @@ export class ArcClient extends DJSClient {
 
   ready = false;
 
-  constructor(token: string) {
-    super({
-      intents: [
-        IntentsBitField.Flags.GuildScheduledEvents,
-        IntentsBitField.Flags.Guilds,
-        IntentsBitField.Flags.GuildMessages,
-        IntentsBitField.Flags.MessageContent,
-        IntentsBitField.Flags.DirectMessages,
-        IntentsBitField.Flags.GuildMembers,
-        IntentsBitField.Flags.GuildVoiceStates,
-        IntentsBitField.Flags.GuildPresences,
-      ],
-    });
+  /**
+   * Constructor for creating an instance of the ArcClient class.
+   *
+   * @param {string} token - The authentication token for the bot.
+   * @param {ArcClientOptions} options - Additional options for configuring the client.
+   */
+  constructor(token: string, options: ArcClientOptions) {
+    super(options);
 
     this.token = token;
 

@@ -1,4 +1,4 @@
-import type { LogLevel } from "#/utils/logger/logger.type";
+import type { LoggerInterface, LogLevel } from "#/utils/logger/logger.type";
 import { colorDebugValue, formatLog, formatShortDebug } from "#/utils/logger/logger.util";
 import * as process from "process";
 import type { DebugValues, DebugValueString } from "#/utils/error/error.type";
@@ -7,7 +7,7 @@ import { isDebug } from "#/utils/config/env";
 import type { BaseError } from "#/utils/error/class/base_error.class";
 
 
-export class Logger {
+export class ArcLogger implements LoggerInterface {
 
   processName: string;
 
@@ -24,7 +24,7 @@ export class Logger {
     }
   }
 
-  debug(message: string|DebugValueString): void {
+  debug(message: string | DebugValueString): void {
     if (typeof message === "string") {
       this.log("debug", message);
     } else {
@@ -40,7 +40,7 @@ export class Logger {
     this.log("warning", message);
   }
 
-  error(message: string, debugs: (string|DebugValueString)[]|DebugValues = []): void {
+  error(message: string, debugs: (string | DebugValueString)[] | DebugValues = []): void {
     this.log("error", message);
 
     if (!Array.isArray(debugs)) {
@@ -56,7 +56,7 @@ export class Logger {
     this.error(error.fullMessage(), error.getDebugsString());
   }
 
-  fatal(message: string, debugs: (string|DebugValueString)[]|DebugValues = []): never {
+  fatal(message: string, debugs: (string | DebugValueString)[] | DebugValues = []): never {
     this.log("fatal", message);
 
     if (!Array.isArray(debugs)) {
@@ -75,4 +75,4 @@ export class Logger {
 
 }
 
-export const logger = new Logger("main");
+export const logger = new ArcLogger("main");

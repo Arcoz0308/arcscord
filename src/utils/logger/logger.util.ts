@@ -1,4 +1,4 @@
-import type { LogLevel } from "#/utils/logger/logger.type";
+import type { LogFunc, LoggerConstructor, LoggerInterface, LogLevel } from "#/utils/logger/logger.type";
 import { effectReset } from "tintify";
 import {
   DATE_COLOR,
@@ -57,3 +57,7 @@ export const formatShortDebug = (message: string|DebugValueString): string => {
 
   return prefix + middle + separator + text;
 };
+
+export const createLogger = (construct: LoggerConstructor, name: string, logFunc?: LogFunc): LoggerInterface => {
+  return new construct(name, logFunc);
+}
