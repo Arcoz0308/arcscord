@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { formatLog } from "#/utils/logger/logger.util";
 import * as console from "console";
-import { logger } from "#/utils/logger/logger.class";
+import { defaultLogger } from "#/utils/logger/logger.class";
 import { BaseError } from "#/utils/error/class/base_error";
 
 describe("logs texts", () => {
@@ -16,8 +16,8 @@ describe("logs texts", () => {
     console.log(formatLog("info", "test2", "database"));
 
 
-    logger.debug(["name", "zghgu"]);
-    logger.error("erroooor", [
+    defaultLogger.debug(["name", "zghgu"]);
+    defaultLogger.error("erroooor", [
       ["author", "arcoz"],
       ["server", "test"],
       ["command", "testing"],
@@ -27,7 +27,7 @@ describe("logs texts", () => {
       throw new BaseError({ message: "oook" });
     } catch (error) {
       if (error instanceof BaseError) {
-        logger.logError(error);
+        defaultLogger.logError(error);
       }
     }
     expect(0).toBe(0);
