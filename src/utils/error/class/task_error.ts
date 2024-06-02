@@ -1,6 +1,10 @@
-import { BaseError } from "#/utils/error/class/base_error.class";
+import { BaseError, ErrorOptions } from "#/utils/error/class/base_error";
 import type { Task } from "#/base/task/task.class";
-import type { DebugValueString, TaskErrorOptions } from "#/utils/error/error.type";
+import type { DebugValueString } from "#/utils/error/error.type";
+
+export type TaskErrorOptions = ErrorOptions & {
+  task: Task;
+}
 
 export class TaskError extends BaseError {
 

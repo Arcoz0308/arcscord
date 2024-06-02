@@ -3,7 +3,7 @@ import type { GuildMember } from "discord.js";
 import { isGuildTextChannel } from "#/utils/discord/utils/util.func";
 import type { EventHandleResult } from "#/base/event/event.type";
 import { anyToError, error, ok } from "#/utils/error/error.util";
-import { EventError } from "#/utils/error/class/event_error.class";
+import { EventError } from "#/utils/error/class/event_error";
 
 export class WelcomeEvent extends Event<"guildMemberAdd"> {
 

@@ -1,6 +1,10 @@
-import { ComponentError } from "#/utils/error/class/component_error.class";
+import { ComponentError, ComponentErrorOptions } from "#/utils/error/class/component_error";
 import type { ButtonInteraction } from "discord.js";
-import type { ButtonErrorOptions, DebugValueString } from "#/utils/error/error.type";
+import type { DebugValueString } from "#/utils/error/error.type";
+
+export type ButtonErrorOptions = ComponentErrorOptions & {
+  interaction: ButtonInteraction;
+}
 
 export class ButtonError extends ComponentError {
 

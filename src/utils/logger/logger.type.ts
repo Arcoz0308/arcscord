@@ -1,6 +1,6 @@
 import type { logLevels } from "#/utils/logger/logger.enum";
 import type { DebugValues, DebugValueString } from "#/utils/error/error.type";
-import type { BaseError } from "#/utils/error/class/base_error.class";
+import type { BaseError } from "#/utils/error/class/base_error";
 
 export type LogLevelInfo = {
   logText: string;

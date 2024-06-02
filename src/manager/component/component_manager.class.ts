@@ -15,8 +15,8 @@ import type {
 import { CUSTOM_ID_SEPARATOR } from "#/base/message_component/base/base_component.const";
 import { anyToError } from "#/utils/error/error.util";
 import { authorOnly, internalErrorEmbed } from "#/utils/discord/embed/embed.const";
-import { ButtonError } from "#/utils/error/class/button_error.class";
-import { SelectMenuError } from "#/utils/error/class/select_menu_error.class";
+import { ButtonError } from "#/utils/error/class/button_error";
+import { SelectMenuError } from "#/utils/error/class/select_menu_error";
 
 export class ComponentManager extends BaseManager {
 

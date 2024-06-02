@@ -1,6 +1,12 @@
-import type { DebugValues, DebugValueString, ErrorOptions } from "#/utils/error/error.type";
+import type { DebugValues, DebugValueString } from "#/utils/error/error.type";
 import { stringifyDebugValue } from "#/utils/error/error.util";
 import ShortUniqueId from "short-unique-id";
+
+export type ErrorOptions = {
+  message?: string;
+  baseError?: BaseError|Error;
+  debugs?: DebugValues;
+}
 
 export class BaseError extends Error {
 

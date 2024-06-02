@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { formatLog } from "#/utils/logger/logger.util";
 import * as console from "console";
 import { logger } from "#/utils/logger/logger.class";
-import { BaseError } from "#/utils/error/class/base_error.class";
+import { BaseError } from "#/utils/error/class/base_error";
 
 describe("logs texts", () => {
   it("some logs tests", () => {

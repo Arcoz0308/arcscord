@@ -1,6 +1,6 @@
 import type { taskTypes } from "#/base/task/task.enum";
 import type { Result } from "#/utils/error/error.type";
-import type { TaskError } from "#/utils/error/class/task_error.class";
+import type { TaskError } from "#/utils/error/class/task_error";
 
 export type TaskType = keyof typeof taskTypes;
 

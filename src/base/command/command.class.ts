@@ -2,7 +2,7 @@ import type { CommandRunContext, CommandRunResult, SubSlashCommandList } from "#
 import { InteractionBase } from "#/base/interaction/interaction.class";
 import { isCommandWithSubs, isSlashCommand } from "#/base/command/command.util";
 import { anyToError, error, ok } from "#/utils/error/error.util";
-import { CommandError } from "#/utils/error/class/command_error.class";
+import { CommandError } from "#/utils/error/class/command_error";
 import { SubCommand } from "#/base/sub_command/sub_command.class";
 import type { InteractionEditReplyOptions, InteractionReplyOptions, MessagePayload } from "discord.js";
 

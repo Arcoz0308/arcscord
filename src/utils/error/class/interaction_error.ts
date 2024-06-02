@@ -1,6 +1,10 @@
-import { BaseError } from "#/utils/error/class/base_error.class";
-import type { DebugValueString, InteractionErrorOptions } from "#/utils/error/error.type";
+import { BaseError, ErrorOptions } from "#/utils/error/class/base_error";
+import type { DebugValueString } from "#/utils/error/error.type";
 import type { BaseInteraction } from "discord.js";
+
+export type InteractionErrorOptions = ErrorOptions & {
+  interaction: BaseInteraction;
+}
 
 export class InteractionError extends BaseError {
 

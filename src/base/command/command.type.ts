@@ -5,7 +5,7 @@ import type { SlashCmdBuilder } from "#/utils/discord/builder/slash_cmd.class";
 import type { Command } from "#/base/command/command.class";
 import type { SubCommand } from "#/base/sub_command/sub_command.class";
 import type { Result } from "#/utils/error/error.type";
-import type { CommandError } from "#/utils/error/class/command_error.class";
+import type { CommandError } from "#/utils/error/class/command_error";
 
 export type CommandRunContext = {
   interaction: CommandInteraction;

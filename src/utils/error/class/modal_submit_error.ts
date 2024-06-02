@@ -1,6 +1,10 @@
-import type { DebugValueString, ModalSubmitErrorOptions } from "#/utils/error/error.type";
-import { ComponentError } from "#/utils/error/class/component_error.class";
+import type { DebugValueString } from "#/utils/error/error.type";
+import { ComponentError, ComponentErrorOptions } from "#/utils/error/class/component_error";
 import type { ModalSubmitInteraction } from "discord.js";
+
+export type ModalSubmitErrorOptions = ComponentErrorOptions & {
+  interaction: ModalSubmitInteraction;
+}
 
 export class ModalSubmitError extends ComponentError {
 

@@ -11,7 +11,7 @@ import type {
   CommandInteraction,
   EmbedBuilder
 } from "discord.js";
-import { CommandError } from "#/utils/error/class/command_error.class";
+import { CommandError } from "#/utils/error/class/command_error";
 import { internalErrorEmbed } from "#/utils/discord/embed/embed.const";
 import { BaseManager } from "#/base/manager/manager.class";
 import type { DevConfigKey } from "#/manager/dev";

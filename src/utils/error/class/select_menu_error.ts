@@ -1,6 +1,10 @@
-import { ComponentError } from "#/utils/error/class/component_error.class";
+import { ComponentError, ComponentErrorOptions } from "#/utils/error/class/component_error";
 import type { AnySelectMenuInteraction } from "discord.js";
-import type { DebugValueString, SelectMenuErrorOptions } from "#/utils/error/error.type";
+import type { DebugValueString } from "#/utils/error/error.type";
+
+export type SelectMenuErrorOptions = ComponentErrorOptions & {
+  interaction: AnySelectMenuInteraction;
+}
 
 export class SelectMenuError extends ComponentError {
 

@@ -6,7 +6,7 @@ import type {
   StringSelectMenuBuilder,
   UserSelectMenuBuilder
 } from "@discordjs/builders";
-import type { SelectMenuError } from "#/utils/error/class/select_menu_error.class";
+import type { SelectMenuError } from "#/utils/error/class/select_menu_error";
 import type { AnySelectMenuInteraction } from "discord.js";
 import type { selectMenuTypes } from "#/base/message_component/select_menu/select_menu.enum";
 

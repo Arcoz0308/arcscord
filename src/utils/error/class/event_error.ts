@@ -1,7 +1,11 @@
-import { BaseError } from "#/utils/error/class/base_error.class";
-import type { DebugValueString, EventErrorOptions } from "#/utils/error/error.type";
+import { BaseError, ErrorOptions } from "#/utils/error/class/base_error";
+import type { DebugValueString } from "#/utils/error/error.type";
 import type { Event } from "#/base/event/event.class";
 import type { ClientEvents } from "discord.js";
+
+export type EventErrorOptions = ErrorOptions & {
+  event: Event<keyof ClientEvents>;
+}
 
 export class EventError extends BaseError {
 

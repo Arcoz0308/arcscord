@@ -1,6 +1,10 @@
-import { InteractionError } from "#/utils/error/class/interaction_error.class";
-import type { ComponentErrorOptions, DebugValueString } from "#/utils/error/error.type";
+import { InteractionError, InteractionErrorOptions } from "#/utils/error/class/interaction_error";
+import type { DebugValueString } from "#/utils/error/error.type";
 import type { MessageComponentInteraction, ModalSubmitInteraction } from "discord.js";
+
+export type ComponentErrorOptions = InteractionErrorOptions & {
+  interaction: MessageComponentInteraction|ModalSubmitInteraction;
+}
 
 export class ComponentError extends InteractionError {
 

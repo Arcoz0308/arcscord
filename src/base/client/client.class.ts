@@ -50,6 +50,8 @@ export class ArcClient extends DJSClient {
       version: "10",
     }).setToken(token);
 
+    void this.preLoad();
+
     this.on("ready", () => {
       this.ready = true;
       this.logger.info("bot connected...");
