@@ -3,7 +3,7 @@ import { devConfigSchema } from "#/manager/dev/dev.z";
 import { readFileSync } from "fs";
 import { DEFAULT_DEV_CONFIG_FILE_PATH } from "#/manager/dev/dev.const";
 import type { DevConfig, DevConfigKey } from "#/manager/dev/dev.type";
-import { logger } from "#/utils/logger/logger.class";
+import { defaultLogger } from "#/utils/logger/logger.class";
 
 export class DevManager {
 
@@ -20,13 +20,13 @@ export class DevManager {
     try {
       fileContent = readFileSync(env.DEV_FILE_PATH ?? DEFAULT_DEV_CONFIG_FILE_PATH);
     } catch (e) {
-      return logger.fatal("failed to open dev config path !", {
+      return defaultLogger.fatal("failed to open dev config path !", {
         path: env.DEV_FILE_PATH ?? DEFAULT_DEV_CONFIG_FILE_PATH,
       });
     }
     const ok = devConfigSchema.safeParse(JSON.parse(fileContent.toString()));
     if (!ok.success) {
-      return logger.fatal("failed to parse config", {
+      return defaultLogger.fatal("failed to parse config", {
         zodError: ok.error.message,
         details: ok.error.format(),
       });
