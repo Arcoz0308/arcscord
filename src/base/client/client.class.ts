@@ -5,18 +5,18 @@ import { ArcLogger } from "#/utils/logger/logger.class";
 import { EventManager } from "#/manager/event/event_manager.class";
 import { TaskManager } from "#/manager/task/task_manager";
 import type { ArcClientOptions } from "#/base/client/client.type";
-import type { LoggerInterface } from "#/utils/logger/logger.type";
+import type { LoggerConstructor, LoggerInterface } from "#/utils/logger/logger.type";
 import { createLogger } from "#/utils/logger/logger.util";
 
 export class ArcClient extends DJSClient {
 
-  commandManager = new CommandManager(this);
+  commandManager: CommandManager;
 
-  devManager = new DevManager();
+  devManager: DevManager;
 
-  eventManager = new EventManager(this);
+  eventManager: EventManager;
 
-  taskManager = new TaskManager(this);
+  taskManager : TaskManager;
 
   logger: LoggerInterface;
 
@@ -25,6 +25,8 @@ export class ArcClient extends DJSClient {
   ready = false;
 
   arcOptions: ArcClientOptions;
+
+  loggerConstructor: LoggerConstructor;
 
   /**
    * Constructor for creating an instance of the ArcClient class.
@@ -37,11 +39,14 @@ export class ArcClient extends DJSClient {
 
     this.arcOptions = options;
 
-    if (options.logger?.customLogger) {
-      this.logger = createLogger(options.logger.customLogger, "main", options.logger.loggerFunc);
-    } else {
-      this.logger = createLogger(ArcLogger, "main", options.logger?.loggerFunc);
-    }
+    this.devManager = new DevManager(this);
+    this.commandManager = new CommandManager(this);
+    this.taskManager = new TaskManager(this);
+    this.eventManager = new EventManager(this);
+
+    this.loggerConstructor = options.logger?.customLogger ?? ArcLogger;
+
+    this.logger = createLogger(this.loggerConstructor, "main", options.logger?.loggerFunc);
 
 
     this.token = token;
@@ -82,6 +87,10 @@ export class ArcClient extends DJSClient {
       }, delay);
 
     });
+  }
+
+  createLogger(name: string): LoggerInterface {
+    return createLogger(this.loggerConstructor, name, this.arcOptions.logger?.loggerFunc);
   }
 
 }
