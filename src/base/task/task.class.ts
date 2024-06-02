@@ -1,5 +1,5 @@
 import type { DevFacultative } from "#/manager/dev";
-import type { Client } from "#/base/client/client.class";
+import type { ArcClient } from "#/base/client/client.class";
 import type { TaskResult, TaskType } from "#/base/task/task.type";
 
 export abstract class Task implements DevFacultative {
@@ -8,7 +8,7 @@ export abstract class Task implements DevFacultative {
 
   abstract name: string;
 
-  client: Client;
+  client: ArcClient;
 
   abstract type: TaskType;
 
@@ -16,7 +16,7 @@ export abstract class Task implements DevFacultative {
 
   needReady: boolean = false;
 
-  constructor(client: Client) {
+  constructor(client: ArcClient) {
     this.client = client;
   }
 

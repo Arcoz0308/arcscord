@@ -1,5 +1,5 @@
 import type { Command, CommandRunContext, CommandRunResult } from "#/base/command";
-import type { Client } from "#/base/client/client.class";
+import type { ArcClient } from "#/base/client/client.class";
 import type { InteractionEditReplyOptions, InteractionReplyOptions, MessagePayload } from "discord.js";
 
 export abstract class SubCommand {
@@ -10,11 +10,11 @@ export abstract class SubCommand {
 
   subGroup: string|null = null;
 
-  client: Client;
+  client: ArcClient;
 
   name: string = "no_name";
 
-  constructor(client: Client, baseCommand: Command) {
+  constructor(client: ArcClient, baseCommand: Command) {
     this.client = client;
 
     this.baseCommand = baseCommand;

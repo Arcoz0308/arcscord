@@ -1,5 +1,5 @@
 import type { DevFacultative } from "#/manager/dev";
-import type { Client } from "#/base/client/client.class";
+import type { ArcClient } from "#/base/client/client.class";
 import type { ClientEvents } from "discord.js";
 import type { EventHandleResult } from "#/base/event/event.type";
 
@@ -7,7 +7,7 @@ export abstract class Event<E extends keyof ClientEvents> implements DevFacultat
 
   isEnableInDev = false;
 
-  client: Client;
+  client: ArcClient;
 
   abstract event: E;
 
@@ -15,7 +15,7 @@ export abstract class Event<E extends keyof ClientEvents> implements DevFacultat
 
   waitReady: boolean = false;
 
-  constructor(client: Client) {
+  constructor(client: ArcClient) {
     this.client = client;
   }
 

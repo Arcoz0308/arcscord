@@ -1,16 +1,16 @@
-import type { Client } from "#/base/client/client.class";
+import type { ArcClient } from "#/base/client/client.class";
 import { Logger } from "#/utils/logger/logger.class";
 import type { DevConfigKey, DevFacultative } from "#/manager/dev";
 
 export abstract class BaseManager {
 
-  client: Client;
+  client: ArcClient;
 
   abstract name: string;
 
   devConfigKey: DevConfigKey|null = null;
 
-  constructor(client: Client) {
+  constructor(client: ArcClient) {
     this.client = client;
   }
 

@@ -5,7 +5,7 @@ import { logger } from "#/utils/logger/logger.class";
 import { EventManager } from "#/manager/event/event_manager.class";
 import { TaskManager } from "#/manager/task/task_manager";
 
-export class Client extends DJSClient {
+export class ArcClient extends DJSClient {
 
   commandManager = new CommandManager(this);
 

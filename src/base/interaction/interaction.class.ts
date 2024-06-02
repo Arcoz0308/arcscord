@@ -1,4 +1,4 @@
-import type { Client } from "#/base/client/client.class";
+import type { ArcClient } from "#/base/client/client.class";
 import type { DevFacultative } from "#/manager/dev";
 import type { InteractionDefaultReplyOptions } from "#/base/interaction/interaction.type";
 
@@ -13,7 +13,7 @@ export abstract class InteractionBase implements DevFacultative {
     ephemeral: true,
   };
 
-  constructor(public client: Client) {
+  constructor(public client: ArcClient) {
   }
 
 }
