@@ -1,4 +1,4 @@
-import type { LoggerInterface, LogLevel } from "#/utils/logger/logger.type";
+import type { LogFunc, LoggerInterface, LogLevel } from "#/utils/logger/logger.type";
 import { colorDebugValue, formatLog, formatShortDebug } from "#/utils/logger/logger.util";
 import * as process from "process";
 import type { DebugValues, DebugValueString } from "#/utils/error/error.type";
@@ -12,10 +12,11 @@ export class ArcLogger implements LoggerInterface {
   processName: string;
 
   // if you want to change logger
-  loggerFunction: (...data: unknown[]) => void = console.log;
+  loggerFunction: LogFunc;
 
-  constructor(name: string) {
+  constructor(name: string, loggerFunction: LogFunc = console.log) {
     this.processName = name;
+    this.loggerFunction = loggerFunction;
   }
 
   trace(message: string): void {
