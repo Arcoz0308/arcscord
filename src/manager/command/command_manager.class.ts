@@ -3,7 +3,7 @@ import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v
 import { ApplicationCommandType } from "discord-api-types/v10";
 import { isDev } from "#/utils/config/env";
 import { commandTypeToString, hasPreRun, isMessageCommand, isSlashCommand, isUserCommand } from "#/base/command";
-import { anyToError } from "#/utils/error/error.util";
+import { anyToError, error } from "#/utils/error/error.util";
 import { globalCommands } from "#/manager/command/command_manager.util";
 import type {
   ApplicationCommand,
@@ -15,14 +15,30 @@ import { CommandError } from "#/utils/error/class/command_error";
 import { internalErrorEmbed } from "#/utils/discord/embed/embed.const";
 import { BaseManager } from "#/base/manager/manager.class";
 import type { DevConfigKey } from "#/manager/dev";
+import type {
+  CommandResultHandler,
+  CommandResultHandlerImplementer,
+  CommandResultHandlerInfos
+} from "#/manager/command/command_manager.type";
+import type { ArcClient } from "#/base";
 
-export class CommandManager extends BaseManager {
+export class CommandManager extends BaseManager implements CommandResultHandlerImplementer {
 
   commands: Map<string, Command> = new Map();
 
   name = "command";
 
   devConfigKey: DevConfigKey = "commands";
+
+  _resultHandler: CommandResultHandler;
+
+  constructor(client: ArcClient) {
+    super(client);
+
+    this._resultHandler = (infos: CommandResultHandlerInfos) => {
+      return this._resultHandler(infos);
+    };
+  }
 
   async load(): Promise<void> {
     let commands = globalCommands(this.client);
@@ -274,29 +290,39 @@ export class CommandManager extends BaseManager {
       }
     }
 
+    const start = Date.now();
     try {
-      const [result, err] = await command.run(ctx);
-      if (err !== null) {
-        err.generateId();
-        this.logger.logError(err);
-        return this.sendInternalError(interaction, internalErrorEmbed(err.id), defer);
-      }
 
-      this.logger.info(`${interaction.user.username} used command ${command.name}`
-        +  `(${commandTypeToString(interaction.commandType)}). Result : `
-      + (typeof result === "string" ? result : "success"));
+      const result = await command.run(ctx);
 
-    } catch (e) {
-      const error = new CommandError({
-        message: `failed to run command : ${anyToError(e).message}`,
+      const infos: CommandResultHandlerInfos = {
+        result: result,
         interaction: interaction,
         command: command,
-        context: ctx,
-        baseError: anyToError(e),
-      }).generateId();
-      this.logger.logError(error);
+        defer: defer,
+        start: start,
+        end: Date.now(),
+      };
 
-      return this.sendInternalError(interaction, internalErrorEmbed(error.id), defer);
+      return this._resultHandler(infos);
+
+    } catch (e) {
+      const infos: CommandResultHandlerInfos = {
+        result: error(new CommandError({
+          message: `failed to run command : ${anyToError(e).message}`,
+          interaction: interaction,
+          command: command,
+          context: ctx,
+          baseError: anyToError(e),
+        })),
+        interaction: interaction,
+        command: command,
+        defer: defer,
+        start: start,
+        end: Date.now(),
+      };
+
+      return this._resultHandler(infos);
     }
   }
 
@@ -317,6 +343,19 @@ export class CommandManager extends BaseManager {
         baseError: anyToError(e).message,
       });
     }
+  }
+
+  async resultHandler(infos: CommandResultHandlerInfos): Promise<void> {
+    const [result, err] = infos.result;
+    if (err !== null) {
+      err.generateId();
+      this.logger.logError(err);
+      return this.sendInternalError(infos.interaction, internalErrorEmbed(err.id), infos.defer);
+    }
+
+    this.logger.info(`${infos.interaction.user.username} used command ${infos.command.name}`
+      +  `(${commandTypeToString(infos.interaction.commandType)}). Result : `
+      + (typeof result === "string" ? result : "success"));
   }
 
 
