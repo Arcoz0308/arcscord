@@ -37,14 +37,14 @@ export class ArcClient extends DJSClient {
   constructor(token: string, options: ArcClientOptions) {
     super(options);
 
-    this.arcOptions = options;
+    this.loggerConstructor = options.logger?.customLogger ?? ArcLogger;
 
+    this.arcOptions = options;
     this.devManager = new DevManager(this);
     this.commandManager = new CommandManager(this);
     this.taskManager = new TaskManager(this);
-    this.eventManager = new EventManager(this);
 
-    this.loggerConstructor = options.logger?.customLogger ?? ArcLogger;
+    this.eventManager = new EventManager(this);
 
     this.logger = createLogger(this.loggerConstructor, "main", options.logger?.loggerFunc);
 
