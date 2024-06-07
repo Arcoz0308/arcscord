@@ -1,4 +1,5 @@
-import type { LogFunc, LoggerConstructor, LoggerInterface, LogLevel } from "#/utils/logger/logger.type";
+// eslint-disable-next-line  @typescript-eslint/consistent-type-imports
+import { LogFunc, LoggerConstructor, LoggerInterface, LogLevel } from "#/utils/logger/logger.type";
 import { effectReset } from "tintify";
 import {
   DATE_COLOR,
@@ -58,6 +59,7 @@ export const formatShortDebug = (message: string|DebugValueString): string => {
   return prefix + middle + separator + text;
 };
 
-export const createLogger = (construct: LoggerConstructor, name: string, logFunc?: LogFunc): LoggerInterface => {
-  return new construct(name, logFunc);
+
+export const createLogger = (ctor: LoggerConstructor, name: string, logFunc?: LogFunc): LoggerInterface => {
+  return new ctor(name, logFunc || console.log);
 };

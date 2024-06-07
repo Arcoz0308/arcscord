@@ -70,6 +70,10 @@ export class ArcLogger implements LoggerInterface {
     return process.exit(1);
   }
 
+  fatalError(error: BaseError): never {
+    this.fatal(error.fullMessage(), error.getDebugsString());
+  }
+
   log(level: LogLevel, message: string): void {
     this.loggerFunction(formatLog(level, message, this.processName));
   }
