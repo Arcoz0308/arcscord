@@ -9,7 +9,8 @@
     "start": "node -r @swc-node/register -r tsconfig-paths/register ./src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint ./src",
-    "lint:fix": "eslint ./src --fix"
+    "lint:fix": "eslint ./src --fix",
+    "test:simpleCommand": "npx nodemon --exec node -r @swc-node/register -r tsconfig-paths/register ./_test/simple_bot/index.ts"
   },
   "keywords": [],
   "author": "",
