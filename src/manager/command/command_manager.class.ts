@@ -1,7 +1,6 @@
 import type { Command } from "#/base/command/command.class";
 import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import { ApplicationCommandType } from "discord-api-types/v10";
-import { isDev } from "#/utils/config/env";
 import { commandTypeToString, hasPreRun, isMessageCommand, isSlashCommand, isUserCommand } from "#/base/command";
 import { anyToError, error } from "#/utils/error/error.util";
 import { globalCommands } from "#/manager/command/command_manager.util";
@@ -39,23 +38,6 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
     this._resultHandler = (infos: CommandResultHandlerInfos) => {
       return this.resultHandler(infos);
     };
-  }
-
-  async load(): Promise<void> {
-    let commands = globalCommands(this.client);
-    if (isDev) {
-      commands = this.checkInDev(commands);
-    }
-
-    const commandsBuilders = this.loadCommands(commands);
-
-    if (isDev) {
-      const data = await this.pushGuildCommands(this.client.devManager.config?.config.devGuildId || "no_found", commandsBuilders);
-      this.resolveCommands(commands, data);
-    } else {
-      const data = await this.pushGlobalCommands(commandsBuilders);
-      this.resolveCommands(commands, data);
-    }
 
     this.client.on("interactionCreate", (interaction) => {
       if (interaction.isCommand()) {
