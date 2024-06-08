@@ -21,6 +21,7 @@ import type {
   CommandResultHandlerInfos
 } from "#/manager/command/command_manager.type";
 import type { ArcClient } from "#/base";
+import { BaseError } from "#/utils";
 
 export class CommandManager extends BaseManager implements CommandResultHandlerImplementer {
 
@@ -36,7 +37,7 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
     super(client);
 
     this._resultHandler = (infos: CommandResultHandlerInfos) => {
-      return this._resultHandler(infos);
+      return this.resultHandler(infos);
     };
   }
 
@@ -83,11 +84,14 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
           this.logger.trace(`loaded slash builder of command "${command.name} in group ${group}"`);
 
         } catch (e) {
-          return this.logger.fatal(`invalid infos in builder for slash command "${command.name}"`,
-            {
-              baseError: anyToError(e).message,
-              group,
-            });
+          console.log(e);
+          return this.logger.fatalError(new BaseError({
+            message: `invalid slash builder of slash command "${command.name}"`,
+            baseError: anyToError(e),
+            debugs: {
+              group: group,
+            },
+          }));
         }
       }
 
@@ -99,11 +103,13 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
           this.logger.trace(`loaded message builder of command "${command.name}" in group ${group}`);
 
         } catch (e) {
-          return this.logger.fatal(`invalid infos in builder for message command "${command.name}"`,
-            {
-              baseError: anyToError(e).message,
-              group,
-            });
+          return this.logger.fatalError(new BaseError({
+            message: `invalid message builder for message command ${command.name}`,
+            baseError: anyToError(e),
+            debugs: {
+              group: group,
+            },
+          }));
         }
       }
 
@@ -115,11 +121,13 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
           this.logger.trace(`loaded user builder of command "${command.name}" in group ${group}`);
 
         } catch (e) {
-          return this.logger.fatal(`invalid infos in builder for user command "${command.name}"`,
-            {
-              baseError: anyToError(e).message,
-              group,
-            });
+          return this.logger.fatalError(new BaseError({
+            message: `invalid user builder for user command ${command.name}`,
+            baseError: anyToError(e),
+            debugs: {
+              group: group,
+            },
+          }));
         }
       }
       if (!hasPush) {
