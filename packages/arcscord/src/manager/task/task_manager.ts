@@ -1,6 +1,4 @@
 import type { Task } from "#/base/task/task.class";
-import { isDev } from "#/utils/config/env";
-import { taskList } from "#/manager/task/task_manager.util";
 import { CronJob } from "cron";
 import { BaseManager } from "#/base/manager/manager.class";
 import { anyToError } from "#/utils/error/error.util";
@@ -16,18 +14,8 @@ export class TaskManager extends BaseManager {
   crons: Map<string, CronJob|CronJob[]|NodeJS.Timeout> = new Map();
 
 
-  load(): void {
-    let tasks = taskList(this.client);
-    if (isDev) {
-      tasks = this.checkInDev(tasks);
-    }
-    let i = 0;
-    for (const task of tasks) {
-      this.loadTask(task);
-      i++;
-    }
-
-    this.logger.info(`loaded ${i} task handlers !`);
+  loadTasks(tasks: Task[]) {
+    tasks.forEach((task) => this.loadTask(task));
   }
 
   loadTask(task: Task): void {
