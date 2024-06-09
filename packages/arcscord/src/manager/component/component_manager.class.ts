@@ -17,6 +17,7 @@ import { anyToError } from "#/utils/error/error.util";
 import { authorOnly, internalErrorEmbed } from "#/utils/discord/embed/embed.const";
 import { ButtonError } from "#/utils/error/class/button_error";
 import { SelectMenuError } from "#/utils/error/class/select_menu_error";
+import { ModalSubmitError } from "#/utils";
 
 export class ComponentManager extends BaseManager {
 
@@ -232,8 +233,62 @@ export class ComponentManager extends BaseManager {
 
   }
 
-  handleModalSubmit(interaction: ModalSubmitInteraction): void {
+  async handleModalSubmit(interaction: ModalSubmitInteraction): Promise<void> {
+    const customId = this.getCustomID(interaction);
+    const modalSubmit = this.modalSubmit.get(customId);
+    if (!modalSubmit) {
+      this.logger.warning(`Modal submit component ${customId} does not exist/registered`);
+      await this.sendError(interaction, internalErrorEmbed());
+      return;
+    }
 
+    const defer = modalSubmit.defaultReplyOptions.preReply;
+    if (defer) {
+      try {
+        await interaction.deferReply({
+          ephemeral: modalSubmit.defaultReplyOptions.ephemeral,
+        });
+      } catch (e) {
+        const error = new ModalSubmitError({
+          message: "failed to pre run defer reply",
+          interaction: interaction,
+          debugs: { ephemeral: modalSubmit.defaultReplyOptions.ephemeral },
+          baseError: anyToError(e),
+        }).generateId();
+        this.logger.logError(error);
+
+        void this.sendError(interaction, internalErrorEmbed(error.id));
+        return;
+      }
+    }
+
+    try {
+      const [result, err] = await modalSubmit.run({
+        interaction: interaction,
+        defer: defer,
+      });
+
+      if (err) {
+        err.generateId();
+        this.logger.logError(err);
+        void this.sendError(interaction, internalErrorEmbed(err.id), defer);
+        return;
+      }
+
+      this.logger.info(`${interaction.user.username} used modal submit ${modalSubmit.name}`
+        +  `(${interaction.customId}). Result : `
+        + (typeof result === "string" ? result : "success"));
+
+    } catch (e) {
+      const error = new ModalSubmitError({
+        message: "failed to handle modal submit interaction",
+        interaction: interaction,
+        baseError: anyToError(e),
+      }).generateId();
+
+      this.logger.logError(error);
+      void this.sendError(interaction, internalErrorEmbed(error.id), defer);
+    }
   }
 
   validCustomID(id: string): true|string {
