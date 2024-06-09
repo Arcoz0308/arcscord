@@ -1,6 +1,6 @@
 {
-  "name": "bot_template",
-  "version": "1.0.0",
+  "name": "arcscord",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -8,9 +8,9 @@
     "debug": "npx nodemon --inspect --exec node -r @swc-node/register -r tsconfig-paths/register ./src/index.ts dev debug",
     "start": "node -r @swc-node/register -r tsconfig-paths/register ./src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint ./src",
-    "lint:fix": "eslint ./src --fix",
-    "test:simpleCommand": "npx nodemon --exec node -r @swc-node/register -r tsconfig-paths/register ./_test/simple_bot/index.ts"
+    "lint": "../../node_modules/.bin/eslint ./src",
+    "lint:fix": "../../node_modules/.bin/eslint ./src --fix",
+    "test:simpleCommand": "npx nodemon --exec node -r @swc-node/register -r tsconfig-paths/register ../../_test/simple_bot/index.ts"
   },
   "keywords": [],
   "author": "",
