@@ -1,8 +1,6 @@
 import type { Event } from "#/base/event/event.class";
 import type { ClientEvents } from "discord.js";
 import { anyToError } from "#/utils/error/error.util";
-import { eventHandlers } from "#/manager/event/event_manager.util";
-import { isDev } from "#/utils/config/env";
 import { BaseManager } from "#/base/manager/manager.class";
 import type { DevConfigKey } from "#/manager/dev";
 
@@ -12,18 +10,8 @@ export class EventManager extends BaseManager {
 
   devConfigKey: DevConfigKey = "events";
 
-  load(): void {
-    let events = eventHandlers(this.client);
-    if (isDev) {
-      events = this.checkInDev(events);
-    }
-    let i = 0;
-    for (const event of events) {
-      void this.loadEvent(event);
-      i++;
-    }
-
-    this.logger.info(`loaded ${i} event handlers !`);
+  loadEvents(events: Event<keyof ClientEvents>[]) {
+    events.forEach(event => void this.loadEvent(event));
   }
 
   async loadEvent(event: Event<keyof ClientEvents>): Promise<void> {
