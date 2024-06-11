@@ -55,17 +55,11 @@ export class ArcClient extends DJSClient {
       version: "10",
     }).setToken(token);
 
-    void this.preLoad();
 
     this.on("ready", () => {
       this.ready = true;
       this.logger.info("bot connected...");
     });
-  }
-
-  preLoad(): void {
-    this.eventManager.load();
-    this.taskManager.load();
   }
 
   waitReady(delay = 50): Promise<void> {
