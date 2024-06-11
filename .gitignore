@@ -1,7 +1,7 @@
-.idea
+.idea/
 .vscode
 .env
-out
+out/
 dev.json
-node_modules
-dist
+node_modules/
+dist/
