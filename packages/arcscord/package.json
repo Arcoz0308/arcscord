@@ -4,10 +4,7 @@
   "description": "A discord.js framework, slash command first and full typescript !",
   "main": "index.js",
   "scripts": {
-    "dev": "npx nodemon --exec node -r @swc-node/register -r tsconfig-paths/register ./src/index.ts dev",
-    "debug": "npx nodemon --inspect --exec node -r @swc-node/register -r tsconfig-paths/register ./src/index.ts dev debug",
-    "start": "node -r @swc-node/register -r tsconfig-paths/register ./src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
     "lint": "../../node_modules/.bin/eslint ./src",
     "lint:fix": "../../node_modules/.bin/eslint ./src --fix",
     "test:simpleCommand": "npx nodemon --exec node -r @swc-node/register -r tsconfig-paths/register ./test/simple_bot/index.ts"
