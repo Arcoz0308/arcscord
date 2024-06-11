@@ -3,7 +3,6 @@ import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v
 import { ApplicationCommandType } from "discord-api-types/v10";
 import { commandTypeToString, hasPreRun, isMessageCommand, isSlashCommand, isUserCommand } from "#/base/command";
 import { anyToError, error } from "#/utils/error/error.util";
-import { globalCommands } from "#/manager/command/command_manager.util";
 import type {
   ApplicationCommand,
   ApplicationCommandDataResolvable,
