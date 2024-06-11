@@ -1,3 +1,19 @@
 {
-  "name": "@arcscord/arcscord"
+  "name": "@arcscord/arcscord",
+  "description": "A discord.js framework, slash command first and full typescript !",
+  "keywords": [
+    "discord",
+    "framework",
+    "discord.js"
+  ],
+  "author": "Arcoz0308",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arcoz0308/arcscord.git"
+  },
+  "bugs": {
+    "url": "https://github.com/arcoz0308/arcscord/issues"
+  },
+  "homepage": "https://github.com/arcoz0308/arcscord#readme"
 }
