@@ -1,6 +1,5 @@
-import type { CommandRunContext, CommandRunResult, SlashCommand } from "#/base/command";
-import { Command } from "#/base/command";
-import { SlashCmdBuilder } from "#/utils";
+import type { CommandRunContext, CommandRunResult, SlashCommand } from "#/base";
+import { Command, SlashCmdBuilder } from "#/index";
 
 export class TestCommand extends Command implements SlashCommand {
 
