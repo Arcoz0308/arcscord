@@ -1,4 +1,4 @@
-import type { DebugValues, DebugValueString, ResultError, ResultOk } from "#/utils/error/error.type";
+import type { DebugValues, DebugValueString, Result } from "#/utils/error/error.type";
 
 export const stringifyDebugValue = (key: string, value: unknown): DebugValueString => {
   if (typeof value === "string") {
@@ -31,11 +31,11 @@ export const stringifyDebugValues = (debug: DebugValues): DebugValueString[] => 
 
 };
 
-export const ok = <T>(value: T): ResultOk<T> => {
+export const ok = <T, E>(value: T): Result<T, E> => {
   return [value, null];
 };
 
-export const error = <E>(error: E): ResultError<E> => {
+export const error = <T, E>(error: E): Result<T, E> => {
   return [null, error];
 };
 
