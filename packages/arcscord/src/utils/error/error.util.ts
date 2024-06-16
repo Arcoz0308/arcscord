@@ -1,5 +1,4 @@
 import type { DebugValues, DebugValueString, Result } from "#/utils/error/error.type";
-import { undefined } from "zod";
 
 export const stringifyDebugValue = (key: string, value: unknown): DebugValueString => {
   if (typeof value === "string") {
@@ -15,11 +14,12 @@ export const stringifyDebugValue = (key: string, value: unknown): DebugValueStri
       return [key, JSON.stringify(value)];
     }
 
+  } else if (typeof value === "undefined") {
+    return [key, "undefined"];
+
   } else if (typeof value === "boolean") {
     return [key, value.toString()];
 
-  } else if (value === undefined) {
-    return [key, "undefined"];
   } else {
     return [key, `${!value}`];
   }
