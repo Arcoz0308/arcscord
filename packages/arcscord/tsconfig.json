@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "module": "commonjs",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "baseUrl": ".",
     "paths": {
       "#/*": [
