@@ -125,4 +125,12 @@ export abstract class Command extends InteractionBase {
     }
   }
 
+  error(err: CommandError): CommandRunResult {
+    return error(err);
+  }
+
+  ok(value: true|string): CommandRunResult {
+    return ok(value);
+  }
+
 }

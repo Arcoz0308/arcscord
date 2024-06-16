@@ -1,6 +1,8 @@
 import type { Command, CommandRunContext, CommandRunResult } from "#/base/command";
 import type { ArcClient } from "#/base/client/client.class";
 import type { InteractionEditReplyOptions, InteractionReplyOptions, MessagePayload } from "discord.js";
+import type { CommandError } from "#/utils";
+import { error, ok } from "#/utils";
 
 export abstract class SubCommand {
 
@@ -40,6 +42,14 @@ export abstract class SubCommand {
 
   editReply(ctx: CommandRunContext,  message: string | MessagePayload | InteractionEditReplyOptions): Promise<CommandRunResult> {
     return this.baseCommand.editReply(ctx, message);
+  }
+
+  error(err: CommandError): CommandRunResult {
+    return error(err);
+  }
+
+  ok(value: true|string): CommandRunResult {
+    return ok(value);
   }
 
 }

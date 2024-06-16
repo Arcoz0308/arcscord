@@ -43,4 +43,12 @@ export abstract class ModalSubmitComponent extends BaseComponent {
     }
   }
 
+  error(err: ModalSubmitError): ModalSubmitRunResult {
+    return error(err);
+  }
+
+  ok(value: true|string): ModalSubmitRunResult {
+    return ok(value);
+  }
+
 }

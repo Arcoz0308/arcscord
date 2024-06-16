@@ -44,4 +44,12 @@ export abstract class SelectMenu extends BaseComponent {
     }
   }
 
+  error(err: SelectMenuError): SelectMenuRunResult {
+    return error(err);
+  }
+
+  ok(value: true|string): SelectMenuRunResult {
+    return ok(value);
+  }
+
 }

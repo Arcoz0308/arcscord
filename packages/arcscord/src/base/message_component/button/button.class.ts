@@ -42,4 +42,12 @@ export abstract class Button extends BaseComponent {
     }
   }
 
+  error(err: ButtonError): ButtonRunResult {
+    return error(err);
+  }
+
+  ok(value: true|string): ButtonRunResult {
+    return ok(value);
+  }
+
 }
