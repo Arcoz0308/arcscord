@@ -1,18 +1,12 @@
 import { BaseComponent } from "#/base/message_component/base/base_component.class";
 import type { ComponentType } from "#/base/message_component/base/base_component.type";
-import type {
-  AnySelectMenuBuilder,
-  SelectMenuRunContext,
-  SelectMenuRunResult
-} from "#/base/message_component/select_menu/select_menu.type";
+import type { SelectMenuRunContext, SelectMenuRunResult } from "#/base/message_component/select_menu/select_menu.type";
 import type { InteractionEditReplyOptions, InteractionReplyOptions, MessagePayload } from "discord.js";
 import { anyToError, error, ok, SelectMenuError } from "#/utils";
 
 export abstract class SelectMenu extends BaseComponent {
 
   type: ComponentType = "selectMenu";
-
-  abstract builder: AnySelectMenuBuilder;
 
   authorOnly: boolean = false;
 

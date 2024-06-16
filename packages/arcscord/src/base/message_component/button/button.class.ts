@@ -1,6 +1,5 @@
 import { BaseComponent } from "#/base/message_component/base/base_component.class";
-import type { ComponentBuilderField, ComponentType } from "#/base/message_component/base/base_component.type";
-import type { ButtonBuilder } from "@discordjs/builders";
+import type { ComponentType } from "#/base/message_component/base/base_component.type";
 import type { ButtonRunContext, ButtonRunResult } from "#/base/message_component/button/button.type";
 import type { InteractionEditReplyOptions, InteractionReplyOptions, MessagePayload } from "discord.js";
 import { anyToError, ButtonError, error, ok } from "#/utils";
@@ -8,8 +7,6 @@ import { anyToError, ButtonError, error, ok } from "#/utils";
 export abstract class Button extends BaseComponent {
 
   type: ComponentType = "button";
-
-  abstract builder: ComponentBuilderField<ButtonBuilder>;
 
   authorOnly = false;
 
