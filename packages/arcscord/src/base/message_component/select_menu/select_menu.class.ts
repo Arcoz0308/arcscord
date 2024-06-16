@@ -10,7 +10,6 @@ export abstract class SelectMenu extends BaseComponent {
 
   type: ComponentType = "selectMenu";
 
-
   abstract builder: AnySelectMenuBuilder;
 
   authorOnly: boolean = false;
