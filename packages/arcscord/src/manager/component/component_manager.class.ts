@@ -17,6 +17,7 @@ import { authorOnly, internalErrorEmbed } from "#/utils/discord/embed/embed.cons
 import { ButtonError } from "#/utils/error/class/button_error";
 import { SelectMenuError } from "#/utils/error/class/select_menu_error";
 import { ModalSubmitError } from "#/utils";
+import type { ArcClient } from "#/base";
 
 export class ComponentManager extends BaseManager {
 
@@ -27,6 +28,16 @@ export class ComponentManager extends BaseManager {
   selectMenus: Map<string, SelectMenu> = new Map();
 
   modalSubmit: Map<string, ModalSubmitComponent> = new Map();
+
+  constructor(client: ArcClient) {
+    super(client);
+
+    client.on("interactionCreate", (interaction) => {
+      if (interaction.isMessageComponent() || interaction.isModalSubmit()) {
+        this.handleInteraction(interaction);
+      }
+    });
+  }
 
   loadComponents(components: Component[]): void {
     components.forEach(component => this.loadComponent(component));

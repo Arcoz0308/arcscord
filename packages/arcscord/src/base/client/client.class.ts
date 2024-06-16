@@ -7,6 +7,7 @@ import { TaskManager } from "#/manager/task/task_manager";
 import type { ArcClientOptions } from "#/base/client/client.type";
 import type { LoggerConstructor, LoggerInterface } from "#/utils/logger/logger.type";
 import { createLogger } from "#/utils/logger/logger.util";
+import { ComponentManager } from "#/manager";
 
 export class ArcClient extends DJSClient {
 
@@ -17,6 +18,8 @@ export class ArcClient extends DJSClient {
   eventManager: EventManager;
 
   taskManager : TaskManager;
+
+  componentManager: ComponentManager;
 
   logger: LoggerInterface;
 
@@ -45,6 +48,8 @@ export class ArcClient extends DJSClient {
     this.taskManager = new TaskManager(this);
 
     this.eventManager = new EventManager(this);
+
+    this.componentManager = new ComponentManager(this);
 
     this.logger = createLogger(this.loggerConstructor, "main", options.logger?.loggerFunc);
 
