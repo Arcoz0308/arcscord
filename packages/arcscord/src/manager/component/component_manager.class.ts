@@ -3,7 +3,6 @@ import { ButtonComponent } from "#/base/message_component/button/button.class";
 import { ModalSubmitComponent } from "#/base/message_component/modal_submit/modal_submit.class";
 import type { Component } from "#/base/message_component/base/base_component.type";
 import { SelectMenu } from "#/base/message_component/select_menu/select_menu.class";
-import { getComponents } from "#/manager/component/component_manager.util";
 import type {
   AnySelectMenuInteraction,
   ButtonInteraction,
@@ -29,17 +28,8 @@ export class ComponentManager extends BaseManager {
 
   modalSubmit: Map<string, ModalSubmitComponent> = new Map();
 
-  load(): void {
-    const components = getComponents(this.client);
-    for (const component of components) {
-      this.loadComponent(component);
-    }
-    this.logger.info(`loaded ${components.length} components (${this.buttons.size} buttons,`
-      + `${this.selectMenus.size} selectMenus, ${this.modalSubmit.size} modalSubmit)`);
-
-    this.client.on("interactionCreate", (interaction) => {
-      this.handleInteraction(interaction);
-    });
+  loadComponents(components: Component[]): void {
+    components.forEach(component => this.loadComponent(component));
   }
 
   loadComponent(component: Component): void {
