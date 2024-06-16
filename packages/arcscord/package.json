@@ -1,6 +1,6 @@
 {
   "name": "arcscord",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A discord.js framework, slash command first and full typescript !",
   "keywords": [
     "discord",
