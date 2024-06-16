@@ -86,7 +86,7 @@ export class ComponentManager extends BaseManager {
       void this.handleSelectMenu(interaction);
     }
     if (interaction.isModalSubmit()) {
-      this.handleModalSubmit(interaction);
+      void this.handleModalSubmit(interaction);
     }
   }
 
