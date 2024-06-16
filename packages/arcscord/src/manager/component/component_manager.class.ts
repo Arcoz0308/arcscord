@@ -1,5 +1,5 @@
 import { BaseManager } from "#/base/manager/manager.class";
-import { ButtonComponent } from "#/base/message_component/button/button.class";
+import { Button } from "#/base/message_component/button/button.class";
 import { ModalSubmitComponent } from "#/base/message_component/modal_submit/modal_submit.class";
 import type { Component } from "#/base/message_component/base/base_component.type";
 import { SelectMenu } from "#/base/message_component/select_menu/select_menu.class";
@@ -22,7 +22,7 @@ export class ComponentManager extends BaseManager {
 
   name = "components";
 
-  buttons: Map<string, ButtonComponent> = new Map();
+  buttons: Map<string, Button> = new Map();
 
   selectMenus: Map<string, SelectMenu> = new Map();
 
@@ -38,7 +38,7 @@ export class ComponentManager extends BaseManager {
     }
 
 
-    if (component.type === "button" && component instanceof ButtonComponent) {
+    if (component.type === "button" && component instanceof Button) {
       return this.loadButton(component);
     }
 
@@ -51,7 +51,7 @@ export class ComponentManager extends BaseManager {
     }
   }
 
-  loadButton(component: ButtonComponent): void {
+  loadButton(component: Button): void {
     if (this.buttons.has(component.name)) {
       return this.logger.warning(`Button component ${component.name} already exists/registered`);
     }

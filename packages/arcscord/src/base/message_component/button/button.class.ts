@@ -3,7 +3,7 @@ import type { ComponentBuilderField, ComponentType } from "#/base/message_compon
 import type { ButtonBuilder } from "@discordjs/builders";
 import type { ButtonRunContext, ButtonRunResult } from "#/base/message_component/button/button.type";
 
-export abstract class ButtonComponent extends BaseComponent {
+export abstract class Button extends BaseComponent {
 
   type: ComponentType = "button";
 
