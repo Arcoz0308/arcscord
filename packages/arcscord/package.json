@@ -30,8 +30,6 @@
     "dayjs": "^1.11.10",
     "discord-api-types": "^0.37.70",
     "discord.js": "^14.14.1",
-    "dotenv": "^16.4.5",
-    "prisma": "^5.10.1",
     "short-unique-id": "^5.0.3",
     "tintify": "^1.1.0",
     "typescript": "^5.3.3",
