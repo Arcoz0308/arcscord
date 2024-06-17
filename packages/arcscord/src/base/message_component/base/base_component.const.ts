@@ -1,1 +1,1 @@
-export const CUSTOM_ID_SEPARATOR = "_";
+export const CUSTOM_ID_SEPARATOR = ";";
