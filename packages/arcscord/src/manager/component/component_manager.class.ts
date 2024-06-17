@@ -63,30 +63,30 @@ export class ComponentManager extends BaseManager {
   }
 
   loadButton(component: Button): void {
-    if (this.buttons.has(component.name)) {
-      return this.logger.warning(`Button component ${component.name} already exists/registered`);
+    if (this.buttons.has(component.customId)) {
+      return this.logger.warning(`Button component ${component.customId} already exists/registered`);
     }
 
     this.logger.trace(`loaded button component ${component.name}`);
-    this.buttons.set(component.name, component);
+    this.buttons.set(component.customId, component);
   }
 
   loadModalSubmit(component: ModalSubmitComponent): void {
-    if (this.modalSubmit.has(component.name)) {
-      return this.logger.warning(`Modal submit component ${component.name} already exists/registered`);
+    if (this.modalSubmit.has(component.customId)) {
+      return this.logger.warning(`Modal submit component ${component.customId} already exists/registered`);
     }
 
     this.logger.trace(`loaded modal submit component ${component.name}`);
-    this.modalSubmit.set(component.name, component);
+    this.modalSubmit.set(component.customId, component);
   }
 
   loadSelectMenu(component: SelectMenu): void {
-    if (this.selectMenus.has(component.name)) {
-      return this.logger.warning(`Select menu component ${component.name} already exists/registered`);
+    if (this.selectMenus.has(component.customId)) {
+      return this.logger.warning(`Select menu component ${component.customId} already exists/registered`);
     }
 
     this.logger.trace(`loaded select menu component ${component.name}`);
-    this.selectMenus.set(component.name, component);
+    this.selectMenus.set(component.customId, component);
   }
 
   handleInteraction(interaction: Interaction): void {
