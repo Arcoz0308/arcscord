@@ -1,6 +1,6 @@
 {
   "name": "arcscord",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "A discord.js framework, slash command first and full typescript !",
   "keywords": [
     "discord",
@@ -10,7 +10,7 @@
   "author": "Arcoz0308",
   "license": "MIT",
   "scripts": {
-    "build": "tsc && tsc-alias && tsup --dts-only",
+    "build": "tsup",
     "lint": "../../node_modules/.bin/eslint ./src",
     "lint:fix": "../../node_modules/.bin/eslint ./src --fix",
     "test:simpleCommand": "npx nodemon --exec node -r @swc-node/register -r tsconfig-paths/register ./test/simple_bot/index.ts",
@@ -22,6 +22,10 @@
   },
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@discordjs/builders": "^1.7.0",
     "cron": "^3.1.6",
@@ -46,7 +50,6 @@
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^1.3.1"
   },
-  "module": "commonjs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arcoz0308/arcscord.git"

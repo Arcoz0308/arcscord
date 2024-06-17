@@ -7,4 +7,6 @@ export default defineConfig({
   clean: true,
   target: "es2022",
   platform: "node",
+  format: ["esm", "cjs"],
+  dts: true,
 });
