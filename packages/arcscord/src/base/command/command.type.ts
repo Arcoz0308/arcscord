@@ -1,4 +1,4 @@
-import type { CommandInteraction } from "discord.js";
+import type { CommandInteraction, SlashCommandOptionsOnlyBuilder } from "discord.js";
 import type { UserCommandBuilder } from "#/utils/discord/builder/user_command.class";
 import type { MessageCommandBuilder } from "#/utils/discord/builder/message_command.class";
 import type { SlashCmdBuilder } from "#/utils/discord/builder/slash_cmd.class";
@@ -14,7 +14,7 @@ export type CommandRunContext = {
 }
 
 export type SlashCommand = Command & {
-  slashBuilder: SlashCmdBuilder| Omit<SlashCmdBuilder, "addSubcommand" | "addSubcommandGroup">;
+  slashBuilder: SlashCmdBuilder| SlashCommandOptionsOnlyBuilder;
 }
 
 export type UserCommand = Command & {
