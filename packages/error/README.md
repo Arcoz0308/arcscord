@@ -9,7 +9,7 @@ import { Result, error, ok } from "@arscord/error";
 
 const foo = (num: number): Result<boolean, Error> => {
   if (num <= 0) {
-    error(new Error("Get negative number"));
+    return error(new Error("Get negative number"));
   }
   return ok(num % 2 === 0);
 }
