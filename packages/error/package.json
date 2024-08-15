@@ -23,7 +23,7 @@
   "bugs": {
     "url": "https://github.com/arcoz0308/arcscord/issues"
   },
-  "homepage": "https://github.com/arcoz0308/arcscord#readme",
+  "homepage": "https://github.com/Arcoz0308/arcscord/tree/main/packages/error#readme",
   "devDependencies": {
     "@arcoz/eslint-config": "^1.1.1",
     "eslint": "^8.56.0",
