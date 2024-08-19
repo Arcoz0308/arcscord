@@ -1,10 +1,10 @@
 import type { CommandRunContext, CommandRunResult, SubSlashCommandList } from "#/base/command/command.type";
 import { InteractionBase } from "#/base/interaction/interaction.class";
 import { isCommandWithSubs, isSlashCommand } from "#/base/command/command.util";
-import { anyToError, error, ok } from "#/utils/error/error.util";
 import { CommandError } from "#/utils/error/class/command_error";
 import { SubCommand } from "#/base/sub_command/sub_command.class";
 import type { InteractionEditReplyOptions, InteractionReplyOptions, MessagePayload } from "discord.js";
+import { anyToError, error, ok } from "@arcscord/error";
 
 export abstract class Command extends InteractionBase {
 
@@ -41,7 +41,7 @@ export abstract class Command extends InteractionBase {
           interaction: ctx.interaction,
           command: this,
           context: ctx,
-          debugs: { subs: JSON.stringify(list) },
+          debugs: { subs: JSON.stringify(Object.keys(list)) },
         }));
       }
 
@@ -52,7 +52,7 @@ export abstract class Command extends InteractionBase {
           interaction: ctx.interaction,
           command: this,
           context: ctx,
-          debugs: { subs: JSON.stringify(list) },
+          debugs: { subs: JSON.stringify(Object.keys(list)) },
         }));
       }
 
@@ -66,7 +66,7 @@ export abstract class Command extends InteractionBase {
         interaction: ctx.interaction,
         command: this,
         context: ctx,
-        debugs: { subs: JSON.stringify(list) },
+        debugs: { subs: JSON.stringify(Object.keys(list)) },
       }));
     }
 
@@ -76,7 +76,7 @@ export abstract class Command extends InteractionBase {
         interaction: ctx.interaction,
         command: this,
         context: ctx,
-        debugs: { subs: JSON.stringify(list) },
+        debugs: { subs: JSON.stringify(Object.keys(list)) },
       }));
     }
 
@@ -87,7 +87,7 @@ export abstract class Command extends InteractionBase {
         interaction: ctx.interaction,
         command: this,
         context: ctx,
-        debugs: { subs: JSON.stringify(list) },
+        debugs: { subs: JSON.stringify(Object.keys(list)) },
       }));
 
     }
