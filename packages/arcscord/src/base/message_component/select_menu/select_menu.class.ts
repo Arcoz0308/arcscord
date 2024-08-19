@@ -2,7 +2,8 @@ import { BaseComponent } from "#/base/message_component/base/base_component.clas
 import type { ComponentType } from "#/base/message_component/base/base_component.type";
 import type { SelectMenuRunContext, SelectMenuRunResult } from "#/base/message_component/select_menu/select_menu.type";
 import type { InteractionEditReplyOptions, InteractionReplyOptions, MessagePayload } from "discord.js";
-import { anyToError, error, ok, SelectMenuError } from "#/utils";
+import { SelectMenuError } from "#/utils";
+import { anyToError, error, ok } from "@arcscord/error";
 
 export abstract class SelectMenu extends BaseComponent {
 

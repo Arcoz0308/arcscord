@@ -11,8 +11,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsup",
-    "lint": "../../node_modules/.bin/eslint ./src",
-    "lint:fix": "../../node_modules/.bin/eslint ./src --fix",
+    "lint": "eslint ./src",
+    "lint:fix": "eslint ./src --fix",
     "test:simpleCommand": "npx nodemon --exec node -r @swc-node/register -r tsconfig-paths/register ./test/simple_bot/index.ts",
     "test": "vitest"
   },
@@ -27,6 +27,7 @@
     "dist"
   ],
   "dependencies": {
+    "@arcscord/error": "^1.0.1",
     "@discordjs/builders": "^1.7.0",
     "cron": "^3.1.6",
     "dayjs": "^1.11.10",

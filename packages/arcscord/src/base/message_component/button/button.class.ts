@@ -2,7 +2,8 @@ import { BaseComponent } from "#/base/message_component/base/base_component.clas
 import type { ComponentType } from "#/base/message_component/base/base_component.type";
 import type { ButtonRunContext, ButtonRunResult } from "#/base/message_component/button/button.type";
 import type { InteractionEditReplyOptions, InteractionReplyOptions, MessagePayload } from "discord.js";
-import { anyToError, ButtonError, error, ok } from "#/utils";
+import { ButtonError } from "#/utils";
+import { anyToError, error, ok } from "@arcscord/error";
 
 export abstract class Button extends BaseComponent {
 

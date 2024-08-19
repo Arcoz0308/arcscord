@@ -5,7 +5,8 @@ import type {
   ModalSubmitRunResult
 } from "#/base/message_component/modal_submit/modal_submit.type";
 import type { InteractionEditReplyOptions, InteractionReplyOptions, MessagePayload } from "discord.js";
-import { anyToError, error, ModalSubmitError, ok } from "#/utils";
+import { ModalSubmitError } from "#/utils";
+import { anyToError, error, ok } from "@arcscord/error";
 
 export abstract class ModalSubmitComponent extends BaseComponent {
 

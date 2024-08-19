@@ -1,8 +1,8 @@
 import type { Task } from "#/base/task/task.class";
 import { CronJob } from "cron";
 import { BaseManager } from "#/base/manager/manager.class";
-import { anyToError } from "#/utils/error/error.util";
 import type { DevConfigKey } from "#/manager/dev";
+import { anyToError } from "@arcscord/error";
 
 export class TaskManager extends BaseManager {
 

@@ -2,7 +2,7 @@ import type { Command, CommandRunContext, CommandRunResult } from "#/base/comman
 import type { ArcClient } from "#/base/client/client.class";
 import type { InteractionEditReplyOptions, InteractionReplyOptions, MessagePayload } from "discord.js";
 import type { CommandError } from "#/utils";
-import { error, ok } from "#/utils";
+import { error, ok } from "@arcscord/error";
 
 export abstract class SubCommand {
 

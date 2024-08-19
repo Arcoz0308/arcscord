@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@arcscord/error':
+        specifier: ^1.0.1
+        version: 1.0.1
       '@discordjs/builders':
         specifier: ^1.7.0
         version: 1.7.0
@@ -81,6 +84,9 @@ packages:
     peerDependencies:
       eslint: '>=8.45.0'
       typescript: '>=5.1.6'
+
+  '@arcscord/error@1.0.1':
+    resolution: {integrity: sha512-yMsuEAPRzsfDiiPM1s9vKTpj10UXV63D3xzBgVREtx76dAkxWhRJ19gr3+CK3FmJEtUZ8yn6BWxGkMmNKrdvBw==}
 
   '@discordjs/builders@1.7.0':
     resolution: {integrity: sha512-GDtbKMkg433cOZur8Dv6c25EHxduNIBsxeHrsRoIM8+AwmEZ8r0tEpckx/sHwTLwQPOF3e2JWloZh9ofCaMfAw==}
@@ -1819,6 +1825,8 @@ snapshots:
       typescript: 5.3.3
     transitivePeerDependencies:
       - supports-color
+
+  '@arcscord/error@1.0.1': {}
 
   '@discordjs/builders@1.7.0':
     dependencies:

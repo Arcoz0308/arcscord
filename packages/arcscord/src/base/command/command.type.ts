@@ -4,8 +4,8 @@ import type { MessageCommandBuilder } from "#/utils/discord/builder/message_comm
 import type { SlashCmdBuilder } from "#/utils/discord/builder/slash_cmd.class";
 import type { Command } from "#/base/command/command.class";
 import type { SubCommand } from "#/base/sub_command/sub_command.class";
-import type { Result } from "#/utils/error/error.type";
 import type { CommandError } from "#/utils/error/class/command_error";
+import type { Result } from "@arcscord/error";
 
 export type CommandRunContext = {
   interaction: CommandInteraction;

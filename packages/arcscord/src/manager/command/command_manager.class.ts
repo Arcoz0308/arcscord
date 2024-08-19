@@ -2,7 +2,6 @@ import type { Command } from "#/base/command/command.class";
 import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import { ApplicationCommandType } from "discord-api-types/v10";
 import { commandTypeToString, hasPreRun, isMessageCommand, isSlashCommand, isUserCommand } from "#/base/command";
-import { anyToError, error } from "#/utils/error/error.util";
 import type {
   ApplicationCommand,
   ApplicationCommandDataResolvable,
@@ -20,6 +19,7 @@ import type {
 } from "#/manager/command/command_manager.type";
 import type { ArcClient } from "#/base";
 import { BaseError } from "#/utils";
+import { anyToError, error } from "@arcscord/error";
 
 export class CommandManager extends BaseManager implements CommandResultHandlerImplementer {
 

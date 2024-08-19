@@ -1,6 +1,6 @@
-import type { Result } from "#/utils/error/error.type";
 import type { ButtonError } from "#/utils/error/class/button_error";
 import type { ButtonInteraction } from "discord.js";
+import type { Result } from "@arcscord/error";
 
 export type ButtonRunResult = Result<string|boolean, ButtonError>
 

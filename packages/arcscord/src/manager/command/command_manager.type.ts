@@ -1,6 +1,7 @@
 import type { CommandInteraction } from "discord.js";
 import type { Command } from "#/base/command";
-import type { CommandError, Result } from "#/utils";
+import type { CommandError } from "#/utils";
+import type { Result } from "@arcscord/error";
 
 export type CommandResultHandlerInfos = {
   result: Result<string|true, CommandError>;

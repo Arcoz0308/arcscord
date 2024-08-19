@@ -1,8 +1,8 @@
 import type { Event } from "#/base/event/event.class";
 import type { ClientEvents } from "discord.js";
-import { anyToError } from "#/utils/error/error.util";
 import { BaseManager } from "#/base/manager/manager.class";
 import type { DevConfigKey } from "#/manager/dev";
+import { anyToError } from "@arcscord/error";
 
 export class EventManager extends BaseManager {
 

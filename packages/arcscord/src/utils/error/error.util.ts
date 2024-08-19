@@ -1,4 +1,4 @@
-import type { DebugValues, DebugValueString, Result } from "#/utils/error/error.type";
+import type { DebugValues, DebugValueString } from "#/utils/error/error.type";
 
 export const stringifyDebugValue = (key: string, value: unknown): DebugValueString => {
   if (typeof value === "string") {
@@ -29,24 +29,4 @@ export const stringifyDebugValues = (debug: DebugValues): DebugValueString[] => 
 
   return Object.entries(debug).map(([key, value]) => stringifyDebugValue(key, value));
 
-};
-
-export const ok = <T, E>(value: T): Result<T, E> => {
-  return [value, null];
-};
-
-export const error = <T, E>(error: E): Result<T, E> => {
-  return [null, error];
-};
-
-export const anyToError = (e: unknown): Error => {
-  if (e instanceof Error) {
-    return e;
-  }
-
-  if (typeof e === "string") {
-    return new Error(e);
-  }
-
-  return new Error(String(e));
 };

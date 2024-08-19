@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { formatLog } from "#/utils/logger/logger.util";
+import { formatLog } from "./logger.util";
 import * as console from "console";
-import { defaultLogger } from "#/utils/logger/logger.class";
-import { BaseError } from "#/utils/error/class/base_error";
+import { defaultLogger } from "./logger.class";
+import { BaseError } from "../error";
 
 describe("logs texts", () => {
   it("some logs tests", () => {
