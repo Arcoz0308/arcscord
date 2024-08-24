@@ -16,9 +16,7 @@ export class BaseError extends Error {
    */
   name = "baseError";
 
-  private _debugs: Map<string, unknown> = new Map();
-
-  private readonly _originalError?: BaseError | Error;
+  protected _debugs: Map<string, unknown> = new Map();
 
   /**
    * Creates a new instance of the error class.
@@ -50,7 +48,18 @@ export class BaseError extends Error {
     }
   }
 
-  private _id?: string;
+  protected _originalError?: BaseError | Error;
+
+  /**
+   * Returns the original error associated with this error.
+   *
+   * @returns {BaseError | Error | undefined} The original error, if available; otherwise, undefined.
+   */
+  get originalError(): BaseError | Error | undefined {
+    return this._originalError;
+  }
+
+  protected _id?: string;
 
   /**
    * Retrieves the error id
@@ -68,15 +77,6 @@ export class BaseError extends Error {
    */
   set id(value: string) {
     this._id = value;
-  }
-
-  /**
-   * Returns the original error associated with this error.
-   *
-   * @returns {BaseError | Error | undefined} The original error, if available; otherwise, undefined.
-   */
-  get originalError(): BaseError | Error | undefined {
-    return this._originalError;
   }
 
   /**
