@@ -136,7 +136,7 @@ export abstract class Command extends InteractionBase {
     return ok(value);
   }
 
-  async buildContext(interaction: CommandInteraction): Promise<Result<CommandRunContext, BaseError>> {
+  async buildContext(interaction: CommandInteraction, command: Command | SubCommand = this): Promise<Result<CommandRunContext, BaseError>> {
     let guildObject: GuildCommandRunContextInfos | DmCommandRunContextInfos;
 
     if (interaction.inGuild()) {
@@ -207,7 +207,7 @@ export abstract class Command extends InteractionBase {
         isUSerCommand: false,
         isMessageCommand: false,
         defer: false,
-        command: this,
+        command: command,
         user: interaction.user,
         options: interaction.options,
       };
@@ -216,10 +216,10 @@ export abstract class Command extends InteractionBase {
         ...baseCtx,
         ...guildObject,
         reply: (msg) => {
-          return this.reply(ctx, msg);
+          return command.reply(ctx, msg);
         },
         editReply: (msg) => {
-          return this.editReply(ctx, msg);
+          return command.editReply(ctx, msg);
         },
         ok: (value) => {
           return this.ok(value);
@@ -251,7 +251,7 @@ export abstract class Command extends InteractionBase {
         isUSerCommand: false,
         isMessageCommand: true,
         defer: false,
-        command: this,
+        command: command,
         user: interaction.user,
         targetMessage: interaction.targetMessage,
       };
@@ -260,10 +260,10 @@ export abstract class Command extends InteractionBase {
         ...baseCtx,
         ...guildObject,
         reply: (msg) => {
-          return this.reply(ctx, msg);
+          return command.reply(ctx, msg);
         },
         editReply: (msg) => {
-          return this.editReply(ctx, msg);
+          return command.editReply(ctx, msg);
         },
         ok: (value) => {
           return this.ok(value);
@@ -310,7 +310,7 @@ export abstract class Command extends InteractionBase {
         isUSerCommand: true,
         isMessageCommand: false,
         defer: false,
-        command: this,
+        command: command,
         user: interaction.user,
         targetUser: interaction.targetUser,
         targetMember: targetMember,
@@ -320,10 +320,10 @@ export abstract class Command extends InteractionBase {
         ...baseCtx,
         ...guildObject,
         reply: (msg) => {
-          return this.reply(ctx, msg);
+          return command.reply(ctx, msg);
         },
         editReply: (msg) => {
-          return this.editReply(ctx, msg);
+          return command.editReply(ctx, msg);
         },
         ok: (value) => {
           return this.ok(value);
