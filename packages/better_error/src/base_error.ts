@@ -100,7 +100,7 @@ export class BaseError extends Error {
 
     let debugs: Debugs = {};
     if (options.id) {
-      debugs.id = options.id;
+      debugs.errorId = this._id || "no_id";
     }
 
     debugs = Object.assign(debugs, Object.fromEntries(this._debugs));
