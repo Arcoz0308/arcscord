@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@arcscord/better-error':
+        specifier: ^1.0.3
+        version: 1.0.3
       '@arcscord/error':
         specifier: ^1.0.1
         version: 1.0.1
@@ -51,6 +54,9 @@ importers:
       '@types/node':
         specifier: ^20.11.24
         version: 20.11.24
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
       eslint:
         specifier: ^8.56.0
         version: 8.56.0
@@ -84,6 +90,9 @@ packages:
     peerDependencies:
       eslint: '>=8.45.0'
       typescript: '>=5.1.6'
+
+  '@arcscord/better-error@1.0.3':
+    resolution: {integrity: sha512-4ScXE3RILS/Ovj0jXfYSfwW1vow+7Uhwy57fdhnuYAMe+ghIUiXZdkRjQDk4XZrUsr/Xe4YSjrpazhNWNXTb6w==}
 
   '@arcscord/error@1.0.1':
     resolution: {integrity: sha512-yMsuEAPRzsfDiiPM1s9vKTpj10UXV63D3xzBgVREtx76dAkxWhRJ19gr3+CK3FmJEtUZ8yn6BWxGkMmNKrdvBw==}
@@ -910,6 +919,10 @@ packages:
   doctrine@3.0.0:
     resolution: {integrity: sha512-yS+Q5i3hBf7GBkd4KG8a7eBNNWNGLTaEwwYWUijIYM7zrlYDM0BFXHjjPWlWZ1Rg7UaddZeIDmi9jF3HmqiQ2w==}
     engines: {node: '>=6.0.0'}
+
+  dotenv@16.4.5:
+    resolution: {integrity: sha512-ZmdL2rui+eB2YwhsWzjInR8LldtZHGDoQ1ugH85ppHKwpUHL7j7rN0Ti9NCnGiQbhaZ11FpR+7ao1dNsmduNUg==}
+    engines: {node: '>=12'}
 
   eastasianwidth@0.2.0:
     resolution: {integrity: sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==}
@@ -1826,6 +1839,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@arcscord/better-error@1.0.3': {}
+
   '@arcscord/error@1.0.1': {}
 
   '@discordjs/builders@1.7.0':
@@ -2529,6 +2544,8 @@ snapshots:
   doctrine@3.0.0:
     dependencies:
       esutils: 2.0.3
+
+  dotenv@16.4.5: {}
 
   eastasianwidth@0.2.0: {}
 

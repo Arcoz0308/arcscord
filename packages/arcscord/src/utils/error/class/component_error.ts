@@ -1,6 +1,5 @@
 import type { InteractionErrorOptions } from "#/utils/error/class/interaction_error";
 import { InteractionError } from "#/utils/error/class/interaction_error";
-import type { DebugValueString } from "#/utils/error/error.type";
 import type { MessageComponentInteraction, ModalSubmitInteraction } from "discord.js";
 
 export type ComponentErrorOptions = InteractionErrorOptions & {
@@ -17,15 +16,6 @@ export class ComponentError extends InteractionError {
     this.name = "ComponentError";
 
     this.interaction = options.interaction;
-  }
-
-  getDebugsString(): DebugValueString[] {
-    const debugs: DebugValueString[] = [];
-
-    debugs.push(["customId", this.interaction.customId]);
-
-    debugs.push(...super.getDebugsString());
-    return debugs;
   }
 
 }

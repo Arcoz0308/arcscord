@@ -3,11 +3,6 @@
     "target": "es2022",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "paths": {
-      "#/*": [
-        "./src/*"
-      ]
-    },
     "resolveJsonModule": true,
     "outDir": "dist",
     "esModuleInterop": true,

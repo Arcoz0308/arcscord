@@ -1,4 +1,4 @@
-import { ArcClient } from "#/base";
+import { ArcClient } from "../../src";
 import "dotenv/config";
 import { TestCommand } from "./test_command";
 import * as process from "node:process";

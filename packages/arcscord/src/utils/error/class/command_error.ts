@@ -1,18 +1,17 @@
-import type { InteractionErrorOptions } from "#/utils/error/class/interaction_error";
 import { InteractionError } from "#/utils/error/class/interaction_error";
 import type { CommandInteraction } from "discord.js";
-import type { DebugValueString } from "#/utils/error/error.type";
 import type { Command, CommandRunContext } from "#/base/command";
-import { commandTypeToString } from "#/base/command";
-import { SubCommand } from "#/base/sub_command/sub_command.class";
+import { commandInteractionToString } from "#/base/command";
+import type { SubCommand } from "#/base/sub_command/sub_command.class";
+import type { ErrorOptions } from "@arcscord/better-error";
 
-export type CommandErrorOptions = InteractionErrorOptions & {
-  interaction: CommandInteraction;
-  context: CommandRunContext;
-  command: Command|SubCommand;
+export type CommandErrorOptions = ErrorOptions & {
+  ctx: CommandRunContext;
 }
 
 export class CommandError extends InteractionError {
+
+  name = "CommandError";
 
   interaction: CommandInteraction;
 
@@ -21,27 +20,12 @@ export class CommandError extends InteractionError {
   command: Command|SubCommand;
 
   constructor(options: CommandErrorOptions) {
-    super(options);
+    super({ ...options, interaction: options.ctx.interaction });
 
-    this.name = "CommandError";
-
-    this.interaction = options.interaction;
-    this.context = options.context;
-    this.command = options.command;
-  }
-
-  getDebugsString(): DebugValueString[] {
-    const debugs: DebugValueString[] = [];
-    if (this.command instanceof SubCommand) {
-      debugs.push(["Command name", this.command.fullName()]);
-    } else {
-      debugs.push(["Command name", this.interaction.commandName]);
-    }
-
-    debugs.push(["Command type", commandTypeToString(this.interaction.commandType)]);
-
-    debugs.push(...super.getDebugsString());
-    return debugs;
+    this.interaction = options.ctx.interaction;
+    this.context = options.ctx;
+    this.command = options.ctx.command;
+    this._debugs.set("Command", commandInteractionToString(options.ctx.interaction));
   }
 
 }

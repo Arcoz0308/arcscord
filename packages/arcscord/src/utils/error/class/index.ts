@@ -1,4 +1,3 @@
-export * from "./base_error";
 export * from "./task_error";
 export * from "./event_error";
 export * from "./button_error";

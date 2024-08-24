@@ -18,7 +18,7 @@ import type {
   CommandResultHandlerInfos
 } from "#/manager/command/command_manager.type";
 import type { ArcClient } from "#/base";
-import { BaseError } from "#/utils";
+import { BaseError } from "@arcscord/better-error";
 import { anyToError, error } from "@arcscord/error";
 
 export class CommandManager extends BaseManager implements CommandResultHandlerImplementer {
@@ -68,7 +68,7 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
           console.log(e);
           return this.logger.fatalError(new BaseError({
             message: `invalid slash builder of slash command "${command.name}"`,
-            baseError: anyToError(e),
+            originalError: anyToError(e),
             debugs: {
               group: group,
             },
@@ -86,7 +86,7 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
         } catch (e) {
           return this.logger.fatalError(new BaseError({
             message: `invalid message builder for message command ${command.name}`,
-            baseError: anyToError(e),
+            originalError: anyToError(e),
             debugs: {
               group: group,
             },
@@ -104,7 +104,7 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
         } catch (e) {
           return this.logger.fatalError(new BaseError({
             message: `invalid user builder for user command ${command.name}`,
-            baseError: anyToError(e),
+            originalError: anyToError(e),
             debugs: {
               group: group,
             },
@@ -225,6 +225,12 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
     }
 
     const defer = command.defaultReplyOptions.preReply;
+    const [context, err] = await command.buildContext(interaction);
+    if (err) {
+      this.logger.logError(err.generateId());
+      return this.sendInternalError(interaction, internalErrorEmbed(err.id));
+    }
+    let ctx = context;
 
     if (defer) {
       try {
@@ -234,22 +240,15 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
       } catch (e) {
         const error = new CommandError({
           message: "failed to pre run defer reply ",
-          interaction: interaction,
-          command: command,
-          context: { interaction, defer: false },
+          ctx: ctx,
           debugs: { ephemeral: command.defaultReplyOptions.ephemeral },
-          baseError: anyToError(e),
+          originalError: anyToError(e),
         }).generateId();
         this.logger.logError(error);
 
         return this.sendInternalError(interaction, internalErrorEmbed(error.id));
       }
     }
-
-    let ctx = {
-      interaction,
-      defer: defer,
-    };
 
     if (hasPreRun(command)) {
       try {
@@ -268,10 +267,8 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
       } catch (e) {
         const error = new CommandError({
           message: `failed to pre run command : ${anyToError(e).message}`,
-          interaction: interaction,
-          command: command,
-          context: ctx,
-          baseError: anyToError(e),
+          ctx: ctx,
+          originalError: anyToError(e),
         }).generateId();
         this.logger.logError(error);
 
@@ -299,10 +296,8 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
       const infos: CommandResultHandlerInfos = {
         result: error(new CommandError({
           message: `failed to run command : ${anyToError(e).message}`,
-          interaction: interaction,
-          command: command,
-          context: ctx,
-          baseError: anyToError(e),
+          ctx: ctx,
+          originalError: anyToError(e),
         })),
         interaction: interaction,
         command: command,

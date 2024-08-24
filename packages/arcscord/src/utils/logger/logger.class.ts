@@ -3,7 +3,7 @@ import { colorDebugValue, formatLog, formatShortDebug } from "#/utils/logger/log
 import * as process from "process";
 import type { DebugValues, DebugValueString } from "#/utils/error/error.type";
 import { stringifyDebugValues } from "#/utils/error/error.util";
-import type { BaseError } from "#/utils/error/class/base_error";
+import type { BaseError } from "@arcscord/better-error";
 
 
 export class ArcLogger implements LoggerInterface {
@@ -53,7 +53,7 @@ export class ArcLogger implements LoggerInterface {
   }
 
   logError(error: BaseError): void {
-    this.error(error.fullMessage(), error.getDebugsString());
+    this.error(error.fullMessage(), error.getDebugString());
   }
 
   fatal(message: string, debugs: (string | DebugValueString)[] | DebugValues = []): never {
@@ -70,7 +70,7 @@ export class ArcLogger implements LoggerInterface {
   }
 
   fatalError(error: BaseError): never {
-    this.fatal(error.fullMessage(), error.getDebugsString());
+    this.fatal(error.fullMessage(), error.getDebugString());
   }
 
   log(level: LogLevel, message: string): void {

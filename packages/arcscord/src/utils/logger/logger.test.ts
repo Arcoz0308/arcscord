@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { formatLog } from "./logger.util";
 import * as console from "console";
 import { defaultLogger } from "./logger.class";
-import { BaseError } from "../error";
+import { BaseError } from "@arcscord/better-error";
 
 describe("logs texts", () => {
   it("some logs tests", () => {

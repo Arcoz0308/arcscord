@@ -21,7 +21,7 @@ export abstract class SelectMenu extends BaseComponent {
       return error(new SelectMenuError({
         interaction: ctx.interaction,
         message: `failed to reply to interaction : ${anyToError(e).message}`,
-        baseError: anyToError(e),
+        originalError: anyToError(e),
       }));
     }
   }
@@ -34,7 +34,7 @@ export abstract class SelectMenu extends BaseComponent {
       return error(new SelectMenuError({
         interaction: ctx.interaction,
         message: `failed to edit reply to interaction : ${anyToError(e).message}`,
-        baseError: anyToError(e),
+        originalError: anyToError(e),
       }));
     }
   }

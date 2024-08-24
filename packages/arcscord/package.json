@@ -27,6 +27,7 @@
     "dist"
   ],
   "dependencies": {
+    "@arcscord/better-error": "^1.0.3",
     "@arcscord/error": "^1.0.1",
     "@discordjs/builders": "^1.7.0",
     "cron": "^3.1.6",
@@ -43,6 +44,7 @@
     "@swc-node/core": "^1.13.0",
     "@swc-node/register": "^1.9.0",
     "@types/node": "^20.11.24",
+    "dotenv": "^16.4.5",
     "eslint": "^8.56.0",
     "nodemon": "^3.1.0",
     "tsc-alias": "^1.8.10",

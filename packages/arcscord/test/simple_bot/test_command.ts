@@ -1,5 +1,4 @@
-import type { CommandRunContext, CommandRunResult, SlashCommand } from "#/base";
-import { Command, SlashCmdBuilder } from "#/index";
+import { Command, CommandRunContext, CommandRunResult, SlashCmdBuilder, SlashCommand } from "../../src";
 
 export class TestCommand extends Command implements SlashCommand {
 
@@ -11,7 +10,7 @@ export class TestCommand extends Command implements SlashCommand {
 
 
   run(ctx: CommandRunContext): Promise<CommandRunResult> {
-    return this.reply(ctx, "hello !!");
+    return ctx.error("C'est codé avec le cul");
   }
 
 }

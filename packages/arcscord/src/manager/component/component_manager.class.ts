@@ -130,7 +130,7 @@ export class ComponentManager extends BaseManager {
           message: "failed to pre run defer reply",
           interaction: interaction,
           debugs: { ephemeral: button.defaultReplyOptions.ephemeral },
-          baseError: anyToError(e),
+          originalError: anyToError(e),
         }).generateId();
         this.logger.logError(error);
 
@@ -159,7 +159,7 @@ export class ComponentManager extends BaseManager {
       const error = new ButtonError({
         message: "failed to handle button interaction",
         interaction: interaction,
-        baseError: anyToError(e),
+        originalError: anyToError(e),
       }).generateId();
       this.logger.logError(error);
       void this.sendError(interaction, internalErrorEmbed(error.id), defer);
@@ -197,7 +197,7 @@ export class ComponentManager extends BaseManager {
           message: "failed to pre run defer reply",
           interaction: interaction,
           debugs: { ephemeral: selectMenu.defaultReplyOptions.ephemeral },
-          baseError: anyToError(e),
+          originalError: anyToError(e),
         }).generateId();
         this.logger.logError(error);
 
@@ -226,7 +226,7 @@ export class ComponentManager extends BaseManager {
       const error = new SelectMenuError({
         message: "failed to handle button interaction",
         interaction: interaction,
-        baseError: anyToError(e),
+        originalError: anyToError(e),
       }).generateId();
       this.logger.logError(error);
       void this.sendError(interaction, internalErrorEmbed(error.id), defer);
@@ -254,7 +254,7 @@ export class ComponentManager extends BaseManager {
           message: "failed to pre run defer reply",
           interaction: interaction,
           debugs: { ephemeral: modalSubmit.defaultReplyOptions.ephemeral },
-          baseError: anyToError(e),
+          originalError: anyToError(e),
         }).generateId();
         this.logger.logError(error);
 
@@ -284,7 +284,7 @@ export class ComponentManager extends BaseManager {
       const error = new ModalSubmitError({
         message: "failed to handle modal submit interaction",
         interaction: interaction,
-        baseError: anyToError(e),
+        originalError: anyToError(e),
       }).generateId();
 
       this.logger.logError(error);

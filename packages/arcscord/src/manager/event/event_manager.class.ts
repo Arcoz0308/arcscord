@@ -23,7 +23,7 @@ export class EventManager extends BaseManager {
       try {
         const [result, error] = await event.handle(...args);
         if (error) {
-          this.logger.logError(error);
+          this.logger.error(error.message);
           return;
         }
         this.logger.trace(`run event ${event.name}, result : ${result}`);
