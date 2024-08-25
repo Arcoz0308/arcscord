@@ -1,7 +1,7 @@
 import type { LocaleMap } from "#/utils/discord/type/locale.type";
 import type { commandOptionTypesEnum } from "#/base/command/command.enum";
 import type { ChannelType } from "#/utils/discord/type/channel.type";
-import type { Attachment, Channel, Role, User } from "discord.js";
+import type { Attachment, GuildBasedChannel, Role, User } from "discord.js";
 
 export type CommandOptionType = keyof typeof commandOptionTypesEnum
 
@@ -13,14 +13,25 @@ export type BaseSlashOption = {
   type: CommandOptionType;
 }
 
-export type Choice<T extends string | number> = {
+export type ChoiceString = {
   name: string;
   nameLocalizations?: LocaleMap;
-  value: T;
+  value: string;
 }
 
-export type ChoiceOption<T extends string | number> = {
-  choices?: Choice<T>[];
+export type ChoiceOptionString = {
+  choices?: ChoiceString[];
+  autocomplete?: false;
+}
+
+export type ChoiceNumber = {
+  name: string;
+  nameLocalizations?: LocaleMap;
+  value: number;
+}
+
+export type ChoiceOptionNumber = {
+  choices?: ChoiceNumber[];
   autocomplete?: false;
 }
 
@@ -72,26 +83,34 @@ export type AttachmentOption = BaseSlashOption & {
 }
 
 export type Option = BaseSlashOption &
-  (| (BaseStringOption & (ChoiceOption<string> | Autocomplete | NonNullable<unknown>))
-    | (BaseIntegerOption & (ChoiceOption<number> | Autocomplete | NonNullable<unknown>))
+  (| (BaseStringOption & (ChoiceOptionString | Autocomplete | NonNullable<unknown>))
+    | (BaseIntegerOption & (ChoiceOptionNumber | Autocomplete | NonNullable<unknown>))
     | BooleanOption
     | UserOption
     | ChannelOption
     | RoleOption
     | MentionableOption
-    | (BaseNumberOption & (ChoiceOption<number> | Autocomplete | NonNullable<unknown>))
+    | (BaseNumberOption & (ChoiceOptionNumber | Autocomplete | NonNullable<unknown>))
     | AttachmentOption);
 
 export type OptionsList = Record<string, Option>
 
-export type ContextOption<T extends Option> = T extends BaseStringOption ? string
-  : T extends BaseIntegerOption ? number
+type StringChoiceValue<T extends ChoiceString[]> = T extends Array<infer U> ? U extends ChoiceString ? U["value"] : never : never;
+
+type StringChoice<T extends ChoiceOptionString> = T["choices"] extends ChoiceString[] ? StringChoiceValue<T["choices"]> : never;
+
+type NumberChoiceValue<T extends ChoiceNumber[]> = T extends Array<infer U> ? U extends ChoiceNumber ? U["value"] : never : never;
+
+type NumberChoice<T extends ChoiceOptionNumber> = T["choices"] extends ChoiceNumber[] ? NumberChoiceValue<T["choices"]> : never;
+
+export type ContextOption<T extends Option> = T extends BaseStringOption ? (T extends ChoiceOptionString ? StringChoice<T> : string)
+  : T extends BaseIntegerOption ? (T extends ChoiceOptionNumber ? NumberChoice<T> : number)
     : T extends BooleanOption ? boolean
       : T extends UserOption ? User
-        : T extends ChannelOption ? Channel
+        : T extends ChannelOption ? GuildBasedChannel
           : T extends RoleOption ? Role
             : T extends MentionableOption ? User | Role
-              : T extends BaseNumberOption ? number
+              : T extends BaseNumberOption ? (T extends ChoiceOptionNumber ? NumberChoice<T> : number)
                 : T extends AttachmentOption ? Attachment : never;
 
 

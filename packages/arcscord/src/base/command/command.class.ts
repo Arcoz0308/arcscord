@@ -201,8 +201,8 @@ export abstract class Command<T extends FullCommandDefinition = {}> extends Inte
 
       let options;
 
-      if (hasOption(this.definer.slash)) {
-        const [pastedOption, err] = parseOptions(interaction, this.definer.slash.options);
+      if (hasOption(this.definer.slash) && this.definer.slash.options) {
+        const [pastedOption, err] = await parseOptions(interaction, this.definer.slash.options);
 
         if (err) {
           return error(err);
