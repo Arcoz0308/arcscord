@@ -2,5 +2,15 @@
   "extends": "@arcoz",
   "ignorePatterns": [
     "*.test.*"
-  ]
+  ],
+  "rules": {
+    "camelcase": [
+      "error",
+      {
+        "properties": "never",
+        "ignoreImports": true,
+        "ignoreDestructuring": true
+      }
+    ]
+  }
 }

@@ -4,3 +4,6 @@ import type { NewsChannel, PrivateThreadChannel, PublicThreadChannel, TextChanne
 export type StringPermissions = keyof typeof PermissionFlagsBits
 
 export type GuildTextFirstBasedChannel =  NewsChannel | TextChannel | PrivateThreadChannel | PublicThreadChannel;
+
+export type ArrayElement<ArrayType extends readonly unknown[]> =
+  ArrayType extends readonly (infer ElementType)[] ? ElementType : never;

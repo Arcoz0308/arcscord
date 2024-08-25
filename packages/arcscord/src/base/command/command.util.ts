@@ -1,32 +1,39 @@
-import type {
-  MessageCommand,
-  PreRunCommand,
-  SlashCommand,
-  SlashCommandWithSubs,
-  UserCommand
-} from "#/base/command/command.type";
-import type { Command } from "#/base/command/command.class";
 import { ApplicationCommandOptionType, ApplicationCommandType } from "discord-api-types/v10";
-import type { CommandInteraction, CommandInteractionOption } from "discord.js";
+import type { ChatInputCommandInteraction, CommandInteraction, CommandInteractionOption } from "discord.js";
+import type {
+  FullCommandDefinition,
+  PartialCommandDefinitionForMessage,
+  PartialCommandDefinitionForSlash,
+  PartialCommandDefinitionForUser,
+  SlashOptionsCommandDefinition,
+  SlashWithSubsCommandDefinition
+} from "#/base/command/command_definition.type";
+import type { ContextOptions, OptionsList } from "#/base/command/option.type";
+import type { Result } from "@arcscord/error";
+import { error } from "@arcscord/error";
+import { BaseError } from "@arcscord/better-error";
 
-export const isSlashCommand = (cmd: Command): cmd is SlashCommand => {
-  return "slashBuilder" in cmd;
+export const hasSlashCommand = (definer: FullCommandDefinition): definer is PartialCommandDefinitionForSlash => {
+  return "slash" in definer;
 };
 
-export const isUserCommand = (cmd: Command): cmd is UserCommand => {
-  return "userBuilder" in cmd;
+export const hasMessageCommand = (definer: FullCommandDefinition): definer is PartialCommandDefinitionForMessage => {
+  return "message" in definer;
 };
 
-export const isMessageCommand = (cmd: Command): cmd is MessageCommand => {
-  return "messageBuilder" in cmd;
+export const hasUserCommand = (definer: FullCommandDefinition): definer is PartialCommandDefinitionForUser => {
+  return "user" in definer;
 };
 
-export const isCommandWithSubs = (cmd: SlashCommand): cmd is SlashCommandWithSubs => {
-  return "subsCommands" in cmd;
+
+export const hasSubCommands = (definer: SlashOptionsCommandDefinition | SlashWithSubsCommandDefinition):
+  definer is SlashWithSubsCommandDefinition => {
+  return "subCommands" in definer || "subCommandsGroups" in definer;
 };
 
-export const hasPreRun = (cmd: Command): cmd is PreRunCommand => {
-  return "preRun" in cmd;
+export const hasOption = (definer: SlashOptionsCommandDefinition | SlashWithSubsCommandDefinition):
+  definer is SlashOptionsCommandDefinition => {
+  return "options" in definer;
 };
 
 export const commandTypeToString = (type: ApplicationCommandType): string => {
@@ -123,4 +130,12 @@ export const commandInteractionToString = (interaction: CommandInteraction, noOp
       return "Unknown Command";
     }
   }
+};
+
+export const parseOptions = <T extends OptionsList | undefined>(interaction: ChatInputCommandInteraction, optionsList: T):
+  Result<(T extends OptionsList ? ContextOptions<T> : undefined), BaseError> => {
+
+  return error(new BaseError({
+    message: "",
+  }));
 };

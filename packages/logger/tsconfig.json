@@ -24,16 +24,10 @@
     "src/**/*.js",
     "src/**/*.cjs",
     "src/**/*.mjs",
-    "bin",
-    "test"
+    "bin"
   ],
   "exclude": [
     "node_modules",
     "src/**/*.test.ts"
-  ],
-  "ts-node": {
-    "compilerOptions": {
-      "module": "CommonJS"
-    }
-  }
+  ]
 }

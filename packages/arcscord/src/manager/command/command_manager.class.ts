@@ -1,7 +1,7 @@
 import type { Command } from "#/base/command/command.class";
 import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import { ApplicationCommandType } from "discord-api-types/v10";
-import { commandTypeToString, hasPreRun, isMessageCommand, isSlashCommand, isUserCommand } from "#/base/command";
+import { commandTypeToString, hasMessageCommand, hasSlashCommand, hasUserCommand } from "#/base/command";
 import type {
   ApplicationCommand,
   ApplicationCommandDataResolvable,
@@ -20,6 +20,7 @@ import type {
 import type { ArcClient } from "#/base";
 import { BaseError } from "@arcscord/better-error";
 import { anyToError, error } from "@arcscord/error";
+import { messageDefinerToAPI, slashDefinerToAPI, userDefinerToAPI } from "#/manager/command/definer_to_api.util";
 
 export class CommandManager extends BaseManager implements CommandResultHandlerImplementer {
 
@@ -56,16 +57,16 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
 
     for (const command of commands) {
       let hasPush = false;
+      const definer = command.definer;
 
-      if (isSlashCommand(command)) {
+      if (hasSlashCommand(definer)) {
         try {
-          commandsBody.push(command.slashBuilder.toJSON());
+          commandsBody.push(slashDefinerToAPI(definer.slash));
           slashCommands++;
           hasPush = true;
           this.logger.trace(`loaded slash builder of command "${command.name} in group ${group}"`);
 
         } catch (e) {
-          console.log(e);
           return this.logger.fatalError(new BaseError({
             message: `invalid slash builder of slash command "${command.name}"`,
             originalError: anyToError(e),
@@ -76,9 +77,9 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
         }
       }
 
-      if (isMessageCommand(command)) {
+      if (hasMessageCommand(definer)) {
         try {
-          commandsBody.push(command.messageBuilder.toJSON());
+          commandsBody.push(messageDefinerToAPI(definer.message));
           messageCommands++;
           hasPush = true;
           this.logger.trace(`loaded message builder of command "${command.name}" in group ${group}`);
@@ -94,9 +95,9 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
         }
       }
 
-      if (isUserCommand(command)) {
+      if (hasUserCommand(definer)) {
         try {
-          commandsBody.push(command.userBuilder.toJSON());
+          commandsBody.push(userDefinerToAPI(definer.user));
           userCommands++;
           hasPush = true;
           this.logger.trace(`loaded user builder of command "${command.name}" in group ${group}`);
@@ -163,34 +164,44 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
   }
 
   resolveCommand(command: Command, apiCommands: ApplicationCommand[]): void {
+    if (hasSlashCommand(command.definer)) {
+      const name = command.definer.slash.name;
+      const apiCommand = apiCommands.find((cmd) => (
+          cmd.type as ApplicationCommandType === ApplicationCommandType.ChatInput)
+        && cmd.name === name);
 
-    //as are here for eslint fix
-    if (isSlashCommand(command)) {
-      const apiCommand = apiCommands.find((cmd) => cmd.type as ApplicationCommandType === ApplicationCommandType.ChatInput);
       if (!apiCommand) {
-        this.logger.warning(`slash command "${command.name}" not found in API`);
+        this.logger.warning(`slash command "${command.definer.slash.name}" not found in API`);
       } else {
-        this.logger.trace(`resolve slash command ${command.name} (${apiCommand.id}) !`);
+        this.logger.trace(`resolve slash command ${command.definer.slash.name} (${apiCommand.id}) !`);
         this.commands.set(this.resolveCommandName(apiCommand), command);
       }
     }
 
-    if (isMessageCommand(command)) {
-      const apiCommand = apiCommands.find((cmd) => cmd.type as ApplicationCommandType === ApplicationCommandType.Message);
+    if (hasMessageCommand(command.definer)) {
+      const name = command.definer.message.name;
+      const apiCommand = apiCommands.find((cmd) => (
+          cmd.type as ApplicationCommandType === ApplicationCommandType.Message)
+        && cmd.name === name);
+
       if (!apiCommand) {
-        this.logger.warning(`message command "${command.name}" not found in API`);
+        this.logger.warning(`message command "${command.definer.message.name}" not found in API`);
       } else {
-        this.logger.trace(`resolve message command ${command.name} (${apiCommand.id}) !`);
+        this.logger.trace(`resolve message command ${command.definer.message.name} (${apiCommand.id}) !`);
         this.commands.set(this.resolveCommandName(apiCommand), command);
       }
     }
 
-    if (isUserCommand(command)) {
-      const apiCommand = apiCommands.find((cmd) => cmd.type as ApplicationCommandType === ApplicationCommandType.User);
+    if (hasUserCommand(command.definer)) {
+      const name = command.definer.user.name;
+      const apiCommand = apiCommands.find((cmd) => (
+          cmd.type as ApplicationCommandType === ApplicationCommandType.User)
+        && cmd.name === name);
+
       if (!apiCommand) {
-        this.logger.warning(`user command "${command.name}" not found in API`);
+        this.logger.warning(`user command "${command.definer.user.name}" not found in API`);
       } else {
-        this.logger.trace(`resolve user command ${command.name} (${apiCommand.id}) !`);
+        this.logger.trace(`resolve user command ${command.definer.user.name} (${apiCommand.id}) !`);
         this.commands.set(this.resolveCommandName(apiCommand), command);
       }
     }
@@ -198,7 +209,7 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
 
   resolveCommands(commands: Command[], apiCommands: ApplicationCommand[]): void {
     for (const command of commands) {
-      this.resolveCommand(command, apiCommands.filter((cmd) => cmd.name === command.name));
+      this.resolveCommand(command, apiCommands);
     }
   }
 
@@ -230,7 +241,7 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
       this.logger.logError(err.generateId());
       return this.sendInternalError(interaction, internalErrorEmbed(err.id));
     }
-    let ctx = context;
+    const ctx = context;
 
     if (defer) {
       try {
@@ -250,31 +261,6 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
       }
     }
 
-    if (hasPreRun(command)) {
-      try {
-        const [result, err] = await command.preRun(ctx);
-        if (err !== null) {
-          err.generateId();
-          this.logger.logError(err);
-          return this.sendInternalError(interaction, internalErrorEmbed(err.id), defer);
-        }
-
-        if (!result) {
-          return;
-        }
-
-        ctx = result;
-      } catch (e) {
-        const error = new CommandError({
-          message: `failed to pre run command : ${anyToError(e).message}`,
-          ctx: ctx,
-          originalError: anyToError(e),
-        }).generateId();
-        this.logger.logError(error);
-
-        return this.sendInternalError(interaction, internalErrorEmbed(error.id), defer);
-      }
-    }
 
     const start = Date.now();
     try {

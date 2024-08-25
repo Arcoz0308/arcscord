@@ -13,7 +13,10 @@ export abstract class InteractionBase implements DevFacultative {
     ephemeral: true,
   };
 
-  constructor(public client: ArcClient) {
+  client: ArcClient;
+
+  constructor(client: ArcClient) {
+    this.client = client;
   }
 
 }

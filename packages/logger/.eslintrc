@@ -1,0 +1,6 @@
+{
+  "extends": "@arcoz",
+  "ignorePatterns": [
+    "*.test.*"
+  ]
+}

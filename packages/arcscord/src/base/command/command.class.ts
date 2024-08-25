@@ -1,17 +1,15 @@
 import type {
+  BaseCommandRunContext,
   CommandRunContext,
   CommandRunResult,
   DmCommandRunContextInfos,
   GuildCommandRunContextInfos,
   MessageCommandRunContext,
   SlashCommandRunContext,
-  SubSlashCommandList,
   UserCommandRunContext
 } from "#/base/command/command.type";
 import { InteractionBase } from "#/base/interaction/interaction.class";
-import { isCommandWithSubs, isSlashCommand } from "#/base/command/command.util";
 import { CommandError } from "#/utils/error/class/command_error";
-import { SubCommand } from "#/base/sub_command/sub_command.class";
 import type {
   CommandInteraction,
   Guild,
@@ -24,33 +22,49 @@ import { GuildMember } from "discord.js";
 import type { Result } from "@arcscord/error";
 import { anyToError, error, ok } from "@arcscord/error";
 import { BaseError } from "@arcscord/better-error";
+import type {
+  FullCommandDefinition,
+  PartialCommandDefinitionForSlash,
+  SlashOptionsCommandDefinition
+} from "#/base/command/command_definition.type";
+import type { ArcClient } from "#/base";
+import { hasMessageCommand, hasOption, hasUserCommand, parseOptions } from "#/base";
 
-export abstract class Command extends InteractionBase {
+// eslint-disable-next-line @typescript-eslint/ban-types
+export abstract class Command<T extends FullCommandDefinition = {}> extends InteractionBase {
+
+  definer: T;
+
+  constructor(client: ArcClient, definer: T) {
+    super(client);
+
+    this.definer = definer;
+  }
 
 
-  abstract run(ctx: CommandRunContext): Promise<CommandRunResult>
+  abstract run(ctx: CommandRunContext<T>): Promise<CommandRunResult>
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  async handleSubCommands(ctx: CommandRunContext): Promise<CommandRunResult> {
-    if (!isSlashCommand(this) || !isCommandWithSubs(this)) {
+  /**async handleSubCommands(ctx: CommandRunContext<T>): Promise<CommandRunResult> {
+   if (!this.definer.slash || !hasSubCommands(this.definer.slash)) {
       return error(new CommandError({
         message: "invalid command for handle subCommands !",
         ctx: ctx,
       }));
     }
 
-    if (!ctx.interaction.isChatInputCommand()) {
+   if (ctx.type !== "slash" || !ctx.interaction.isChatInputCommand()) {
       return error(new CommandError({
         message: "get interaction for no slash command interaction",
         ctx: ctx,
       }));
     }
 
-    let list: SubSlashCommandList | Record<string, SubCommand> = this.subsCommands;
+   let list: SubCommand[] = this.definer.slash.subCommands  || [];
 
     const subCommandGroup = ctx.interaction.options.getSubcommandGroup(false);
     if (subCommandGroup) {
-      if (!Object.keys(list).includes(subCommandGroup)) {
+   if (!this.definer.slash.subCommandsGroups
+   || Object.keys(this.definer.slash.subCommandsGroups).includes(subCommandGroup)) {
         return error(new CommandError({
           message: `subCommand group ${subCommandGroup} not found`,
           ctx: ctx,
@@ -58,17 +72,9 @@ export abstract class Command extends InteractionBase {
         }));
       }
 
-      const nList = list[subCommandGroup];
-      if (nList instanceof SubCommand) {
-        return error(new CommandError({
-          message: `subCommand group ${subCommandGroup} only exist in sub command...`,
-          ctx: ctx,
-          debugs: { subs: JSON.stringify(Object.keys(list)) },
-        }));
-      }
+   list = this.definer.slash.subCommandsGroups[subCommandGroup];
+   }
 
-      list = nList;
-    }
 
     const subCommandName = ctx.interaction.options.getSubcommand(false);
     if (!subCommandName) {
@@ -79,7 +85,9 @@ export abstract class Command extends InteractionBase {
       }));
     }
 
-    if (!Object.keys(list).includes(subCommandName)) {
+   const subCommand = list.find((sub) => sub.definer.name === subCommandName);
+
+   if (!subCommand) {
       return error(new CommandError({
         message: `subCommand ${subCommandName} not found`,
         ctx: ctx,
@@ -87,20 +95,10 @@ export abstract class Command extends InteractionBase {
       }));
     }
 
-    const sub = list[subCommandName];
-    if (!(sub instanceof SubCommand) || !sub) {
-      return error(new CommandError({
-        message: `subCommand ${subCommandName} don't have class SubCommand`,
-        ctx: ctx,
-        debugs: { subs: JSON.stringify(Object.keys(list)) },
-      }));
+   return subCommand.run(ctx);
+   } */
 
-    }
-
-    return sub.run(ctx);
-  }
-
-  async reply(ctx: CommandRunContext, message: string | MessagePayload | InteractionReplyOptions): Promise<CommandRunResult> {
+  async reply(ctx: BaseCommandRunContext, message: string | MessagePayload | InteractionReplyOptions): Promise<CommandRunResult> {
     try {
       await ctx.interaction.reply(message);
       return ok(true);
@@ -113,7 +111,7 @@ export abstract class Command extends InteractionBase {
     }
   }
 
-  async editReply(ctx: CommandRunContext, message: string | MessagePayload | InteractionEditReplyOptions): Promise<CommandRunResult> {
+  async editReply(ctx: BaseCommandRunContext, message: string | MessagePayload | InteractionEditReplyOptions): Promise<CommandRunResult> {
     try {
       await ctx.interaction.editReply(message);
       return ok(true);
@@ -136,7 +134,7 @@ export abstract class Command extends InteractionBase {
     return ok(value);
   }
 
-  async buildContext(interaction: CommandInteraction, command: Command | SubCommand = this): Promise<Result<CommandRunContext, BaseError>> {
+  async buildContext(interaction: CommandInteraction): Promise<Result<CommandRunContext<T>, BaseError>> {
     let guildObject: GuildCommandRunContextInfos | DmCommandRunContextInfos;
 
     if (interaction.inGuild()) {
@@ -199,27 +197,48 @@ export abstract class Command extends InteractionBase {
       };
     }
 
-    if (interaction.isChatInputCommand()) {
-      const baseCtx: Omit<SlashCommandRunContext, "reply" | "editReply" | "ok" | "error"> = {
+    if (interaction.isChatInputCommand() && this.definer.slash) {
+
+      let options;
+
+      if (hasOption(this.definer.slash)) {
+        const [pastedOption, err] = parseOptions(interaction, this.definer.slash.options);
+
+        if (err) {
+          return error(err);
+        }
+        options = pastedOption;
+      } else {
+        options = undefined;
+      }
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      const baseCtx: Omit<SlashCommandRunContext<
+        T extends PartialCommandDefinitionForSlash ?
+          (T["slash"] extends SlashOptionsCommandDefinition ? T["slash"]["options"] : undefined) : undefined
+      >, "reply" | "editReply" | "ok" | "error"> = {
         interaction: interaction,
         type: "slash",
         isSlashCommand: true,
         isUSerCommand: false,
         isMessageCommand: false,
         defer: false,
-        command: command,
+        command: this,
         user: interaction.user,
-        options: interaction.options,
+        options: options,
       };
 
-      const ctx: CommandRunContext = {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      const ctx: CommandRunContext<T> = {
         ...baseCtx,
         ...guildObject,
         reply: (msg) => {
-          return command.reply(ctx, msg);
+          return this.reply(ctx, msg);
         },
         editReply: (msg) => {
-          return command.editReply(ctx, msg);
+          return this.editReply(ctx, msg);
         },
         ok: (value) => {
           return this.ok(value);
@@ -243,27 +262,29 @@ export abstract class Command extends InteractionBase {
     }
 
 
-    if (interaction.isMessageContextMenuCommand()) {
+    if (interaction.isMessageContextMenuCommand() && hasMessageCommand(this.definer)) {
       const baseCtx: Omit<MessageCommandRunContext, "reply" | "editReply" | "ok" | "error"> = {
         interaction: interaction,
-        type: "msg",
+        type: "message",
         isSlashCommand: false,
         isUSerCommand: false,
         isMessageCommand: true,
         defer: false,
-        command: command,
+        command: this,
         user: interaction.user,
         targetMessage: interaction.targetMessage,
       };
 
-      const ctx: CommandRunContext = {
-        ...baseCtx,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      const ctx: CommandRunContext<T> = {
         ...guildObject,
+        ...baseCtx,
         reply: (msg) => {
-          return command.reply(ctx, msg);
+          return this.reply(ctx, msg);
         },
         editReply: (msg) => {
-          return command.editReply(ctx, msg);
+          return this.editReply(ctx, msg);
         },
         ok: (value) => {
           return this.ok(value);
@@ -286,7 +307,7 @@ export abstract class Command extends InteractionBase {
       return ok(ctx);
     }
 
-    if (interaction.isUserContextMenuCommand()) {
+    if (interaction.isUserContextMenuCommand() && hasUserCommand(this.definer)) {
       let targetMember: GuildMember | null;
 
       try {
@@ -310,20 +331,22 @@ export abstract class Command extends InteractionBase {
         isUSerCommand: true,
         isMessageCommand: false,
         defer: false,
-        command: command,
+        command: this,
         user: interaction.user,
         targetUser: interaction.targetUser,
         targetMember: targetMember,
       };
 
-      const ctx: CommandRunContext = {
-        ...baseCtx,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      const ctx: CommandRunContext<T> = {
         ...guildObject,
+        ...baseCtx,
         reply: (msg) => {
-          return command.reply(ctx, msg);
+          return this.reply(ctx, msg);
         },
         editReply: (msg) => {
-          return command.editReply(ctx, msg);
+          return this.editReply(ctx, msg);
         },
         ok: (value) => {
           return this.ok(value);

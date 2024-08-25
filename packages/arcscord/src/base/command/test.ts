@@ -1,6 +1,7 @@
-import type { ArcClient, CommandRunContext, CommandRunResult } from "../../src";
-import { Command, SlashCmdBuilder } from "../../src";
-import type { FullCommandDefinition } from "../../src/base/command/command_definition.type";
+import type { FullCommandDefinition } from "#/base/command/command_definition.type";
+import type { ArcClient, CommandRunContext, CommandRunResult } from "#/base";
+import { Command } from "#/base";
+import { SlashCmdBuilder } from "#/utils";
 
 const definer = {
   slash: {
@@ -8,8 +9,8 @@ const definer = {
     description: "test command",
     options: {
       name: {
-        type: "string",
         description: "name",
+        type: "user",
         required: true,
       },
     },
@@ -38,7 +39,8 @@ export class TestCommand extends Command<typeof definer> {
   }
 
   run(ctx: CommandRunContext<typeof definer>): Promise<CommandRunResult> {
-    ctx.options.name.split("");
+
+
     return ctx.ok(true);
   }
 

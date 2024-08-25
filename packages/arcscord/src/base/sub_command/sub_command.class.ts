@@ -1,15 +1,9 @@
-import type { Command, CommandRunContext, CommandRunResult } from "#/base/command";
+import type { BaseCommandRunContext, Command, CommandRunResult, SubCommandRunContext } from "#/base/command";
 import type { ArcClient } from "#/base/client/client.class";
-import type {
-  CommandInteraction,
-  InteractionEditReplyOptions,
-  InteractionReplyOptions,
-  MessagePayload
-} from "discord.js";
-import { type Result } from "@arcscord/error";
-import type { BaseError } from "@arcscord/better-error";
+import type { InteractionEditReplyOptions, InteractionReplyOptions, MessagePayload } from "discord.js";
+import type { SubCommandDefinition } from "#/base/command/command_definition.type";
 
-export abstract class SubCommand {
+export abstract class SubCommand<T extends SubCommandDefinition = { name: string; description: string }> {
 
   baseCommand: Command;
 
@@ -21,14 +15,17 @@ export abstract class SubCommand {
 
   name: string = "no_name";
 
-  constructor(client: ArcClient, baseCommand: Command) {
+  definer: T;
+
+  constructor(client: ArcClient, baseCommand: Command, definer: T) {
     this.client = client;
 
     this.baseCommand = baseCommand;
     this.setName();
+    this.definer = definer;
   }
 
-  abstract run(ctx: CommandRunContext): Promise<CommandRunResult>
+  abstract run(ctx: SubCommandRunContext<T>): Promise<CommandRunResult>
 
   setName(): void {
     this.name = this.baseCommand.name;
@@ -41,16 +38,13 @@ export abstract class SubCommand {
     return `${this.name}-${this.subName}`;
   }
 
-  reply(ctx: CommandRunContext,  message: string | MessagePayload | InteractionReplyOptions): Promise<CommandRunResult> {
+  reply(ctx: BaseCommandRunContext, message: string | MessagePayload | InteractionReplyOptions): Promise<CommandRunResult> {
     return this.baseCommand.reply(ctx, message);
   }
 
-  editReply(ctx: CommandRunContext,  message: string | MessagePayload | InteractionEditReplyOptions): Promise<CommandRunResult> {
+  editReply(ctx: BaseCommandRunContext, message: string | MessagePayload | InteractionEditReplyOptions): Promise<CommandRunResult> {
     return this.baseCommand.editReply(ctx, message);
   }
 
-  async buildContext(interaction: CommandInteraction, command: Command | SubCommand = this): Promise<Result<CommandRunContext, BaseError>> {
-    return this.baseCommand.buildContext(interaction, command);
-  }
 
 }

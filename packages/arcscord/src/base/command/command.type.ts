@@ -6,20 +6,25 @@ import type {
   GuildMember,
   Message,
   MessageContextMenuCommandInteraction,
-  SlashCommandOptionsOnlyBuilder,
   User,
   UserContextMenuCommandInteraction
 } from "discord.js";
 import { type InteractionEditReplyOptions, type InteractionReplyOptions, type MessagePayload } from "discord.js";
-import type { UserCommandBuilder } from "#/utils/discord/builder/user_command.class";
-import type { MessageCommandBuilder } from "#/utils/discord/builder/message_command.class";
-import type { SlashCmdBuilder } from "#/utils/discord/builder/slash_cmd.class";
 import type { Command } from "#/base/command/command.class";
 import type { SubCommand } from "#/base/sub_command/sub_command.class";
 import type { CommandError, CommandErrorOptions } from "#/utils/error/class/command_error";
 import type { Result } from "@arcscord/error";
+import type {
+  FullCommandDefinition,
+  PartialCommandDefinitionForMessage,
+  PartialCommandDefinitionForSlash,
+  PartialCommandDefinitionForUser,
+  SlashOptionsCommandDefinition,
+  SubCommandDefinition
+} from "#/base/command/command_definition.type";
+import type { ContextOptions, OptionsList } from "#/base/command/option.type";
 
-export type CommandType = "slash" | "user" | "msg";
+export type CommandType = "slash" | "user" | "message";
 
 
 export type BaseCommandRunContext = {
@@ -48,14 +53,25 @@ export type DmCommandRunContextInfos = {
   inGuild: false;
 }
 
-export type SlashCommandRunContext = BaseCommandRunContext & {
+export type SlashCommandRunContextWithOption<T extends OptionsList> = BaseCommandRunContext & {
   type: "slash";
   interaction: ChatInputCommandInteraction;
-  options: ChatInputCommandInteraction["options"];
   isSlashCommand: true;
   isUSerCommand: false;
   isMessageCommand: false;
+  options: ContextOptions<T>;
 }
+
+export type SlashCommandRunContextWithoutOption = BaseCommandRunContext & {
+  type: "slash";
+  interaction: ChatInputCommandInteraction;
+  isSlashCommand: true;
+  isUSerCommand: false;
+  isMessageCommand: false;
+  options: undefined;
+}
+export type SlashCommandRunContext<T extends OptionsList | undefined> = T extends OptionsList ?
+  SlashCommandRunContextWithOption<T> : SlashCommandRunContextWithoutOption;
 
 export type UserCommandRunContext = BaseCommandRunContext & {
   type: "user";
@@ -68,7 +84,7 @@ export type UserCommandRunContext = BaseCommandRunContext & {
 }
 
 export type MessageCommandRunContext = BaseCommandRunContext & {
-  type: "msg";
+  type: "message";
   interaction: MessageContextMenuCommandInteraction;
   targetMessage: Message;
   isSlashCommand: false;
@@ -76,35 +92,20 @@ export type MessageCommandRunContext = BaseCommandRunContext & {
   isMessageCommand: true;
 }
 
+export type CommandRunContext<T extends FullCommandDefinition> = (
+  (T extends PartialCommandDefinitionForSlash ?
+    (SlashCommandRunContext<
+      (T["slash"] extends SlashOptionsCommandDefinition ? T["slash"]["options"] : undefined)
+    > & (DmCommandRunContextInfos | GuildCommandRunContextInfos)) : never)
 
-export type CommandRunContext = (
-  (SlashCommandRunContext & (DmCommandRunContextInfos | GuildCommandRunContextInfos)) |
-  (UserCommandRunContext & (DmCommandRunContextInfos | GuildCommandRunContextInfos)) |
-  (MessageCommandRunContext & (DmCommandRunContextInfos | GuildCommandRunContextInfos)));
+  | (T extends PartialCommandDefinitionForUser ?
+  (UserCommandRunContext & (DmCommandRunContextInfos | GuildCommandRunContextInfos)) : never)
 
+  | (T extends PartialCommandDefinitionForMessage ?
+  ((MessageCommandRunContext & (DmCommandRunContextInfos | GuildCommandRunContextInfos))) : never));
 
-export type SlashCommand = Command & {
-  slashBuilder: SlashCmdBuilder| SlashCommandOptionsOnlyBuilder;
-}
-
-export type UserCommand = Command & {
-  userBuilder: UserCommandBuilder;
-}
-
-export type MessageCommand = Command & {
-  messageBuilder: MessageCommandBuilder;
-}
-
-export type SubSlashCommandList = Record<string, SubCommand|Record<string, SubCommand>>
-
-export type SlashCommandWithSubs = SlashCommand & {
-  subsCommands: SubSlashCommandList;
-}
+export type SubCommandRunContext<T extends SubCommandDefinition> = (SlashCommandRunContext<T["options"]> & (
+  DmCommandRunContextInfos | GuildCommandRunContextInfos
+  ));
 
 export type CommandRunResult = Result<string|true, CommandError>;
-export type CommandPreRunResult = Result<false|CommandRunContext, CommandError>
-
-
-export type PreRunCommand = Command & {
-  preRun: (ctx: CommandRunContext) => Promise<CommandPreRunResult>;
-}
