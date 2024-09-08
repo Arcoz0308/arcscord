@@ -2,7 +2,7 @@ import type { LocaleMap } from "#/utils/discord/type/locale.type";
 import type { PermissionsString } from "discord.js";
 import type { commandContextsEnum, commandIntegrationTypesEnum } from "#/base/command/command.enum";
 import type { OptionsList } from "#/base/command/option.type";
-import type { SubCommand } from "#/base";
+import type { Command, SubCommand } from "#/base";
 
 export type CommandIntegrationType = keyof typeof commandIntegrationTypesEnum;
 
@@ -45,7 +45,7 @@ export type SlashWithSubsCommandDefinition = BaseSlashCommandDefinition & {
 }
 
 export type PartialCommandDefinitionForSlash = {
-  slash: SlashOptionsCommandDefinition | SlashWithSubsCommandDefinition;
+  slash: SlashOptionsCommandDefinition;
 }
 
 export type PartialCommandDefinitionForMessage = {
@@ -61,3 +61,5 @@ export type FullCommandDefinition = Partial<
   & PartialCommandDefinitionForMessage
   & PartialCommandDefinitionForUser
 >
+
+export type CommandDefinition = Command | SlashWithSubsCommandDefinition;
