@@ -1,5 +1,6 @@
-import type { ClientOptions } from "discord.js";
+import type { BaseMessageOptions, ClientOptions, PermissionsString } from "discord.js";
 import type { LoggerConstructor } from "#/utils/logger/logger.type";
+import type { Locale } from "#/utils/discord/type/locale.type";
 
 /**
  * Represents the options for configuring the ArcClient Logger.
@@ -63,4 +64,19 @@ export type ArcClientOptions = ClientOptions & {
    * Options for configuring dev mode
    */
   dev?: ArcClientDevOptions;
+
+  developers?: string[];
+
+  baseMessages?: MessageOptions | (
+    Partial<Record<Locale, MessageOptions>> & {
+    default: MessageOptions;
+  });
 }
+
+export type MessageOptions = {
+  error?: (errId: string) => BaseMessageOptions;
+  devOnly?: MessageDefiner;
+  missingPermissions?: (permissionsMissing: PermissionsString[]) => BaseMessageOptions;
+}
+
+export type MessageDefiner = BaseMessageOptions;

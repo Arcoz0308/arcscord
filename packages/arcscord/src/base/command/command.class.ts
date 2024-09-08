@@ -1,5 +1,5 @@
 import type {
-  BaseCommandRunContext,
+  APICommandObject,
   CommandRunContext,
   CommandRunResult,
   DmCommandRunContextInfos,
@@ -8,16 +8,8 @@ import type {
   SlashCommandRunContext,
   UserCommandRunContext
 } from "#/base/command/command.type";
-import { InteractionBase } from "#/base/interaction/interaction.class";
 import { CommandError } from "#/utils/error/class/command_error";
-import type {
-  CommandInteraction,
-  Guild,
-  GuildBasedChannel,
-  InteractionEditReplyOptions,
-  InteractionReplyOptions,
-  MessagePayload
-} from "discord.js";
+import type { CommandInteraction, Guild, GuildBasedChannel } from "discord.js";
 import { GuildMember } from "discord.js";
 import type { Result } from "@arcscord/error";
 import { anyToError, error, ok } from "@arcscord/error";
@@ -29,14 +21,19 @@ import type {
 } from "#/base/command/command_definition.type";
 import type { ArcClient } from "#/base";
 import { hasMessageCommand, hasOption, hasUserCommand, parseOptions } from "#/base";
+import type { BaseCommandOptions } from "#/base/command/base_command.class";
+import { BaseCommand } from "#/base/command/base_command.class";
+import { contextsToAPI, integrationTypeToAPI, optionListToAPI } from "#/utils/discord/tranformers/command";
+import { ApplicationCommandType } from "discord-api-types/v10";
+import { permissionToAPI } from "#/utils/discord/tranformers/permission";
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export abstract class Command<T extends FullCommandDefinition = {}> extends InteractionBase {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export abstract class Command<T extends FullCommandDefinition = FullCommandDefinition> extends BaseCommand {
 
   definer: T;
 
-  constructor(client: ArcClient, definer: T) {
-    super(client);
+  constructor(client: ArcClient, definer: T, options?: BaseCommandOptions) {
+    super(client, options);
 
     this.definer = definer;
   }
@@ -44,26 +41,26 @@ export abstract class Command<T extends FullCommandDefinition = {}> extends Inte
 
   abstract run(ctx: CommandRunContext<T>): Promise<CommandRunResult>
 
-  /**async handleSubCommands(ctx: CommandRunContext<T>): Promise<CommandRunResult> {
-   if (!this.definer.slash || !hasSubCommands(this.definer.slash)) {
+  /* async handleSubCommands(ctx: BaseCommandRunContext): Promise<CommandRunResult> {
+    if (!this.definer.slash || !hasSubCommands(this.definer.slash)) {
       return error(new CommandError({
         message: "invalid command for handle subCommands !",
         ctx: ctx,
       }));
     }
 
-   if (ctx.type !== "slash" || !ctx.interaction.isChatInputCommand()) {
+    if (ctx.type !== "slash" || !ctx.interaction.isChatInputCommand()) {
       return error(new CommandError({
         message: "get interaction for no slash command interaction",
         ctx: ctx,
       }));
     }
 
-   let list: SubCommand[] = this.definer.slash.subCommands  || [];
+    let list: SubCommand[] = this.definer.slash.subCommands  || [];
 
     const subCommandGroup = ctx.interaction.options.getSubcommandGroup(false);
     if (subCommandGroup) {
-   if (!this.definer.slash.subCommandsGroups
+      if (!this.definer.slash.subCommandsGroups
    || Object.keys(this.definer.slash.subCommandsGroups).includes(subCommandGroup)) {
         return error(new CommandError({
           message: `subCommand group ${subCommandGroup} not found`,
@@ -72,8 +69,8 @@ export abstract class Command<T extends FullCommandDefinition = {}> extends Inte
         }));
       }
 
-   list = this.definer.slash.subCommandsGroups[subCommandGroup];
-   }
+      list = this.definer.slash.subCommandsGroups[subCommandGroup].subCommands;
+    }
 
 
     const subCommandName = ctx.interaction.options.getSubcommand(false);
@@ -85,9 +82,9 @@ export abstract class Command<T extends FullCommandDefinition = {}> extends Inte
       }));
     }
 
-   const subCommand = list.find((sub) => sub.definer.name === subCommandName);
+    const subCommand = list.find((sub) => sub.definer.name === subCommandName);
 
-   if (!subCommand) {
+    if (!subCommand) {
       return error(new CommandError({
         message: `subCommand ${subCommandName} not found`,
         ctx: ctx,
@@ -95,44 +92,9 @@ export abstract class Command<T extends FullCommandDefinition = {}> extends Inte
       }));
     }
 
-   return subCommand.run(ctx);
-   } */
+    return subCommand.run(ctx);
+  } */
 
-  async reply(ctx: BaseCommandRunContext, message: string | MessagePayload | InteractionReplyOptions): Promise<CommandRunResult> {
-    try {
-      await ctx.interaction.reply(message);
-      return ok(true);
-    } catch (e) {
-      return error(new CommandError({
-        ctx: ctx,
-        message: `failed to reply to interaction : ${anyToError(e).message}`,
-        originalError: anyToError(e),
-      }));
-    }
-  }
-
-  async editReply(ctx: BaseCommandRunContext, message: string | MessagePayload | InteractionEditReplyOptions): Promise<CommandRunResult> {
-    try {
-      await ctx.interaction.editReply(message);
-      return ok(true);
-    } catch (e) {
-      return error(new CommandError({
-        ctx: ctx,
-        message: `failed to edit reply to interaction : ${anyToError(e).message}`,
-        originalError: anyToError(e),
-      }));
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/require-await
-  async error(err: CommandError): Promise<CommandRunResult> {
-    return error(err);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/require-await
-  async ok(value: true | string): Promise<CommandRunResult> {
-    return ok(value);
-  }
 
   async buildContext(interaction: CommandInteraction): Promise<Result<CommandRunContext<T>, BaseError>> {
     let guildObject: GuildCommandRunContextInfos | DmCommandRunContextInfos;
@@ -375,6 +337,60 @@ export abstract class Command<T extends FullCommandDefinition = {}> extends Inte
         commandType: interaction.commandType,
       },
     }));
+  }
+
+  toAPIObject(): APICommandObject {
+    const obj: APICommandObject = {};
+
+    if (this.definer.slash) {
+      const def = this.definer.slash;
+
+      obj.slash = {
+        type: ApplicationCommandType.ChatInput,
+        name: def.name,
+        description: def.description,
+        name_localizations: def.nameLocalizations,
+        description_localizations: def.descriptionLocalizations,
+        default_member_permissions: def.defaultMemberPermissions
+          ? permissionToAPI(def.defaultMemberPermissions) : undefined,
+        nsfw: def.nsfw,
+        contexts: def.contexts ? contextsToAPI(def.contexts) : undefined,
+        integration_types: def.integrationTypes ? integrationTypeToAPI(def.integrationTypes) : undefined,
+        options: def.options ? optionListToAPI(def.options) : undefined,
+      };
+    }
+
+    if (this.definer.user) {
+      const def = this.definer.user;
+
+      obj.user = {
+        type: ApplicationCommandType.User,
+        name: def.name,
+        name_localizations: def.nameLocalizations,
+        default_member_permissions: def.defaultMemberPermissions
+          ? permissionToAPI(def.defaultMemberPermissions) : undefined,
+        nsfw: def.nsfw,
+        contexts: def.contexts ? contextsToAPI(def.contexts) : undefined,
+        integration_types: def.integrationTypes ? integrationTypeToAPI(def.integrationTypes) : undefined,
+      };
+    }
+
+    if (this.definer.message) {
+      const def = this.definer.message;
+
+      obj.message = {
+        type: ApplicationCommandType.Message,
+        name: def.name,
+        name_localizations: def.nameLocalizations,
+        default_member_permissions: def.defaultMemberPermissions
+          ? permissionToAPI(def.defaultMemberPermissions) : undefined,
+        nsfw: def.nsfw,
+        contexts: def.contexts ? contextsToAPI(def.contexts) : undefined,
+        integration_types: def.integrationTypes ? integrationTypeToAPI(def.integrationTypes) : undefined,
+      };
+    }
+
+    return obj;
   }
 
 }

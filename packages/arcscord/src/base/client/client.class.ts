@@ -1,10 +1,11 @@
-import { Client as DJSClient, REST } from "discord.js";
+import type { PermissionsString } from "discord.js";
+import { Client as DJSClient, EmbedBuilder, REST } from "discord.js";
 import { CommandManager } from "#/manager/command/command_manager.class";
 import { DevManager } from "#/manager/dev";
 import { ArcLogger } from "#/utils/logger/logger.class";
 import { EventManager } from "#/manager/event/event_manager.class";
 import { TaskManager } from "#/manager/task/task_manager";
-import type { ArcClientOptions } from "#/base/client/client.type";
+import type { ArcClientOptions, MessageOptions } from "#/base/client/client.type";
 import type { LoggerConstructor, LoggerInterface } from "#/utils/logger/logger.type";
 import { createLogger } from "#/utils/logger/logger.util";
 import { ComponentManager } from "#/manager";
@@ -29,6 +30,8 @@ export class ArcClient extends DJSClient {
 
   arcOptions: ArcClientOptions;
 
+  defaultMessages: Required<MessageOptions>;
+
   loggerConstructor: LoggerConstructor;
 
   /**
@@ -41,6 +44,37 @@ export class ArcClient extends DJSClient {
     super(options);
 
     this.loggerConstructor = options.logger?.customLogger ?? ArcLogger;
+
+    this.defaultMessages = Object.assign<Required<MessageOptions>, MessageOptions | undefined>({
+      error: (errId: string) => {
+        return {
+          embeds: [
+            new EmbedBuilder()
+              .setTitle("One error happen.")
+              .setColor("Orange")
+              .setDescription(`One error happen, error id ${errId}`),
+          ],
+        };
+      },
+      missingPermissions: (permissionsMissing: PermissionsString[]) => {
+        return {
+          embeds: [
+            new EmbedBuilder()
+              .setTitle("Bot missing permissions")
+              .setDescription(`The bot missing permissions : \`${permissionsMissing.join("`, `")}\``)
+              .setColor("Orange"),
+          ],
+        };
+      },
+      devOnly: {
+        embeds: [
+          new EmbedBuilder()
+            .setTitle("Reserved to Developer")
+            .setDescription("This command is reserved for bot developers")
+            .setColor("Red"),
+        ],
+      },
+    }, options.baseMessages && "default" in options.baseMessages ? options.baseMessages.default : options.baseMessages);
 
     this.arcOptions = options;
     this.devManager = new DevManager(this);

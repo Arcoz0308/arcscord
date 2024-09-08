@@ -23,20 +23,32 @@ import type {
   SubCommandDefinition
 } from "#/base/command/command_definition.type";
 import type { ContextOptions, OptionsList } from "#/base/command/option.type";
+import type {
+  APIModalSubmission,
+  RESTPostAPIChatInputApplicationCommandsJSONBody,
+  RESTPostAPIContextMenuApplicationCommandsJSONBody
+} from "discord-api-types/v10";
 
 export type CommandType = "slash" | "user" | "message";
-
 
 export type BaseCommandRunContext = {
   interaction: CommandInteraction;
   defer: boolean;
   user: User;
-  reply: (message: string | MessagePayload | InteractionReplyOptions) => Promise<CommandRunResult>;
-  editReply: (message: string | MessagePayload | InteractionEditReplyOptions) => Promise<CommandRunResult>;
   command: Command | SubCommand;
   type: CommandType;
+  reply: (message: string | MessagePayload | InteractionReplyOptions) => Promise<CommandRunResult>;
+  editReply: (message: string | MessagePayload | InteractionEditReplyOptions) => Promise<CommandRunResult>;
   ok: (value: string | true) => Promise<CommandRunResult>;
   error: (options: Omit<CommandErrorOptions, "ctx"> | string) => Promise<CommandRunResult>;
+}
+
+export type CommandRunContextFunctions = {
+  reply: (message: string | MessagePayload | InteractionReplyOptions) => Promise<CommandRunResult>;
+  editReply: (message: string | MessagePayload | InteractionEditReplyOptions) => Promise<CommandRunResult>;
+  ok: (value: string | true) => Promise<CommandRunResult>;
+  error: (options: Omit<CommandErrorOptions, "ctx"> | string) => Promise<CommandRunResult>;
+  showModal: (modal: APIModalSubmission) => Promise<CommandRunResult>;
 }
 
 export type GuildCommandRunContextInfos = {
@@ -106,6 +118,12 @@ export type CommandRunContext<T extends FullCommandDefinition> = (
 
 export type SubCommandRunContext<T extends SubCommandDefinition> = (SlashCommandRunContext<T["options"]> & (
   DmCommandRunContextInfos | GuildCommandRunContextInfos
-  ));
+  )) & BaseCommandRunContext;
 
 export type CommandRunResult = Result<string|true, CommandError>;
+
+export type APICommandObject = {
+  slash?: RESTPostAPIChatInputApplicationCommandsJSONBody;
+  message?: RESTPostAPIContextMenuApplicationCommandsJSONBody;
+  user?: RESTPostAPIContextMenuApplicationCommandsJSONBody;
+}

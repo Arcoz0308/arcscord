@@ -9,7 +9,7 @@ import type {
   SlashOptionsCommandDefinition,
   SlashWithSubsCommandDefinition
 } from "#/base/command/command_definition.type";
-import type { ContextOptions, OptionalContextOption, OptionsList } from "#/base/command/option.type";
+import type { ContextOptions, Option, OptionalContextOption, OptionsList } from "#/base/command/option.type";
 import type { Result } from "@arcscord/error";
 import { anyToError, error, ok } from "@arcscord/error";
 import { BaseError } from "@arcscord/better-error";
@@ -136,7 +136,7 @@ export const commandInteractionToString = (interaction: CommandInteraction, noOp
 export const parseOptions = async <T extends OptionsList>(interaction: ChatInputCommandInteraction, optionsList: T):
   Promise<Result<(ContextOptions<T>), BaseError>> => {
 
-  const result: Record<string, OptionalContextOption<any>> = {};
+  const result: Record<string, OptionalContextOption<Option>> = {};
 
   for (const [name, option] of Object.entries(optionsList)) {
     switch (option.type) {
