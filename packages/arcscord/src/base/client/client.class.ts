@@ -9,6 +9,7 @@ import type { ArcClientOptions, MessageOptions } from "#/base/client/client.type
 import type { LoggerConstructor, LoggerInterface } from "#/utils/logger/logger.type";
 import { createLogger } from "#/utils/logger/logger.util";
 import { ComponentManager } from "#/manager";
+import type { CommandDefinition } from "#/base/command/command_definition.type";
 
 export class ArcClient extends DJSClient {
 
@@ -123,6 +124,19 @@ export class ArcClient extends DJSClient {
 
   createLogger(name: string): LoggerInterface {
     return createLogger(this.loggerConstructor, name, this.arcOptions.logger?.loggerFunc);
+  }
+
+  async loadCommands(commands: CommandDefinition[], group = "default", guild?: string): Promise<void> {
+    const data = this.commandManager.loadCommands(commands, group);
+    let data2;
+    if (guild) {
+      data2 = await this.commandManager.pushGuildCommands(guild, data);
+    } else {
+      data2 = await this.commandManager.pushGlobalCommands(data);
+    }
+    this.commandManager.resolveCommands(commands, data2);
+
+    return;
   }
 
 }
