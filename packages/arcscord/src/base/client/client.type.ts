@@ -71,6 +71,8 @@ export type ArcClientOptions = ClientOptions & {
     Partial<Record<Locale, MessageOptions>> & {
     default: MessageOptions;
   });
+
+  applicationId?: string;
 }
 
 export type MessageOptions = {
