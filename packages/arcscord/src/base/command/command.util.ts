@@ -125,8 +125,8 @@ export const commandInteractionToString = (interaction: CommandInteraction, noOp
 
 
       return `msg:${interaction.commandName} (${interaction.commandId}) targetMessage=${interaction.targetId}`
-      + `targetChannel=${targetChannel}`
-      + targetGuild ? `targetGuild=${targetGuild}` : "";
+        + ` targetChannel=${targetChannel}`
+        + (targetGuild ? ` targetGuild=${targetGuild}` : "");
     }
     default: {
       return "Unknown Command";
