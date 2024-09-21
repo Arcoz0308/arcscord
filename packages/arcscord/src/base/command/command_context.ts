@@ -10,7 +10,6 @@ import type { ArcClient, Command, CommandRunResult, SubCommand } from "#/base";
 import type {
   ChatInputCommandInteraction,
   CommandInteraction,
-  ContextMenuCommandInteraction,
   Guild,
   GuildBasedChannel,
   GuildMember,
@@ -18,8 +17,10 @@ import type {
   InteractionEditReplyOptions,
   InteractionReplyOptions,
   Message,
+  MessageContextMenuCommandInteraction,
   MessagePayload,
-  User
+  User,
+  UserContextMenuCommandInteraction
 } from "discord.js";
 import { InteractionContextType } from "discord.js";
 import type { CommandErrorOptions } from "#/utils";
@@ -252,10 +253,14 @@ export class GuildSlashCommandContext<
 
   readonly isUserCommand = false;
 
+  interaction: ChatInputCommandInteraction;
+
   constructor(command: CommandClassType<T>, interaction: ChatInputCommandInteraction, options: GuildSlashCommandContextBuilderOptions<T>) {
     super(command, interaction, options);
 
     this.options = options.options;
+
+    this.interaction = interaction;
   }
 
 }
@@ -278,10 +283,14 @@ export class GuildMessageCommandContext<
 
   readonly isUserCommand = false;
 
-  constructor(command: CommandClassType<T>, interaction: ContextMenuCommandInteraction, options: GuildMessageCommandContextBuilderOptions) {
+  interaction: MessageContextMenuCommandInteraction;
+
+  constructor(command: CommandClassType<T>, interaction: MessageContextMenuCommandInteraction, options: GuildMessageCommandContextBuilderOptions) {
     super(command, interaction, options);
 
     this.targetMessage = options.message;
+
+    this.interaction = interaction;
   }
 
 }
@@ -307,11 +316,15 @@ export class GuildUserCommandContext<
 
   readonly isUserCommand = true;
 
-  constructor(command: CommandClassType<T>, interaction: ContextMenuCommandInteraction, options: GuildUserCommandContextBuilderOptions) {
+  interaction: UserContextMenuCommandInteraction;
+
+  constructor(command: CommandClassType<T>, interaction: UserContextMenuCommandInteraction, options: GuildUserCommandContextBuilderOptions) {
     super(command, interaction, options);
 
     this.targetUser = options.targetUser;
     this.targetMember = options.targetMember;
+
+    this.interaction = interaction;
   }
 
 }
@@ -338,10 +351,14 @@ export class DmSlashCommandContext<
 
   readonly isUserCommand = false;
 
+  interaction: ChatInputCommandInteraction;
+
   constructor(command: CommandClassType<T>, interaction: ChatInputCommandInteraction, options: DmSlashCommandContextBuilderOptions<T>) {
     super(command, interaction, options);
 
     this.options = options.options;
+
+    this.interaction = interaction;
   }
 
 }
@@ -364,10 +381,14 @@ export class DmMessageCommandContext<
 
   readonly isUserCommand = false;
 
-  constructor(command: CommandClassType<T>, interaction: ContextMenuCommandInteraction, options: DmMessageCommandContextBuilderOptions) {
+  interaction: MessageContextMenuCommandInteraction;
+
+  constructor(command: CommandClassType<T>, interaction: MessageContextMenuCommandInteraction, options: DmMessageCommandContextBuilderOptions) {
     super(command, interaction, options);
 
     this.targetMessage = options.message;
+
+    this.interaction = interaction;
   }
 
 }
@@ -392,10 +413,14 @@ export class DmUserCommandContext<
 
   readonly isUserCommand = true;
 
-  constructor(command: CommandClassType<T>, interaction: ContextMenuCommandInteraction, options: DmUserCommandContextBuilderOptions) {
+  interaction: UserContextMenuCommandInteraction;
+
+  constructor(command: CommandClassType<T>, interaction: UserContextMenuCommandInteraction, options: DmUserCommandContextBuilderOptions) {
     super(command, interaction, options);
 
     this.targetUser = options.targetUser;
+
+    this.interaction = interaction;
   }
 
 }
