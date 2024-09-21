@@ -119,4 +119,4 @@ export type OptionalContextOption<T extends Option> = T extends { required: true
 
 export type ContextOptions<T extends OptionsList> = {
   [Prob in keyof T]: OptionalContextOption<T[Prob]>
-}
+};

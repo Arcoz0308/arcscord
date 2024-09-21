@@ -14,7 +14,8 @@
     "lint": "eslint ./src",
     "lint:fix": "eslint ./src --fix",
     "test:simpleCommand": "npx nodemon --exec node -r @swc-node/register -r tsconfig-paths/register ./test/simple_bot/index.ts",
-    "test": "vitest"
+    "test": "vitest",
+    "check": "tsc --project tsconfig.test.json && tsc-alias -p tsconfig.test.json"
   },
   "directories": {
     "lib": "./src",
@@ -33,7 +34,7 @@
     "cron": "^3.1.6",
     "dayjs": "^1.11.10",
     "discord-api-types": "^0.37.97",
-    "discord.js": "^14.14.1",
+    "discord.js": "^14.16.2",
     "short-unique-id": "^5.0.3",
     "tintify": "^1.1.0",
     "typescript": "^5.3.3",

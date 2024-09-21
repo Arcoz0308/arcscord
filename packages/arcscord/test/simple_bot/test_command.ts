@@ -1,8 +1,9 @@
-import type { ArcClient, CommandRunContext, CommandRunResult } from "../../src";
+import type { ArcClient, CommandRunResult } from "../../src";
 import { Command } from "../../src";
 import type { FullCommandDefinition } from "../../src/base/command/command_definition.type";
 import type { ImageSize } from "discord.js";
 import { EmbedBuilder } from "discord.js";
+import type { CommandContext } from "#/base/command/command_context";
 
 const definer = {
   slash: {
@@ -48,7 +49,7 @@ export class TestCommand extends Command<typeof definer> {
   }
 
 
-  run(ctx: CommandRunContext<typeof definer>): Promise<CommandRunResult> {
+  run(ctx: CommandContext<typeof definer>): Promise<CommandRunResult> {
     const user = ctx.isSlashCommand
       ? ctx.options.user || ctx.user
       : ctx.targetUser;
@@ -69,29 +70,3 @@ export class TestCommand extends Command<typeof definer> {
   }
 
 }
-
-/* const subCommandDefinition = {
-  name: "test",
-  description: "test command",
-  options: {
-    age: {
-      type: "number",
-      description: "Votre age",
-      min_value: 0,
-      max_value: 200,
-      required: true,
-    },
-  },
-} as const satisfies SubCommandDefinition;
-
-class TestSubCommand extends SubCommand<typeof subCommandDefinition> {
-
-  constructor(client: ArcClient, command: Command) {
-    super(client, command, subCommandDefinition);
-  }
-
-  run(ctx: SubCommandRunContext<typeof subCommandDefinition>): Promise<CommandRunResult> {
-    return ctx.reply(`Tu as ${ctx.options.age * 12} mois environs`);
-  }
-
-} */

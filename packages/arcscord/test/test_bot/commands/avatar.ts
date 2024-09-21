@@ -1,6 +1,7 @@
 import type { FullCommandDefinition } from "#/base/command/command_definition.type";
-import { type ArcClient, Command, type CommandRunContext, type CommandRunResult } from "#/base";
+import { type ArcClient, Command, type CommandRunResult } from "#/base";
 import { EmbedBuilder } from "discord.js";
+import type { CommandContext } from "#/base/command/command_context";
 
 const definer = {
   slash: {
@@ -19,7 +20,7 @@ const definer = {
 } as const satisfies FullCommandDefinition;
 
 
-export class TestCommand extends Command<typeof definer> {
+export class AvatarCommand extends Command<typeof definer> {
 
   name = "avatar";
 
@@ -32,10 +33,10 @@ export class TestCommand extends Command<typeof definer> {
   }
 
 
-  run(ctx: CommandRunContext<typeof definer>): Promise<CommandRunResult> {
+  run(ctx: CommandContext<typeof definer>): Promise<CommandRunResult> {
+
     const user = ctx.isSlashCommand
-      ? ctx.options.user || ctx.user
-      : ctx.targetUser;
+      ? ctx.options.user || ctx.user : ctx.targetUser;
 
     return ctx.reply({
       embeds: [

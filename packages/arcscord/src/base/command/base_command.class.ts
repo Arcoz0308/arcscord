@@ -1,16 +1,10 @@
 import type { InteractionPreReplyOption } from "#/base/interaction/interaction.type";
-import type { ArcClient, BaseCommandRunContext, CommandRunResult } from "#/base";
-import type {
-  CommandInteraction,
-  InteractionEditReplyOptions,
-  InteractionReplyOptions,
-  MessagePayload,
-  PermissionsString
-} from "discord.js";
+import type { ArcClient, CommandRunResult } from "#/base";
+import type { CommandInteraction, InteractionReplyOptions, MessagePayload, PermissionsString } from "discord.js";
 import type { Result } from "@arcscord/error";
 import { anyToError, error, ok } from "@arcscord/error";
 import { BaseError } from "@arcscord/better-error";
-import { CommandError } from "#/utils";
+import type { CommandError } from "#/utils";
 
 export type BaseCommandOptions = {
   /**
@@ -78,34 +72,6 @@ export abstract class BaseCommand implements InteractionPreReplyOption {
     }
 
     return ok(true);
-  }
-
-  async reply(ctx: BaseCommandRunContext, message: string | MessagePayload | InteractionReplyOptions):
-    Promise<CommandRunResult> {
-    try {
-      await ctx.interaction.reply(message);
-      return ok(true);
-    } catch (e) {
-      return error(new CommandError({
-        ctx: ctx,
-        message: `failed to reply to interaction : ${anyToError(e).message}`,
-        originalError: anyToError(e),
-      }));
-    }
-  }
-
-  async editReply(ctx: BaseCommandRunContext, message: string | MessagePayload | InteractionEditReplyOptions):
-    Promise<CommandRunResult> {
-    try {
-      await ctx.interaction.editReply(message);
-      return ok(true);
-    } catch (e) {
-      return error(new CommandError({
-        ctx: ctx,
-        message: `failed to edit reply to interaction : ${anyToError(e).message}`,
-        originalError: anyToError(e),
-      }));
-    }
   }
 
   async baseReply(

@@ -5,14 +5,14 @@ import type { Component } from "#/base/message_component/base/base_component.typ
 import { SelectMenu } from "#/base/message_component/select_menu/select_menu.class";
 import type {
   AnySelectMenuInteraction,
+  BaseMessageOptions,
   ButtonInteraction,
-  EmbedBuilder,
   Interaction,
   MessageComponentInteraction,
   ModalSubmitInteraction
 } from "discord.js";
 import { CUSTOM_ID_SEPARATOR } from "#/base/message_component/base/base_component.const";
-import { authorOnly, internalErrorEmbed } from "#/utils/discord/embed/embed.const";
+import { internalErrorEmbed } from "#/utils/discord/embed/embed.const";
 import { ButtonError } from "#/utils/error/class/button_error";
 import { SelectMenuError } from "#/utils/error/class/select_menu_error";
 import { ModalSubmitError } from "#/utils";
@@ -106,7 +106,7 @@ export class ComponentManager extends BaseManager {
     const button = this.buttons.get(customId);
     if (!button) {
       this.logger.warning(`Button component ${customId} does not exist/registered`);
-      await this.sendError(interaction, internalErrorEmbed());
+      await this.sendError(interaction, internalErrorEmbed(this.client));
       return;
     }
 
@@ -115,7 +115,7 @@ export class ComponentManager extends BaseManager {
         this.logger.trace(`${interaction.user.username} (${interaction.user.id}) run button for `
           + `${interaction.message.interaction.user.id}, ${interaction.user.id} that are author only`);
       }
-      await this.sendError(interaction, authorOnly());
+      await this.sendError(interaction, this.client.defaultMessages.authorOnly);
       return;
     }
 
@@ -134,7 +134,7 @@ export class ComponentManager extends BaseManager {
         }).generateId();
         this.logger.logError(error);
 
-        void this.sendError(interaction, internalErrorEmbed(error.id));
+        void this.sendError(interaction, internalErrorEmbed(this.client, error.id));
         return;
       }
     }
@@ -148,7 +148,7 @@ export class ComponentManager extends BaseManager {
       if (err) {
         err.generateId();
         this.logger.logError(err);
-        void this.sendError(interaction, internalErrorEmbed(err.id), defer);
+        void this.sendError(interaction, internalErrorEmbed(this.client, err.id), defer);
         return;
       }
 
@@ -162,7 +162,7 @@ export class ComponentManager extends BaseManager {
         originalError: anyToError(e),
       }).generateId();
       this.logger.logError(error);
-      void this.sendError(interaction, internalErrorEmbed(error.id), defer);
+      void this.sendError(interaction, internalErrorEmbed(this.client, error.id), defer);
     }
   }
 
@@ -171,7 +171,7 @@ export class ComponentManager extends BaseManager {
     const selectMenu = this.selectMenus.get(customId);
     if (!selectMenu) {
       this.logger.warning(`Select menu component ${customId} does not exist/registered`);
-      await this.sendError(interaction, internalErrorEmbed());
+      await this.sendError(interaction, internalErrorEmbed(this.client));
       return;
     }
 
@@ -181,7 +181,7 @@ export class ComponentManager extends BaseManager {
           this.logger.trace(`${interaction.user.username} (${interaction.user.id}) run select menu for `
             + `${interaction.message.interaction.user.id}, ${interaction.user.id} that are author only`);
         }
-        await this.sendError(interaction, authorOnly());
+        await this.sendError(interaction, this.client.defaultMessages.authorOnly);
         return;
       }
     }
@@ -201,7 +201,7 @@ export class ComponentManager extends BaseManager {
         }).generateId();
         this.logger.logError(error);
 
-        void this.sendError(interaction, internalErrorEmbed(error.id));
+        void this.sendError(interaction, internalErrorEmbed(this.client, error.id));
         return;
       }
     }
@@ -215,7 +215,7 @@ export class ComponentManager extends BaseManager {
       if (err) {
         err.generateId();
         this.logger.logError(err);
-        await this.sendError(interaction, internalErrorEmbed(err.id), defer);
+        await this.sendError(interaction, internalErrorEmbed(this.client, err.id), defer);
         return;
       }
 
@@ -229,7 +229,7 @@ export class ComponentManager extends BaseManager {
         originalError: anyToError(e),
       }).generateId();
       this.logger.logError(error);
-      void this.sendError(interaction, internalErrorEmbed(error.id), defer);
+      void this.sendError(interaction, internalErrorEmbed(this.client, error.id), defer);
     }
 
   }
@@ -239,7 +239,7 @@ export class ComponentManager extends BaseManager {
     const modalSubmit = this.modalSubmit.get(customId);
     if (!modalSubmit) {
       this.logger.warning(`Modal submit component ${customId} does not exist/registered`);
-      await this.sendError(interaction, internalErrorEmbed());
+      await this.sendError(interaction, internalErrorEmbed(this.client));
       return;
     }
 
@@ -258,7 +258,7 @@ export class ComponentManager extends BaseManager {
         }).generateId();
         this.logger.logError(error);
 
-        void this.sendError(interaction, internalErrorEmbed(error.id));
+        void this.sendError(interaction, internalErrorEmbed(this.client, error.id));
         return;
       }
     }
@@ -272,7 +272,7 @@ export class ComponentManager extends BaseManager {
       if (err) {
         err.generateId();
         this.logger.logError(err);
-        void this.sendError(interaction, internalErrorEmbed(err.id), defer);
+        void this.sendError(interaction, internalErrorEmbed(this.client, err.id), defer);
         return;
       }
 
@@ -288,7 +288,7 @@ export class ComponentManager extends BaseManager {
       }).generateId();
 
       this.logger.logError(error);
-      void this.sendError(interaction, internalErrorEmbed(error.id), defer);
+      void this.sendError(interaction, internalErrorEmbed(this.client, error.id), defer);
     }
   }
 
@@ -307,16 +307,14 @@ export class ComponentManager extends BaseManager {
     return interaction.customId.split(CUSTOM_ID_SEPARATOR)[0];
   }
 
-  async sendError(interaction: MessageComponentInteraction|ModalSubmitInteraction, embed: EmbedBuilder, defer: boolean = false):
+  async sendError(interaction: MessageComponentInteraction | ModalSubmitInteraction, message: BaseMessageOptions, defer: boolean = false):
     Promise<void> {
     try {
       if (defer) {
-        await interaction.editReply({
-          embeds: [embed],
-        });
+        await interaction.editReply(message);
       } else {
         await interaction.reply({
-          embeds: [embed],
+          ...message,
           ephemeral: true,
         });
       }

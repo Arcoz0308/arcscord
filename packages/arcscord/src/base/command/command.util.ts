@@ -5,14 +5,26 @@ import type {
   FullCommandDefinition,
   PartialCommandDefinitionForMessage,
   PartialCommandDefinitionForSlash,
-  PartialCommandDefinitionForUser,
-  SlashOptionsCommandDefinition,
-  SlashWithSubsCommandDefinition
+  PartialCommandDefinitionForUser
 } from "#/base/command/command_definition.type";
 import type { ContextOptions, Option, OptionalContextOption, OptionsList } from "#/base/command/option.type";
 import type { Result } from "@arcscord/error";
 import { anyToError, error, ok } from "@arcscord/error";
 import { BaseError } from "@arcscord/better-error";
+import type { Command } from "#/base";
+
+export const isSlashCommand = (command: Command): command is Command<PartialCommandDefinitionForSlash> => {
+  return "slash" in command.definer;
+};
+
+export const isUserCommand = (command: Command): command is Command<PartialCommandDefinitionForUser> => {
+  return "user" in command.definer;
+};
+
+export const isMessageCommand = (command: Command): command is Command<PartialCommandDefinitionForMessage> => {
+  return "message" in command.definer;
+};
+
 
 export const hasSlashCommand = (definer: FullCommandDefinition): definer is PartialCommandDefinitionForSlash => {
   return "slash" in definer;
@@ -24,17 +36,6 @@ export const hasMessageCommand = (definer: FullCommandDefinition): definer is Pa
 
 export const hasUserCommand = (definer: FullCommandDefinition): definer is PartialCommandDefinitionForUser => {
   return "user" in definer;
-};
-
-
-export const hasSubCommands = (definer: SlashOptionsCommandDefinition | SlashWithSubsCommandDefinition):
-  definer is SlashWithSubsCommandDefinition => {
-  return "subCommands" in definer || "subCommandsGroups" in definer;
-};
-
-export const hasOption = (definer: SlashOptionsCommandDefinition | SlashWithSubsCommandDefinition):
-  definer is SlashOptionsCommandDefinition => {
-  return "options" in definer;
 };
 
 export const commandTypeToString = (type: ApplicationCommandType): string => {
@@ -110,7 +111,7 @@ export const commandInteractionToString = (interaction: CommandInteraction, noOp
 
       const stringOptions = options.map((option) => `${option.name}=${slashCommandOptionValueToString(option)}`).join(" ");
 
-      return `slash:${commandName} (${interaction.commandId}) ${noOptions ? "" : stringOptions}`;
+      return `slash:${commandName} (${interaction.commandId})${noOptions ? "" : " " + stringOptions}`;
     }
     case  interaction.isUserContextMenuCommand(): {
 

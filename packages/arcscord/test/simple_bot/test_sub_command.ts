@@ -1,6 +1,7 @@
-import type { ArcClient, CommandRunResult, SubCommandRunContext } from "#/base";
+import type { ArcClient, CommandRunResult } from "#/base";
 import { SubCommand } from "#/base";
 import type { SubCommandDefinition } from "#/base/command/command_definition.type";
+import type { CommandContext } from "#/base/command/command_context";
 
 const definer = {
   name: "ping",
@@ -22,7 +23,7 @@ export class Ping extends SubCommand<typeof definer> {
     });
   }
 
-  run(ctx: SubCommandRunContext<typeof definer>): Promise<CommandRunResult> {
+  run(ctx: CommandContext<typeof definer>): Promise<CommandRunResult> {
 
     return ctx.reply(`Pong ! ${ctx.options.name ? `How are you ${ctx.options.name} ?` : ""}`);
   }

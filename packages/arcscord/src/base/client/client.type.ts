@@ -76,9 +76,8 @@ export type ArcClientOptions = ClientOptions & {
 }
 
 export type MessageOptions = {
-  error?: (errId: string) => BaseMessageOptions;
-  devOnly?: MessageDefiner;
+  error?: (errId?: string) => BaseMessageOptions;
+  devOnly?: BaseMessageOptions;
   missingPermissions?: (permissionsMissing: PermissionsString[]) => BaseMessageOptions;
+  authorOnly?: BaseMessageOptions;
 }
-
-export type MessageDefiner = BaseMessageOptions;

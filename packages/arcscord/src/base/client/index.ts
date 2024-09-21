@@ -3,5 +3,6 @@ export {
 } from "./client.class";
 export type {
   ArcClientOptions,
-  ArcClientLoggerOptions
+  ArcClientLoggerOptions,
+  MessageOptions
 } from "./client.type";

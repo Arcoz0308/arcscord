@@ -1,4 +1,3 @@
-import type { Command } from "../../src";
 import { ArcClient } from "../../src";
 import "dotenv/config";
 import { TestCommand } from "./test_command";
@@ -13,9 +12,10 @@ const client = new ArcClient(process.env.TOKEN as string, {
   ],
 });
 
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
 client.on("ready", async() => {
   const commands: CommandDefinition[] = [
-    new TestCommand(client) as Command,
+    new TestCommand(client),
     {
       name: "test",
       description: "test",

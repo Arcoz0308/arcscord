@@ -1,12 +1,13 @@
 import { InteractionError } from "#/utils/error/class/interaction_error";
 import type { CommandInteraction } from "discord.js";
-import type { BaseCommandRunContext, Command } from "#/base/command";
+import type { Command } from "#/base/command";
 import { commandInteractionToString } from "#/base/command";
 import type { SubCommand } from "#/base/sub_command/sub_command.class";
 import type { ErrorOptions } from "@arcscord/better-error";
+import type { BaseCommandContext } from "#/base/command/command_context";
 
 export type CommandErrorOptions = ErrorOptions & {
-  ctx: BaseCommandRunContext;
+  ctx: BaseCommandContext;
 }
 
 export class CommandError extends InteractionError {
@@ -15,7 +16,7 @@ export class CommandError extends InteractionError {
 
   interaction: CommandInteraction;
 
-  context: BaseCommandRunContext;
+  context: BaseCommandContext;
 
   command: Command|SubCommand;
 

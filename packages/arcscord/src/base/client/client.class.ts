@@ -47,13 +47,13 @@ export class ArcClient extends DJSClient {
     this.loggerConstructor = options.logger?.customLogger ?? ArcLogger;
 
     this.defaultMessages = Object.assign<Required<MessageOptions>, MessageOptions | undefined>({
-      error: (errId: string) => {
+      error: (errId?: string) => {
         return {
           embeds: [
             new EmbedBuilder()
-              .setTitle("One error happen.")
+              .setTitle("Internal Error.")
               .setColor("Orange")
-              .setDescription(`One error happen, error id ${errId}`),
+              .setDescription(`A internal error happen, error id ${errId}, please contact bot owner if error repeat`),
           ],
         };
       },
@@ -73,6 +73,14 @@ export class ArcClient extends DJSClient {
             .setTitle("Reserved to Developer")
             .setDescription("This command is reserved for bot developers")
             .setColor("Red"),
+        ],
+      },
+      authorOnly: {
+        embeds: [
+          new EmbedBuilder()
+            .setTitle("Author Only")
+            .setDescription("This command is reserved for author of interaction")
+            .setColor("Orange"),
         ],
       },
     }, options.baseMessages && "default" in options.baseMessages ? options.baseMessages.default : options.baseMessages);
