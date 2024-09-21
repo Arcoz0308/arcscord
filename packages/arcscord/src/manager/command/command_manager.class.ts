@@ -327,7 +327,7 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
 
     let guildInfos: null | { guild: Guild; member: GuildMember; channel: GuildBasedChannel };
 
-    if (interaction.inGuild()) {
+    if (interaction.inGuild() && interaction.authorizingIntegrationOwners["0"]) {
       let guild;
       let member;
       let channel;

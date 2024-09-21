@@ -1,5 +1,6 @@
 import type {
   CommandContexts,
+  CommandIntegrationType,
   FullCommandDefinition,
   PartialCommandDefinitionForMessage,
   PartialCommandDefinitionForSlash,
@@ -53,6 +54,8 @@ export class BaseCommandContext<T extends FullCommandDefinition | SubCommandDefi
 
   interactionContext: CommandContexts | null;
 
+  interactionSource: CommandIntegrationType;
+
   defer: boolean = false;
 
   client: ArcClient;
@@ -66,6 +69,7 @@ export class BaseCommandContext<T extends FullCommandDefinition | SubCommandDefi
     this.user = interaction.user;
 
     this.interactionContext = this.#interactionContextConverter(interaction.context);
+    this.interactionSource = interaction.authorizingIntegrationOwners["0"] ? "guildInstall" : "userInstall";
 
     this.client = command.client;
 
