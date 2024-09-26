@@ -12,24 +12,50 @@ const definer = {
         type: "user",
         description: "The user",
       },
+      size: {
+        type: "number",
+        description: "yeah",
+        choices: [
+          {
+            name: "64",
+            value: 64,
+          },
+          {
+            name: "128",
+            value: 128,
+          },
+          {
+            name: "256",
+            value: 256,
+          },
+          {
+            name: "512",
+            value: 512,
+          },
+          {
+            name: "1024 (default)",
+            value: 1024,
+          },
+          {
+            name: "4096",
+            value: 4096,
+          },
+        ],
+      },
     },
+    integrationTypes: ["userInstall", "guildInstall"],
   },
   user: {
     name: "avatar",
+    integrationTypes: ["userInstall", "guildInstall"],
   },
 } as const satisfies FullCommandDefinition;
 
 
-export class AvatarCommand extends Command<typeof definer> {
-
-  name = "avatar";
-
-  definer: typeof definer;
+export class AvatarCommand extends Command {
 
   constructor(client: ArcClient) {
     super(client, definer);
-
-    this.definer = definer;
   }
 
 
@@ -42,7 +68,9 @@ export class AvatarCommand extends Command<typeof definer> {
       embeds: [
         new EmbedBuilder()
           .setTitle(`Avatar de ${user.displayName}`)
-          .setImage(user.displayAvatarURL() || user.defaultAvatarURL),
+          .setImage(user.displayAvatarURL({
+            size: ctx.isSlashCommand ? ctx.options.size || 1024 : 1024,
+          }) || user.defaultAvatarURL),
       ],
       ephemeral: true,
     });

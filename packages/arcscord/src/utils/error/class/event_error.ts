@@ -1,8 +1,7 @@
-import type { ErrorOptions } from "#/utils/error/class/base_error";
-import { BaseError } from "#/utils/error/class/base_error";
-import type { DebugValueString } from "#/utils/error/error.type";
 import type { Event } from "#/base/event/event.class";
 import type { ClientEvents } from "discord.js";
+import type { ErrorOptions } from "@arcscord/better-error";
+import { BaseError } from "@arcscord/better-error";
 
 export type EventErrorOptions = ErrorOptions & {
   event: Event<keyof ClientEvents>;
@@ -18,14 +17,9 @@ export class EventError extends BaseError {
     this.name = "EventError";
 
     this.event = options.event;
-  }
 
-  getDebugsString(): DebugValueString[] {
-    const debugs: DebugValueString[] = [];
-    debugs.push(["eventName", this.event.event], ["handlerName", this.event.name]);
-
-    debugs.push(...super.getDebugsString());
-    return debugs;
+    this._debugs.set("eventType", options.event.event);
+    this._debugs.set("handlerName", options.event.name);
   }
 
 }

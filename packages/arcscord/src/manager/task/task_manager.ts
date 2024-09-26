@@ -66,7 +66,7 @@ export class TaskManager extends BaseManager {
 
     const cron = new CronJob(task.interval, () => {
       void this.runTask(task);
-    });
+    }, null, true);
 
     const nextRun = cron.nextDate().setLocale("fr-CH").toLocaleString({ timeZone: "Europe/Zurich" });
     this.logger.trace(`loaded cron task ${task.name} (${task.interval}), next execute : ${nextRun}`);
@@ -89,7 +89,7 @@ export class TaskManager extends BaseManager {
     for (const interval of task.interval) {
       crons.push(new CronJob(interval, () => {
         void this.runTask(task);
-      }));
+      }, null, true));
     }
 
     const nextRuns = crons.map((cron) => cron.nextDate().setLocale("fr-CH").toLocaleString({ timeZone: "Europe/Zurich" }))

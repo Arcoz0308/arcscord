@@ -1,4 +1,4 @@
-import type { PermissionsString } from "discord.js";
+import type { ClientEvents, PermissionsString } from "discord.js";
 import { Client as DJSClient, EmbedBuilder, REST } from "discord.js";
 import { CommandManager } from "#/manager/command/command_manager.class";
 import { DevManager } from "#/manager/dev";
@@ -10,6 +10,7 @@ import type { LoggerConstructor, LoggerInterface } from "#/utils/logger/logger.t
 import { createLogger } from "#/utils/logger/logger.util";
 import { ComponentManager } from "#/manager";
 import type { CommandDefinition } from "#/base/command/command_definition.type";
+import type { Event, Task } from "#/base";
 
 export class ArcClient extends DJSClient {
 
@@ -145,6 +146,14 @@ export class ArcClient extends DJSClient {
     this.commandManager.resolveCommands(commands, data2);
 
     return;
+  }
+
+  loadEvents(events: Event<keyof ClientEvents>[]) {
+    return this.eventManager.loadEvents(events);
+  }
+
+  loadTasks(tasks: Task[]) {
+    return this.taskManager.loadTasks(tasks);
   }
 
 }

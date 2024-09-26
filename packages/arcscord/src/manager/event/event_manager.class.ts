@@ -19,6 +19,7 @@ export class EventManager extends BaseManager {
     if (event.waitReady) {
       await this.client.waitReady();
     }
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.client.on(event.event, async(...args) => {
       try {
         const [result, error] = await event.handle(...args);
