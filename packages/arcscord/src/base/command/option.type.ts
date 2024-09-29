@@ -19,8 +19,10 @@ export type ChoiceString = {
   value: string;
 }
 
+export type StringChoices = (ChoiceString | string)[] | { [key: string]: string };
+
 export type ChoiceOptionString = {
-  choices?: ChoiceString[];
+  choices?: StringChoices;
   autocomplete?: false;
 }
 
@@ -30,8 +32,10 @@ export type ChoiceNumber = {
   value: number;
 }
 
+export type NumberChoices = (ChoiceNumber | number)[] | { [key: string]: number };
+
 export type ChoiceOptionNumber = {
-  choices?: ChoiceNumber[];
+  choices?: NumberChoices;
   autocomplete?: false;
 }
 
@@ -95,13 +99,15 @@ export type Option = BaseSlashOption &
 
 export type OptionsList = Record<string, Option>
 
-type StringChoiceValue<T extends ChoiceString[]> = T extends Array<infer U> ? U extends ChoiceString ? U["value"] : never : never;
+type StringChoiceValue<T extends StringChoices> =
+  (T extends Array<infer U> ? U extends string ? U : (U extends ChoiceString ? U["value"] : never) : T[keyof T]);
 
-type StringChoice<T extends ChoiceOptionString> = T["choices"] extends ChoiceString[] ? StringChoiceValue<T["choices"]> : never;
+type StringChoice<T extends ChoiceOptionString> = T["choices"] extends StringChoices ? StringChoiceValue<T["choices"]> : never;
 
-type NumberChoiceValue<T extends ChoiceNumber[]> = T extends Array<infer U> ? U extends ChoiceNumber ? U["value"] : never : never;
+type NumberChoiceValue<T extends NumberChoices> =
+  (T extends Array<infer U> ? U extends number ? U : (U extends ChoiceNumber ? U["value"] : never) : T[keyof T]);
 
-type NumberChoice<T extends ChoiceOptionNumber> = T["choices"] extends ChoiceNumber[] ? NumberChoiceValue<T["choices"]> : never;
+type NumberChoice<T extends ChoiceOptionNumber> = T["choices"] extends NumberChoices ? NumberChoiceValue<T["choices"]> : never;
 
 export type ContextOption<T extends Option> = T extends BaseStringOption ? (T extends ChoiceOptionString ? StringChoice<T> : string)
   : T extends BaseIntegerOption ? (T extends ChoiceOptionNumber ? NumberChoice<T> : number)

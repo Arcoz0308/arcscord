@@ -4,11 +4,12 @@ import type {
   SlashWithSubsCommandDefinition
 } from "#/base/command/command_definition.type";
 import { commandContextsEnum, commandIntegrationTypesEnum, commandOptionTypesEnum } from "#/base/command/command.enum";
-import type { CommandOptionType, Option, OptionsList } from "#/base/command/option.type";
+import type { ChoiceNumber, ChoiceString, CommandOptionType, Option, OptionsList } from "#/base/command/option.type";
 import type { ChannelType } from "#/utils/discord/type/channel.type";
 import { channelTypeEnum } from "#/utils/discord/type/channel.enum";
 import type {
   APIApplicationCommandBasicOption,
+  APIApplicationCommandOptionChoice,
   APIApplicationCommandSubcommandGroupOption,
   APIApplicationCommandSubcommandOption,
   RESTPostAPIChatInputApplicationCommandsJSONBody
@@ -32,6 +33,59 @@ export const optionChannelTypeToAPI = (channelTypes: Exclude<ChannelType, "dm" |
   return channelTypes.map((channelType) => channelTypeEnum[channelType]);
 };
 
+export const stringChoiceToAPI = (choices: (string | ChoiceString)[] | Record<string, string> | undefined):
+  APIApplicationCommandOptionChoice<string>[] | undefined => {
+  if (!choices) {
+    return undefined;
+  }
+
+  if (Array.isArray(choices)) {
+    return choices.map((choice) => {
+      if (typeof choice === "string") {
+        return {
+          name: `${choice}`,
+          value: choice,
+        };
+      }
+      return choice;
+    });
+  }
+
+  return Object.keys(choices).map((choice) => {
+    return {
+      name: choice,
+      value: choices[choice],
+    };
+  });
+};
+
+export const numberChoiceToAPI = (choices: (number | ChoiceNumber)[] | Record<string, number> | undefined):
+  APIApplicationCommandOptionChoice<number>[] | undefined => {
+  if (!choices) {
+    return undefined;
+  }
+
+  if (Array.isArray(choices)) {
+    return choices.map((choice) => {
+      if (typeof choice === "number") {
+        return {
+          name: `${choice}`,
+          value: choice,
+        };
+      }
+      return choice;
+    });
+  }
+
+  return Object.keys(choices).map((choice) => {
+    return {
+      name: choice,
+      value: choices[choice],
+    };
+  });
+};
+
+
 export const optionToAPI = (name: string, option: Option): APIApplicationCommandBasicOption => {
 
   const baseOption: Omit<APIApplicationCommandBasicOption, "type"> = {
@@ -51,7 +105,7 @@ export const optionToAPI = (name: string, option: Option): APIApplicationCommand
           min_length: option.min_length,
           max_length: option.max_length,
           autocomplete: option.autocomplete,
-          choices: option.choices,
+          choices: stringChoiceToAPI(option.choices),
         };
       }
       return {
@@ -73,7 +127,7 @@ export const optionToAPI = (name: string, option: Option): APIApplicationCommand
           min_value: option.min_value,
           max_value: option.max_value,
           autocomplete: option.autocomplete,
-          choices: option.choices,
+          choices: numberChoiceToAPI(option.choices),
         };
       }
 

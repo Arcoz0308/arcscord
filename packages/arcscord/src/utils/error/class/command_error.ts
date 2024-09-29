@@ -1,22 +1,23 @@
 import { InteractionError } from "#/utils/error/class/interaction_error";
-import type { CommandInteraction } from "discord.js";
+import type { AutocompleteInteraction, CommandInteraction } from "discord.js";
 import type { Command } from "#/base/command";
 import { commandInteractionToString } from "#/base/command";
 import type { SubCommand } from "#/base/sub_command/sub_command.class";
 import type { ErrorOptions } from "@arcscord/better-error";
 import type { BaseCommandContext } from "#/base/command/command_context";
+import type { BaseAutocompleteContext } from "#/base/command/autocomplete_context";
 
 export type CommandErrorOptions = ErrorOptions & {
-  ctx: BaseCommandContext;
+  ctx: BaseCommandContext | BaseAutocompleteContext;
 }
 
 export class CommandError extends InteractionError {
 
   name = "CommandError";
 
-  interaction: CommandInteraction;
+  interaction: CommandInteraction | AutocompleteInteraction;
 
-  context: BaseCommandContext;
+  context: BaseCommandContext | BaseAutocompleteContext;
 
   command: Command|SubCommand;
 

@@ -1,5 +1,10 @@
 import { ApplicationCommandOptionType, ApplicationCommandType } from "discord-api-types/v10";
-import type { ChatInputCommandInteraction, CommandInteraction, CommandInteractionOption } from "discord.js";
+import type {
+  AutocompleteInteraction,
+  ChatInputCommandInteraction,
+  CommandInteraction,
+  CommandInteractionOption
+} from "discord.js";
 import { BaseChannel, GuildMember, Role, User } from "discord.js";
 import type {
   FullCommandDefinition,
@@ -11,7 +16,7 @@ import type { ContextOptions, Option, OptionalContextOption, OptionsList } from 
 import type { Result } from "@arcscord/error";
 import { anyToError, error, ok } from "@arcscord/error";
 import { BaseError } from "@arcscord/better-error";
-import type { Command } from "#/base";
+import type { AutocompleteCommand, Command } from "#/base";
 
 export const isSlashCommand = (command: Command): command is Command<PartialCommandDefinitionForSlash> => {
   return "slash" in command.definer;
@@ -36,6 +41,10 @@ export const hasMessageCommand = (definer: FullCommandDefinition): definer is Pa
 
 export const hasUserCommand = (definer: FullCommandDefinition): definer is PartialCommandDefinitionForUser => {
   return "user" in definer;
+};
+
+export const hasAutocomplete = (command: object): command is AutocompleteCommand => {
+  return "autocomplete" in command;
 };
 
 export const commandTypeToString = (type: ApplicationCommandType): string => {
@@ -92,7 +101,7 @@ export const slashCommandOptionValueToString = (option: CommandInteractionOption
   }
 };
 
-export const commandInteractionToString = (interaction: CommandInteraction, noOptions = true): string => {
+export const commandInteractionToString = (interaction: CommandInteraction | AutocompleteInteraction, noOptions = true): string => {
   switch (true) {
     case interaction.isChatInputCommand(): {
 
@@ -134,7 +143,7 @@ export const commandInteractionToString = (interaction: CommandInteraction, noOp
   }
 };
 
-export const parseOptions = async <T extends OptionsList>(interaction: ChatInputCommandInteraction, optionsList: T):
+export const parseOptions = async <T extends OptionsList>(interaction: ChatInputCommandInteraction, optionsList: T, required = true):
   Promise<Result<(ContextOptions<T>), BaseError>> => {
 
   const result: Record<string, OptionalContextOption<Option>> = {};
@@ -143,7 +152,7 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
     switch (option.type) {
       case "user": {
         const user = interaction.options.getUser(name, false);
-        if (!user && option.required) {
+        if (!user && option.required && required) {
           return error(new BaseError({
             message: `User is required, get undefined for ${name}`,
             debugs: {
@@ -159,7 +168,7 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
 
       case "role": {
         const role = interaction.options.getRole(name, false);
-        if (!role && option.required) {
+        if (!role && option.required && required) {
           return error(new BaseError({
             message: `Role is required, get undefined for ${name}`,
             debugs: {
@@ -201,7 +210,7 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
 
       case "channel": {
         const channel = interaction.options.getChannel(name, false);
-        if (!channel && option.required) {
+        if (!channel && option.required && required) {
           return error(new BaseError({
             message: `Channel is required, get undefined for ${name}`,
             debugs: {
@@ -243,7 +252,7 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
 
       case "mentionable": {
         const mentionable = interaction.options.getMentionable(name, false);
-        if (!mentionable && option.required) {
+        if (!mentionable && option.required && required) {
           return error(new BaseError({
             message: `Mention is required, get undefined for ${name}`,
             debugs: {
@@ -279,7 +288,7 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
 
       case "boolean": {
         const boolean = interaction.options.getBoolean(name, false);
-        if (boolean === null && option.required) {
+        if (boolean === null && option.required && required) {
           return error(new BaseError({
             message: `Boolean is required, get undefined for ${name}`,
             debugs: {
@@ -295,7 +304,7 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
 
       case "attachment": {
         const attachment = interaction.options.getAttachment(name, false);
-        if (!attachment && option.required) {
+        if (!attachment && option.required && required) {
           return error(new BaseError({
             message: `Attachment is required, get undefined for ${name}`,
             debugs: {
@@ -311,7 +320,7 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
 
       case "string": {
         const value = interaction.options.getString(name, false);
-        if (!value && option.required) {
+        if (!value && option.required && required) {
           return error(new BaseError({
             message: `String is required, get undefined for ${name}`,
             debugs: {
@@ -347,17 +356,31 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
           }));
         }
 
-        if ("choices" in option) {
-          if (option.choices?.findIndex((v) => v.value === value) === -1) {
-            return error(new BaseError({
-              message: `Invalid choice for ${name} option received`,
-              debugs: {
-                options: interaction.options.data,
-                definer: optionsList,
-                value: value,
-                valid: option.choices.map((v) => v.value),
-              },
-            }));
+        if ("choices" in option && option.choices) {
+          if (Array.isArray(option.choices)) {
+            if (!option.choices.find((choice) => (typeof choice === "string" ? choice === value : choice.value === value))) {
+              return error(new BaseError({
+                message: `Invalid choice for ${name} option received`,
+                debugs: {
+                  options: interaction.options.data,
+                  definer: optionsList,
+                  value: value,
+                  valid: option.choices.map((v) => typeof v === "string" ? v : v.value),
+                },
+              }));
+            }
+          } else {
+            if (!Object.values(option.choices).includes(value)) {
+              return error(new BaseError({
+                message: `Invalid choice for ${name} option received`,
+                debugs: {
+                  options: interaction.options.data,
+                  definer: optionsList,
+                  value: value,
+                  valid: Object.values(option.choices),
+                },
+              }));
+            }
           }
         }
 
@@ -369,7 +392,7 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
       case "number": {
         const value = option.type === "number"
           ? interaction.options.getNumber(name, false) : interaction.options.getInteger(name, false);
-        if (!value && option.required) {
+        if (!value && option.required && required) {
           return error(new BaseError({
             message: `Number is required, get undefined for ${name}`,
             debugs: {
@@ -404,17 +427,31 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
           }));
         }
 
-        if ("choices" in option) {
-          if (option.choices?.findIndex((v) => v.value === value) === -1) {
-            return error(new BaseError({
-              message: `Invalid choice for ${name} option received`,
-              debugs: {
-                options: interaction.options.data,
-                definer: optionsList,
-                value: value,
-                valid: option.choices.map((v) => v.value),
-              },
-            }));
+        if ("choices" in option && option.choices) {
+          if (Array.isArray(option.choices)) {
+            if (!option.choices.find((choice) => (typeof choice === "number" ? choice === value : choice.value === value))) {
+              return error(new BaseError({
+                message: `Invalid choice for ${name} option received`,
+                debugs: {
+                  options: interaction.options.data,
+                  definer: optionsList,
+                  value: value,
+                  valid: option.choices.map((v) => typeof v === "number" ? v : v.value),
+                },
+              }));
+            }
+          } else {
+            if (!Object.values(option.choices).includes(value)) {
+              return error(new BaseError({
+                message: `Invalid choice for ${name} option received`,
+                debugs: {
+                  options: interaction.options.data,
+                  definer: optionsList,
+                  value: value,
+                  valid: Object.values(option.choices),
+                },
+              }));
+            }
           }
         }
 

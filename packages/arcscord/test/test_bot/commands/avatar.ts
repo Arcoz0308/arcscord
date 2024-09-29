@@ -16,30 +16,15 @@ const definer = {
         type: "number",
         description: "yeah",
         choices: [
-          {
-            name: "64",
-            value: 64,
-          },
-          {
-            name: "128",
-            value: 128,
-          },
-          {
-            name: "256",
-            value: 256,
-          },
-          {
-            name: "512",
-            value: 512,
-          },
+          64,
+          128,
+          256,
+          512,
           {
             name: "1024 (default)",
             value: 1024,
           },
-          {
-            name: "4096",
-            value: 4096,
-          },
+          2048,
         ],
       },
     },

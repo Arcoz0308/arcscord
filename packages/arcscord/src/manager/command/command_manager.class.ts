@@ -3,6 +3,7 @@ import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v
 import { ApplicationCommandType } from "discord-api-types/v10";
 import {
   commandInteractionToString,
+  hasAutocomplete,
   hasMessageCommand,
   hasSlashCommand,
   hasUserCommand,
@@ -14,6 +15,7 @@ import {
 import type {
   ApplicationCommand,
   ApplicationCommandDataResolvable,
+  AutocompleteInteraction,
   BaseMessageOptions,
   CommandInteraction,
   Guild,
@@ -44,6 +46,7 @@ import {
   GuildUserCommandContext
 } from "#/base/command/command_context";
 import { CommandError } from "#/utils";
+import { DmAutoCompleteContext, GuildAutocompleteContext } from "#/base/command/autocomplete_context";
 
 export class CommandManager extends BaseManager implements CommandResultHandlerImplementer {
 
@@ -65,6 +68,9 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
     this.client.on("interactionCreate", (interaction) => {
       if (interaction.isCommand()) {
         void this.handleInteraction(interaction);
+      }
+      if (interaction.isAutocomplete()) {
+        void this.handleAutocomplete(interaction);
       }
     });
   }
@@ -234,7 +240,10 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
     return apiCommand.id + "_" + apiCommand.name;
   }
 
-  getCommand(interaction: CommandInteraction): Result<{ cmd: Command | SubCommand; resolvedName: string }, BaseError> {
+  getCommand(interaction: CommandInteraction | AutocompleteInteraction): Result<{
+    cmd: Command | SubCommand;
+    resolvedName: string;
+  }, BaseError> {
     if (!interaction.command) {
       return error(new BaseError({
         message: `no command object found for interaction with ${interaction.commandName}`,
@@ -556,6 +565,91 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
       return this._resultHandler(infos);
     }
 
+  }
+
+  async handleAutocomplete(interaction: AutocompleteInteraction) {
+    /* INITIALISATION */
+    const [infos, err] = this.getCommand(interaction);
+
+    if (err) {
+      return this.logger.logError(err.generateId());
+    }
+
+    const command = infos.cmd;
+
+    if (!hasAutocomplete(command)) {
+      return this.logger.warning(`Get autocomplete for command without autocomplete function : ${infos.resolvedName}`);
+    }
+
+
+    /* Guild Check */
+    let guildInfos: null | { guild: Guild; member: GuildMember; channel: GuildBasedChannel };
+
+    if (interaction.inGuild()) {
+      try {
+        const guild = await this.client.guilds.fetch(interaction.guildId);
+        let member, channel;
+        try {
+          member = await guild.members.fetch(interaction.user.id);
+        } catch (e) {
+          const bError = new BaseError({
+            message: `failed to get member because ${anyToError(e).message}`,
+            originalError: anyToError(e),
+          }).generateId();
+
+          return this.logger.logError(bError);
+        }
+
+        try {
+          channel = interaction.channel ?? await guild.channels.fetch(interaction.channelId);
+        } catch (e) {
+
+          const bError = new BaseError({
+            message: `failed to get channel because ${anyToError(e).message}`,
+            originalError: anyToError(e),
+          }).generateId();
+
+          return this.logger.logError(bError);
+        }
+
+        if (channel === null) {
+          const bError = new BaseError({
+            message: `get nul channel value for channel ${interaction.channelId}`,
+            debugs: {
+              guildId: interaction.guildId,
+            },
+          }).generateId();
+
+          return this.logger.logError(bError);
+        }
+        guildInfos = {
+          guild: guild,
+          member: member,
+          channel: channel,
+        };
+      } catch (e) {
+        // if is user installed app
+
+        guildInfos = null;
+      }
+    } else {
+      guildInfos = null;
+    }
+
+    const context = guildInfos
+      ? new GuildAutocompleteContext(command, interaction, { ...guildInfos, resolvedName: infos.resolvedName })
+      : new DmAutoCompleteContext(command, interaction, { resolvedName: infos.resolvedName });
+
+    try {
+      const [result, err2] = await command.autocomplete(context);
+      if (err2) {
+        return this.logger.logError(err2.generateId());
+      }
+
+      this.logger.trace(`Run autocomplete for command ${infos.resolvedName}, result : ${result}`);
+    } catch (e) {
+      return this.logger.error(`Failed to run autocomplete, error : ${anyToError(e).message}`);
+    }
   }
 
   async sendInternalError(interaction: CommandInteraction, message: BaseMessageOptions, defer: boolean = false): Promise<void> {
