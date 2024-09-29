@@ -7,6 +7,7 @@ import { userSelectMenu } from "../components/user_select_menu";
 import { roleSelectMenu } from "../components/role_select_menu";
 import { mentionableSelectMenu } from "../components/mentionable_select_menu";
 import { channelSelectMenu } from "../components/channel_select_menu";
+import { modal } from "../components/modal";
 
 const definer = {
   slash: {
@@ -40,6 +41,10 @@ const definer = {
           {
             name: "channel_select",
             value: "channel_select",
+          },
+          {
+            name: "modal",
+            value: "modal",
           },
         ],
       },
@@ -85,6 +90,8 @@ export class ComponentTestCommand extends Command {
           components: [channelSelectMenu.build()],
           content: ctx.options.component,
         });
+      case "modal":
+        return ctx.showModal(modal.build("funny"));
       default:
         return ctx.reply("No component found");
     }

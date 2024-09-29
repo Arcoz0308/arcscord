@@ -20,6 +20,7 @@ import type {
   Message,
   MessageContextMenuCommandInteraction,
   MessagePayload,
+  ModalComponentData,
   User,
   UserContextMenuCommandInteraction
 } from "discord.js";
@@ -130,7 +131,20 @@ export class BaseCommandContext<T extends FullCommandDefinition | SubCommandDefi
     } catch (e) {
       return error(new CommandError({
         ctx: this,
-        message: "failed to defer reply to interaction : ${anyToError(e).message}`,",
+        message: `failed to defer reply to interaction : ${anyToError(e).message}`,
+        originalError: anyToError(e),
+      }));
+    }
+  }
+
+  async showModal(modal: ModalComponentData): Promise<CommandRunResult> {
+    try {
+      await this.interaction.showModal(modal);
+      return ok(true);
+    } catch (e) {
+      return error(new CommandError({
+        ctx: this,
+        message: `failed to show modal : ${anyToError(e).message}`,
         originalError: anyToError(e),
       }));
     }
