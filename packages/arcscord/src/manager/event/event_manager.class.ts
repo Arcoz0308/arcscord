@@ -1,8 +1,8 @@
-import type { Event } from "#/base/event/event.class";
-import type { ClientEvents } from "discord.js";
 import { BaseManager } from "#/base/manager/manager.class";
 import type { DevConfigKey } from "#/manager/dev";
 import { anyToError } from "@arcscord/error";
+import type { EventHandler } from "#/base/event/event.type";
+import { EventContext } from "#/base/event/event_context";
 
 export class EventManager extends BaseManager {
 
@@ -10,11 +10,11 @@ export class EventManager extends BaseManager {
 
   devConfigKey: DevConfigKey = "events";
 
-  loadEvents(events: Event<keyof ClientEvents>[]) {
+  loadEvents(events: EventHandler[]) {
     events.forEach(event => void this.loadEvent(event));
   }
 
-  async loadEvent(event: Event<keyof ClientEvents>): Promise<void> {
+  async loadEvent(event: EventHandler): Promise<void> {
     this.logger.trace(`bind event ${event.event} for ${event.name} handler !`);
     if (event.waitReady) {
       await this.client.waitReady();
@@ -22,7 +22,8 @@ export class EventManager extends BaseManager {
     // eslint-disable-next-line @typescript-eslint/no-misused-promises
     this.client.on(event.event, async(...args) => {
       try {
-        const [result, error] = await event.handle(...args);
+        const context = new EventContext(this.client, event);
+        const [result, error] = await event.run(context, ...args);
         if (error) {
           this.logger.error(error.message);
           return;

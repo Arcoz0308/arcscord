@@ -1,25 +1,24 @@
-import type { Event } from "#/base/event/event.class";
-import type { ClientEvents } from "discord.js";
 import type { ErrorOptions } from "@arcscord/better-error";
 import { BaseError } from "@arcscord/better-error";
+import type { EventHandler } from "#/base/event/event.type";
 
 export type EventErrorOptions = ErrorOptions & {
-  event: Event<keyof ClientEvents>;
+  handler: EventHandler;
 }
 
 export class EventError extends BaseError {
 
-  event: Event<keyof ClientEvents>;
+  handler: EventHandler;
 
   constructor(options: EventErrorOptions) {
     super(options);
 
     this.name = "EventError";
 
-    this.event = options.event;
+    this.handler = options.handler;
 
-    this._debugs.set("eventType", options.event.event);
-    this._debugs.set("handlerName", options.event.name);
+    this._debugs.set("eventType", options.handler.event);
+    this._debugs.set("handlerName", options.handler.name);
   }
 
 }

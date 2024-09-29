@@ -16,7 +16,7 @@ import type {
   GuildMember
 } from "discord.js";
 import { error, ok } from "@arcscord/error";
-import { CommandError } from "#/utils";
+import { CommandError, type CommandErrorOptions } from "#/utils";
 
 type BaseAutocompleteOptions = {
   resolvedName: string;
@@ -81,6 +81,26 @@ export class BaseAutocompleteContext {
     }
   }
 
+  ok(value: string | true): CommandRunResult {
+    return ok(value);
+  }
+
+  error(options: Omit<CommandErrorOptions, "ctx">): CommandRunResult {
+    return error(new CommandError({ ...options, ctx: this }));
+  }
+
+  async multiple(...funcList: Promise<CommandRunResult>[]): Promise<CommandRunResult> {
+    for (const func of funcList) {
+      const [, err] = await func;
+
+      if (err) {
+        return error(err);
+      }
+    }
+
+    return ok(true);
+  }
+
 }
 
 export class DmAutoCompleteContext extends BaseAutocompleteContext {
@@ -117,7 +137,11 @@ export class GuildAutocompleteContext extends BaseAutocompleteContext {
 
   readonly inDM = false;
 
-  constructor(command: Command | SubCommand, interaction: AutocompleteInteraction, options: GuildCommandContextBuilderOptions & BaseAutocompleteOptions) {
+  constructor(
+    command: Command | SubCommand,
+    interaction: AutocompleteInteraction,
+    options: GuildCommandContextBuilderOptions & BaseAutocompleteOptions
+  ) {
     super(command, interaction, options);
 
     this.guildId = options.guild.id;
