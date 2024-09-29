@@ -103,7 +103,7 @@ export class ComponentManager extends BaseManager {
     for (const [, component] of components.entries()) {
       if (component.matcherType === "full" && id === component.matcher) {
         result.push(component);
-      } else if (component.matcher.startsWith(id)) {
+      } else if (id.startsWith(component.matcher)) {
         result.push(component);
       }
     }

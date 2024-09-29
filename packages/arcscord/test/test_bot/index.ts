@@ -11,6 +11,11 @@ import { modal } from "./components/modal";
 import process from "node:process";
 import { messageEvent } from "./event/message";
 import { Partials } from "discord.js";
+import { disableAllButton } from "./components/function_test/disable_all";
+import { disableRowButton } from "./components/function_test/disableRow";
+import { disableComponentButton } from "./components/function_test/disableComponent";
+import { editButton } from "./components/function_test/edit";
+import { deferEditButton } from "./components/function_test/defer_edit";
 
 const client = new ArcClient(process.env.TOKEN as string, {
   intents: [
@@ -43,6 +48,11 @@ client.on("ready", async() => {
     mentionableSelectMenu,
     channelSelectMenu,
     modal,
+    disableAllButton,
+    disableRowButton,
+    disableComponentButton,
+    editButton,
+    deferEditButton,
   ]);
   const [count, err] = await client.commandManager.deleteUnloadedCommands();
   if (err) {
