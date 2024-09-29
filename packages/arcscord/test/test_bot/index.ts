@@ -8,6 +8,7 @@ import { roleSelectMenu } from "./components/role_select_menu";
 import { mentionableSelectMenu } from "./components/mentionable_select_menu";
 import { channelSelectMenu } from "./components/channel_select_menu";
 import { modal } from "./components/modal";
+import process from "node:process";
 
 const client = new ArcClient(process.env.TOKEN as string, {
   intents: [
@@ -18,8 +19,8 @@ const client = new ArcClient(process.env.TOKEN as string, {
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 client.on("ready", async() => {
-  void client.loadCommands(commands(client));
-  void client.loadComponents([
+  await client.loadCommands(commands(client));
+  client.loadComponents([
     simpleButton,
     stringSelectMenu,
     userSelectMenu,
@@ -28,6 +29,11 @@ client.on("ready", async() => {
     channelSelectMenu,
     modal,
   ]);
+  const [count, err] = await client.commandManager.deleteUnloadedCommands();
+  if (err) {
+    return client.logger.fatalError(err);
+  }
+  client.logger.info(`Deleted ${count} unloaded commands`);
 });
 
 void client.login();

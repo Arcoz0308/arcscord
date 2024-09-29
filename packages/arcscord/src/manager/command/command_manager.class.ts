@@ -167,6 +167,47 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
     }
   }
 
+  async deleteUnloadedCommands(guildId?: string): Promise<Result<number, BaseError>> {
+
+    if (!this.client.application) {
+      return error(new BaseError("No application found in client"));
+    }
+
+    let commands;
+    try {
+      commands = (await this.client.application.commands.fetch({
+        guildId: guildId,
+      })).map((cmd) => cmd);
+    } catch (e) {
+      return error(new BaseError({
+        message: "Failed to fetch applications commands",
+        originalError: anyToError(e),
+      }));
+    }
+
+    if (commands.length === 0) {
+      return ok(0);
+    }
+
+    let i = 0;
+    for (const command of commands) {
+      const name = this.resolveCommandName(command);
+      if (!this.commands.has(name)) {
+        i++;
+        try {
+          await this.client.application.commands.delete(command, guildId);
+        } catch (e) {
+          return error(new BaseError({
+            message: "Failed to delete command",
+            originalError: anyToError(e),
+          }));
+        }
+      }
+    }
+
+    return ok(i);
+  }
+
 
   resolveCommand(command: CommandDefinition, apiCommands: ApplicationCommand[]): void {
     if (command instanceof Command) {
