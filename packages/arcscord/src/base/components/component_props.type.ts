@@ -17,6 +17,7 @@ import type {
   StringSelectMenuContext,
   UserSelectMenuContext
 } from "#/base/components/context/select_menu_context";
+import type { ModalContext } from "#/base/components/context/modal_context";
 
 export type MatcherType = "begin" | "full";
 
@@ -28,22 +29,24 @@ export type BaseComponentProps = {
    * @default "begin"
    */
   matcherType?: MatcherType;
+  preReply?: boolean;
+  ephemeralPreReply?: boolean;
 }
 
-export type ButtonComponentProps = BaseComponentProps & {
+export type ButtonComponentProps<O extends string[] = string[]> = BaseComponentProps & {
   type: Extract<BaseComponentProps["type"], "button">;
 
-  build: (...args: string[]) => Button;
+  build: (...args: O) => Button;
 
   run: (ctx: ButtonContext) => Promise<ComponentRunResult>;
 }
 
-export type StringSelectMenuComponentProps<Typed extends TypedSelectMenuOptions | undefined = undefined> =
+export type StringSelectMenuComponentProps<O extends string[] = string[], Typed extends TypedSelectMenuOptions | undefined = undefined> =
   BaseComponentProps
   & {
   type: Extract<BaseComponentProps["type"], "stringSelect">;
 
-  build: (...args: string[]) => ActionRowData<StringSelectMenuComponentData>;
+  build: (...args: O) => ActionRowData<StringSelectMenuComponentData>;
 
   run: (ctx: StringSelectMenuContext<Typed>) => Promise<ComponentRunResult>;
 
@@ -52,49 +55,54 @@ export type StringSelectMenuComponentProps<Typed extends TypedSelectMenuOptions 
   values: Typed;
 } : object);
 
-export type UserSelectMenuComponentProps = BaseComponentProps & {
+export type UserSelectMenuComponentProps<O extends string[] = string[]> = BaseComponentProps & {
   type: Extract<BaseComponentProps["type"], "userSelect">;
 
-  build: (...args: string[]) => ActionRowData<UserSelectMenuComponentData>;
+  build: (...args: O) => ActionRowData<UserSelectMenuComponentData>;
 
   run: (ctx: UserSelectMenuContext) => Promise<ComponentRunResult>;
 }
 
-export type RoleSelectMenuComponentProps = BaseComponentProps & {
+export type RoleSelectMenuComponentProps<O extends string[] = string[]> = BaseComponentProps & {
   type: Extract<BaseComponentProps["type"], "roleSelect">;
 
-  build: (...args: string[]) => ActionRowData<RoleSelectMenuComponentData>;
+  build: (...args: O) => ActionRowData<RoleSelectMenuComponentData>;
 
   run: (ctx: RoleSelectMenuContext) => Promise<ComponentRunResult>;
 }
 
-export type MentionableSelectMenuComponentProps = BaseComponentProps & {
+export type MentionableSelectMenuComponentProps<O extends string[] = string[]> = BaseComponentProps & {
   type: Extract<BaseComponentProps["type"], "mentionableSelect">;
 
-  build: (...args: string[]) => ActionRowData<MentionableSelectMenuComponentData>;
+  build: (...args: O) => ActionRowData<MentionableSelectMenuComponentData>;
 
   run: (ctx: MentionableSelectMenuContext) => Promise<ComponentRunResult>;
 }
 
-export type ChannelSelectMenuComponentProps = BaseComponentProps & {
+export type ChannelSelectMenuComponentProps<O extends string[] = string[]> = BaseComponentProps & {
   type: Extract<BaseComponentProps["type"], "channelSelect">;
 
-  build: (...args: string[]) => ActionRowData<ChannelSelectMenuComponentData>;
+  build: (...args: O) => ActionRowData<ChannelSelectMenuComponentData>;
 
   run: (ctx: ChannelSelectMenuContext) => Promise<ComponentRunResult>;
 }
 
-export type ModalComponentProps = BaseComponentProps & {
+export type ModalComponentProps<O extends string[] = string[]> = BaseComponentProps & {
   type: Extract<BaseComponentProps["type"], "modal">;
 
-  build: (...args: string[]) => ModalComponentData;
+  build: (...args: O) => ModalComponentData;
+
+  run: (ctx: ModalContext) => Promise<ComponentRunResult>;
 }
+
+export type SelectMenuComponentProps<O extends string[] = string[], T extends TypedSelectMenuOptions | undefined = undefined> =
+  | StringSelectMenuComponentProps<O, T>
+  | UserSelectMenuComponentProps<O>
+  | RoleSelectMenuComponentProps<O>
+  | MentionableSelectMenuComponentProps<O>
+  | ChannelSelectMenuComponentProps<O>;
 
 export type ComponentProps =
   | ButtonComponentProps
-  | StringSelectMenuComponentProps
-  | UserSelectMenuComponentProps
-  | RoleSelectMenuComponentProps
-  | MentionableSelectMenuComponentProps
-  | ChannelSelectMenuComponentProps
+  | SelectMenuComponentProps
   | ModalComponentProps;

@@ -11,6 +11,7 @@ import { createLogger } from "#/utils/logger/logger.util";
 import { ComponentManager } from "#/manager";
 import type { CommandDefinition } from "#/base/command/command_definition.type";
 import type { Event, Task } from "#/base";
+import type { ComponentProps } from "#/base/components/component_props.type";
 
 export class ArcClient extends DJSClient {
 
@@ -154,6 +155,10 @@ export class ArcClient extends DJSClient {
 
   loadTasks(tasks: Task[]) {
     return this.taskManager.loadTasks(tasks);
+  }
+
+  loadComponents(components: ComponentProps[]) {
+    return this.componentManager.loadComponents(components);
   }
 
 }

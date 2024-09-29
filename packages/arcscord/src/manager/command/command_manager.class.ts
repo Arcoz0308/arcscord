@@ -532,7 +532,7 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
         result: result,
         interaction: interaction,
         command: command,
-        defer: command.preReply,
+        defer: context.defer,
         start: start,
         end: Date.now(),
       };
@@ -548,7 +548,7 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
         })),
         interaction: interaction,
         command: command,
-        defer: command.preReply,
+        defer: context.defer,
         start: start,
         end: Date.now(),
       };

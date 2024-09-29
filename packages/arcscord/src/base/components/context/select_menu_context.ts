@@ -1,9 +1,13 @@
 import { MessageComponentContext } from "#/base/components/context/message_component_context";
 import type {
+  APIChannel,
+  APIRole,
   Channel,
+  ChannelSelectMenuInteraction,
   Guild,
   GuildBasedChannel,
   GuildMember,
+  MentionableSelectMenuInteraction,
   MessageComponentInteraction,
   Role,
   RoleSelectMenuInteraction,
@@ -157,12 +161,12 @@ export type UserSelectMenuContext = GuildUserSelectMenuContext | DmUserSelectMen
 /* Role Select*/
 
 export type RoleSelectMenuContextOptions = {
-  values: Role[];
+  values: (Role | APIRole)[];
 }
 
 export class GuildRoleSelectMenuContext extends GuildSelectMenuContext {
 
-  values: Role[];
+  values: (Role | APIRole)[];
 
   interaction: RoleSelectMenuInteraction;
 
@@ -177,7 +181,7 @@ export class GuildRoleSelectMenuContext extends GuildSelectMenuContext {
 
 export class DmRoleSelectMenuContext extends DmSelectMenuContext {
 
-  values: Role[];
+  values: (Role | APIRole)[];
 
   interaction: RoleSelectMenuInteraction;
 
@@ -196,21 +200,21 @@ export type RoleSelectMenuContext = GuildRoleSelectMenuContext | DmRoleSelectMen
 /* Mentionable Select */
 
 export type MentionableSelectMenuContextOptions = {
-  roles: Role[];
+  roles: (Role | APIRole)[];
   users: User[];
 }
 
 export class GuildMentionableSelectMenuContext extends GuildSelectMenuContext {
 
-  values: (Role | User)[];
+  values: (Role | User | APIRole)[];
 
-  roles: Role[];
+  roles: (Role | APIRole)[];
 
   users: User[];
 
-  interaction: RoleSelectMenuInteraction;
+  interaction: MentionableSelectMenuInteraction;
 
-  constructor(client: ArcClient, interaction: RoleSelectMenuInteraction, options:
+  constructor(client: ArcClient, interaction: MentionableSelectMenuInteraction, options:
     (GuildComponentContextOptions & MentionableSelectMenuContextOptions)) {
     super(client, interaction, options);
 
@@ -224,15 +228,15 @@ export class GuildMentionableSelectMenuContext extends GuildSelectMenuContext {
 
 export class DmMentionableSelectMenuContext extends DmSelectMenuContext {
 
-  values: (Role | User)[];
+  values: (Role | User | APIRole)[];
 
-  roles: Role[];
+  roles: (Role | APIRole)[];
 
   users: User[];
 
-  interaction: RoleSelectMenuInteraction;
+  interaction: MentionableSelectMenuInteraction;
 
-  constructor(client: ArcClient, interaction: RoleSelectMenuInteraction, options: MentionableSelectMenuContextOptions) {
+  constructor(client: ArcClient, interaction: MentionableSelectMenuInteraction, options: MentionableSelectMenuContextOptions) {
     super(client, interaction);
 
     this.interaction = interaction;
@@ -249,16 +253,16 @@ export type MentionableSelectMenuContext = GuildMentionableSelectMenuContext | D
 /* Channel Select */
 
 export type ChannelSelectMenuContextOptions = {
-  values: Channel[];
+  values: (Channel | APIChannel)[];
 }
 
 export class GuildChannelSelectMenuContext extends GuildSelectMenuContext {
 
-  values: Channel[];
+  values: (Channel | APIChannel)[];
 
-  interaction: RoleSelectMenuInteraction;
+  interaction: ChannelSelectMenuInteraction;
 
-  constructor(client: ArcClient, interaction: RoleSelectMenuInteraction, options: GuildComponentContextOptions & ChannelSelectMenuContextOptions) {
+  constructor(client: ArcClient, interaction: ChannelSelectMenuInteraction, options: GuildComponentContextOptions & ChannelSelectMenuContextOptions) {
     super(client, interaction, options);
 
     this.values = options.values;
@@ -269,11 +273,11 @@ export class GuildChannelSelectMenuContext extends GuildSelectMenuContext {
 
 export class DmChannelSelectMenuContext extends DmSelectMenuContext {
 
-  values: Channel[];
+  values: (Channel | APIChannel)[];
 
-  interaction: RoleSelectMenuInteraction;
+  interaction: ChannelSelectMenuInteraction;
 
-  constructor(client: ArcClient, interaction: RoleSelectMenuInteraction, options: ChannelSelectMenuContextOptions) {
+  constructor(client: ArcClient, interaction: ChannelSelectMenuInteraction, options: ChannelSelectMenuContextOptions) {
     super(client, interaction);
 
     this.values = options.values;
