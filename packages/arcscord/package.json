@@ -5,7 +5,11 @@
   "keywords": [
     "discord",
     "framework",
-    "discord.js"
+    "discord.js",
+    "arcscord",
+    "typescript",
+    "slash-commands",
+    "typed-commands"
   ],
   "author": "Arcoz0308",
   "license": "MIT",
