@@ -1,8 +1,9 @@
-import type { Task } from "#/base/task/task.class";
 import { CronJob } from "cron";
 import { BaseManager } from "#/base/manager/manager.class";
 import type { DevConfigKey } from "#/manager/dev";
 import { anyToError } from "@arcscord/error";
+import type { Task } from "#/base";
+import { TaskContext } from "#/base";
 
 export class TaskManager extends BaseManager {
 
@@ -23,26 +24,53 @@ export class TaskManager extends BaseManager {
       return this.logger.fatal(`a task with name ${task.name} already exist !`);
     }
 
-    switch (task.type) {
-      case "cron":
-        this.loadCronTask(task);
-        break;
-      case "multiCron":
-        this.loadMultiCronTask(task);
-        break;
-      case "delay":
-        this.loadDelayTask(task);
-        break;
-      default:
-        this.logger.fatal(`invalid type get for task ${task.name}`, {
-          type: task.type,
-        });
+    if (Array.isArray(task.interval)) {
+      const crons: CronJob[] = [];
+      for (const interval of task.interval) {
+        crons.push(new CronJob(interval, () => {
+          void this.runTask(task);
+        }, null, true));
+      }
+      this.crons.set(task.name, crons);
+
+      const nextRuns = crons.map((cron) => cron.nextDate().toISO()).join(", ");
+      this.logger.info(`loaded multi cron task ${task.name}, next runs : ${nextRuns}`);
+      return;
     }
+
+    if (typeof task.interval === "string") {
+      const cron = new CronJob(task.interval, () => {
+        void this.runTask(task);
+      }, null, true);
+      this.crons.set(task.name, cron);
+
+      const nextRun = cron.nextDate().toISO();
+      this.logger.trace(`loaded cron task ${task.name} (${task.interval}), next execute : ${nextRun}`);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      void this.runTask(task);
+    }, task.interval);
+
+    this.crons.set(task.name, interval);
+    this.logger.info(`Loaded interval task ${task.name}, next runs ${new Date(Date.now() + task.interval).toISOString()}`);
   }
 
   async runTask(task: Task): Promise<void> {
     try {
-      const [result, err] = await task.run();
+      const cron = this.crons.get(task.name);
+      if (!cron) {
+        this.logger.warning("task run but not registered !");
+      }
+
+      const next = Array.isArray(cron)
+        ? cron.sort((a, b) => a.nextDate().toMillis() - b.nextDate().toMillis())[0].nextDate().toJSDate()
+        : cron instanceof CronJob ? cron.nextDate().toJSDate() : typeof task.interval === "number" ? new Date(Date.now() + task.interval) : new Date();
+      const context = new TaskContext(this.client, task, {
+        nextRun: next,
+      });
+      const [result, err] = await task.run(context);
       if (err) {
         err.generateId();
         return this.logger.error(err.message);
@@ -52,65 +80,6 @@ export class TaskManager extends BaseManager {
     } catch (e) {
       this.logger.error(`Error running task ${task.name}: ${anyToError(e).message}`);
     }
-  }
-
-  // loading tasks
-  loadCronTask(task: Task): void {
-    if (typeof task.interval !== "string") {
-      return this.logger.fatal(`dont get string as type for interval value in task ${task.name}`, {
-        isArray: Array.isArray(task.interval),
-        valueType: typeof task.interval,
-        TaskType: task.type,
-      });
-    }
-
-    const cron = new CronJob(task.interval, () => {
-      void this.runTask(task);
-    }, null, true);
-
-    const nextRun = cron.nextDate().setLocale("fr-CH").toLocaleString({ timeZone: "Europe/Zurich" });
-    this.logger.trace(`loaded cron task ${task.name} (${task.interval}), next execute : ${nextRun}`);
-    this.crons.set(task.name, cron);
-  }
-
-  loadMultiCronTask(task: Task): void {
-    if (!Array.isArray(task.interval)) {
-      return this.logger.fatal(`dont get a array for interval value in task ${task.name}`, {
-        valueType: typeof task.interval,
-        TaskType: task.type,
-      });
-    }
-
-    if (task.interval.length < 1) {
-      return this.logger.fatal(`get 0 value in array for multi cron task ${task.name}`);
-    }
-
-    const crons: CronJob[] = [];
-    for (const interval of task.interval) {
-      crons.push(new CronJob(interval, () => {
-        void this.runTask(task);
-      }, null, true));
-    }
-
-    const nextRuns = crons.map((cron) => cron.nextDate().setLocale("fr-CH").toLocaleString({ timeZone: "Europe/Zurich" }))
-      .join(", ");
-    this.logger.trace(`loaded multi cron task ${task.name}, next runs : ${nextRuns}`);
-    this.crons.set(task.name, crons);
-  }
-
-  loadDelayTask(task: Task): void {
-    if (typeof task.interval !== "number") {
-      return this.logger.fatal(`dont get number as type for interval value in task ${task.name}`, {
-        isArray: Array.isArray(task.interval),
-        valueType: typeof task.interval,
-        TaskType: task.type,
-      });
-    }
-
-    const interval = setInterval(() => {
-      void this.runTask(task);
-    }, task.interval);
-    this.crons.set(task.name, interval);
   }
 
 }

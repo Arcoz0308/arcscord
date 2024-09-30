@@ -1,3 +1,3 @@
-export { Task } from "./task.class";
-export { taskTypes } from "./task.enum";
-export type { TaskResult, TaskType } from "./task.type";
+export type { TaskResult, TaskType, Task } from "./task.type";
+export { TaskContext } from "./task_context";
+export { createTask } from "./task.func";
