@@ -1,7 +1,6 @@
 # Arcscord
 
-[![npm version](https:// badge.fury.io/js/arcscord.svg)](https://www.npmjs.com/package/arcscord)
-
+[![npm version](https://badge.fury.io/js/arcscord.svg)](https://github.com/Arcoz0308/arcscord/tree/main/packages/better_error)
 ## About
 
 Arcscord is a project for simplify creating discord bot with typescript and also some utility package used by core
