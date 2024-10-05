@@ -1,21 +1,9 @@
-import type {
-  CommandContexts,
-  CommandIntegrationType,
-  SlashWithSubsCommandDefinition
-} from "#/base/command/command_definition.type";
+import type { CommandContexts, CommandIntegrationType } from "#/base/command/command_definition.type";
 import { commandContextsEnum, commandIntegrationTypesEnum, commandOptionTypesEnum } from "#/base/command/command.enum";
 import type { ChoiceNumber, ChoiceString, CommandOptionType, Option, OptionsList } from "#/base/command/option.type";
 import type { ChannelType } from "#/utils/discord/type/channel.type";
 import { channelTypeEnum } from "#/utils/discord/type/channel.enum";
-import type {
-  APIApplicationCommandBasicOption,
-  APIApplicationCommandOptionChoice,
-  APIApplicationCommandSubcommandGroupOption,
-  APIApplicationCommandSubcommandOption,
-  RESTPostAPIChatInputApplicationCommandsJSONBody
-} from "discord-api-types/v10";
-import { ApplicationCommandOptionType } from "discord-api-types/v10";
-import { permissionToAPI } from "#/utils/discord/tranformers/permission";
+import type { APIApplicationCommandBasicOption, APIApplicationCommandOptionChoice } from "discord-api-types/v10";
 
 export const contextsToAPI = (contexts: CommandContexts[]): number[] => {
   return contexts.map((context) => commandContextsEnum[context]);
@@ -169,41 +157,4 @@ export const optionListToAPI = (list: OptionsList): APIApplicationCommandBasicOp
   }
 
   return options;
-};
-
-export const subCommandDefinitionToAPI = (def: SlashWithSubsCommandDefinition):
-  RESTPostAPIChatInputApplicationCommandsJSONBody => {
-
-  const subCommands: (APIApplicationCommandSubcommandOption | APIApplicationCommandSubcommandGroupOption)[] = [];
-
-  if (def.subCommands) {
-    subCommands.push(...def.subCommands.map((cmd) => cmd.toAPIObject()));
-  }
-
-  if (def.subCommandsGroups) {
-    for (const [name, option] of Object.entries(def.subCommandsGroups)) {
-      subCommands.push({
-        type: ApplicationCommandOptionType.SubcommandGroup,
-        name: name,
-        description: option.description,
-        name_localizations: option.nameLocalizations,
-        description_localizations: option.descriptionLocalizations,
-        options: option.subCommands.map((cmd) => cmd.toAPIObject()),
-      });
-    }
-  }
-
-  return {
-    name: def.name,
-    description: def.description,
-    name_localizations: def.nameLocalizations,
-    description_localizations: def.descriptionLocalizations,
-    default_member_permissions: def.defaultMemberPermissions
-      ? permissionToAPI(def.defaultMemberPermissions) : undefined,
-    nsfw: def.nsfw,
-    contexts: def.contexts ? contextsToAPI(def.contexts) : undefined,
-    integration_types: def.integrationTypes ? integrationTypeToAPI(def.integrationTypes) : undefined,
-    options: subCommands,
-  };
-
 };

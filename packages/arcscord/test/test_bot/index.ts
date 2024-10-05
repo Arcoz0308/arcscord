@@ -29,7 +29,7 @@ client.loadEvents([
 
 // eslint-disable-next-line @typescript-eslint/no-misused-promises
 client.on("ready", async() => {
-  await client.loadCommands(commands(client));
+  await client.loadCommands(commands);
   client.loadComponents(components);
   client.loadTasks(tasks);
   const [count, err] = await client.commandManager.deleteUnloadedCommands();

@@ -1,11 +1,10 @@
 import type {
   ArcClient,
-  Command,
+  CommandProps,
   CommandRunResult,
   GuildCommandContextBuilderOptions,
   NumberChoices,
-  StringChoices,
-  SubCommand
+  StringChoices
 } from "#/base";
 import type {
   ApplicationCommandOptionChoiceData,
@@ -20,23 +19,24 @@ import { CommandError, type CommandErrorOptions } from "#/utils";
 
 type BaseAutocompleteOptions = {
   resolvedName: string;
+  client: ArcClient;
 }
 
 export class BaseAutocompleteContext {
 
   client: ArcClient;
 
-  command: Command | SubCommand;
+  command: CommandProps;
 
   interaction: AutocompleteInteraction;
 
   resolvedCommandName: string;
 
-  constructor(command: Command | SubCommand, interaction: AutocompleteInteraction, options: BaseAutocompleteOptions) {
+  constructor(command: CommandProps, interaction: AutocompleteInteraction, options: BaseAutocompleteOptions) {
     this.command = command;
-    this.client = command.client;
     this.interaction = interaction;
     this.resolvedCommandName = options.resolvedName;
+    this.client = options.client;
   }
 
   get focus(): string {
@@ -138,7 +138,7 @@ export class GuildAutocompleteContext extends BaseAutocompleteContext {
   readonly inDM = false;
 
   constructor(
-    command: Command | SubCommand,
+    command: CommandProps,
     interaction: AutocompleteInteraction,
     options: GuildCommandContextBuilderOptions & BaseAutocompleteOptions
   ) {

@@ -2,7 +2,7 @@ import type { LocaleMap } from "#/utils/discord/type/locale.type";
 import type { PermissionsString } from "discord.js";
 import type { commandContextsEnum, commandIntegrationTypesEnum } from "#/base/command/command.enum";
 import type { OptionsList } from "#/base/command/option.type";
-import type { Command, SubCommand } from "#/base";
+import type { CommandProps } from "#/base";
 
 export type CommandIntegrationType = keyof typeof commandIntegrationTypesEnum;
 
@@ -17,15 +17,11 @@ export type BaseCommandDefinition = {
   contexts?: CommandContexts[];
 }
 
-export type BaseSlashCommandDefinition = BaseCommandDefinition & {
+export type SlashCommandDefinition = BaseCommandDefinition & {
   description: string;
   descriptionLocalizations?: LocaleMap;
-}
-
-export type SlashOptionsCommandDefinition = BaseSlashCommandDefinition & {
   options?: OptionsList;
 }
-
 
 export type SubCommandDefinition = {
   name: string;
@@ -36,16 +32,18 @@ export type SubCommandDefinition = {
 }
 
 export type SubCommandGroupDefinition = Omit<SubCommandDefinition, "options" | "name"> & {
-  subCommands: SubCommand[];
+  subCommands: CommandProps<SubCommandDefinition>[];
 };
 
-export type SlashWithSubsCommandDefinition = BaseSlashCommandDefinition & {
-  subCommands?: SubCommand[];
+export type SlashWithSubsCommandDefinition = BaseCommandDefinition & {
+  description: string;
+  descriptionLocalizations?: LocaleMap;
+  subCommands?: CommandProps<SubCommandDefinition>[];
   subCommandsGroups?: Record<string, SubCommandGroupDefinition>;
 }
 
 export type PartialCommandDefinitionForSlash = {
-  slash: SlashOptionsCommandDefinition;
+  slash: SlashCommandDefinition;
 }
 
 export type PartialCommandDefinitionForMessage = {
@@ -62,4 +60,4 @@ export type FullCommandDefinition = Partial<
   & PartialCommandDefinitionForUser
 >
 
-export type CommandDefinition = Command | SlashWithSubsCommandDefinition;
+export type CommandDefinition = CommandProps<FullCommandDefinition> | SlashWithSubsCommandDefinition;

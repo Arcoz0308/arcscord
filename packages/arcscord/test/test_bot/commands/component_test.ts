@@ -1,5 +1,4 @@
-import type { ArcClient, CommandContext, CommandRunResult, FullCommandDefinition } from "#/base";
-import { Command } from "#/base";
+import { createCommand } from "#/base/command/command_func";
 import { buildButtonActionRow } from "#/base/components";
 import { simpleButton } from "../components/simple_button";
 import { stringSelectMenu } from "../components/string_select_menu";
@@ -9,56 +8,51 @@ import { mentionableSelectMenu } from "../components/mentionable_select_menu";
 import { channelSelectMenu } from "../components/channel_select_menu";
 import { modal } from "../components/modal";
 
-const definer = {
-  slash: {
-    name: "component-test",
-    description: "Components tests",
-    options: {
-      component: {
-        description: "Component to send",
-        type: "string",
-        choices: [
-          {
-            name: "simple_button",
-            value: "simple_button",
-          },
-          {
-            name: "string_select",
-            value: "string_select",
-          },
-          {
-            name: "user_select",
-            value: "user_select",
-          },
-          {
-            name: "role_select",
-            value: "role_select",
-          },
-          {
-            name: "mentionable_select",
-            value: "mentionable_select",
-          },
-          {
-            name: "channel_select",
-            value: "channel_select",
-          },
-          {
-            name: "modal",
-            value: "modal",
-          },
-        ],
+export const componentTestCommand = createCommand({
+  build: {
+    slash: {
+      name: "component-test",
+      description: "Components tests",
+      options: {
+        component: {
+          description: "Component to send",
+          type: "string",
+          required: true,
+          choices: [
+            {
+              name: "simple_button",
+              value: "simple_button",
+            },
+            {
+              name: "string_select",
+              value: "string_select",
+            },
+            {
+              name: "user_select",
+              value: "user_select",
+            },
+            {
+              name: "role_select",
+              value: "role_select",
+            },
+            {
+              name: "mentionable_select",
+              value: "mentionable_select",
+            },
+            {
+              name: "channel_select",
+              value: "channel_select",
+            },
+            {
+              name: "modal",
+              value: "modal",
+            },
+          ],
+        } as const,
       },
     },
   },
-} as const satisfies FullCommandDefinition;
-
-export class ComponentTestCommand extends Command {
-
-  constructor(client: ArcClient) {
-    super(client, definer);
-  }
-
-  run(ctx: CommandContext<typeof definer>): Promise<CommandRunResult> {
+  run: async(ctx) => {
     switch (ctx.options.component) {
       case "simple_button":
         return ctx.reply({
@@ -95,6 +89,5 @@ export class ComponentTestCommand extends Command {
       default:
         return ctx.reply("No component found");
     }
-  }
-
-}
+  },
+});

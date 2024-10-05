@@ -17,7 +17,8 @@
     "experimentalDecorators": true,
     "sourceMap": true,
     "removeComments": false,
-    "declaration": true
+    "declaration": true,
+    "strictNullChecks": true
   },
   "include": [
     "src/**/*.ts",

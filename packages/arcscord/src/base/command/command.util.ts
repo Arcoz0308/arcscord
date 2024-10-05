@@ -10,26 +10,18 @@ import type {
   FullCommandDefinition,
   PartialCommandDefinitionForMessage,
   PartialCommandDefinitionForSlash,
-  PartialCommandDefinitionForUser
+  PartialCommandDefinitionForUser,
+  SlashWithSubsCommandDefinition
 } from "#/base/command/command_definition.type";
 import type { ContextOptions, Option, OptionalContextOption, OptionsList } from "#/base/command/option.type";
 import type { Result } from "@arcscord/error";
 import { anyToError, error, ok } from "@arcscord/error";
 import { BaseError } from "@arcscord/better-error";
-import type { AutocompleteCommand, Command } from "#/base";
+import type { AutocompleteCommand, CommandProps } from "#/base";
 
-export const isSlashCommand = (command: Command): command is Command<PartialCommandDefinitionForSlash> => {
-  return "slash" in command.definer;
+export const isSubCommand = (props: CommandProps | SlashWithSubsCommandDefinition): props is SlashWithSubsCommandDefinition => {
+  return "name" in props;
 };
-
-export const isUserCommand = (command: Command): command is Command<PartialCommandDefinitionForUser> => {
-  return "user" in command.definer;
-};
-
-export const isMessageCommand = (command: Command): command is Command<PartialCommandDefinitionForMessage> => {
-  return "message" in command.definer;
-};
-
 
 export const hasSlashCommand = (definer: FullCommandDefinition): definer is PartialCommandDefinitionForSlash => {
   return "slash" in definer;

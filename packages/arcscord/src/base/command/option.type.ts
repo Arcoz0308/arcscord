@@ -87,17 +87,17 @@ export type AttachmentOption = BaseSlashOption & {
 }
 
 export type Option = BaseSlashOption &
-  (| (BaseStringOption & (ChoiceOptionString | Autocomplete | NonNullable<unknown>))
-    | (BaseIntegerOption & (ChoiceOptionNumber | Autocomplete | NonNullable<unknown>))
+  (| (BaseStringOption & (ChoiceOptionString | Autocomplete))
+    | (BaseIntegerOption & (ChoiceOptionNumber | Autocomplete))
     | BooleanOption
     | UserOption
     | ChannelOption
     | RoleOption
     | MentionableOption
-    | (BaseNumberOption & (ChoiceOptionNumber | Autocomplete | NonNullable<unknown>))
+    | (BaseNumberOption & (ChoiceOptionNumber | Autocomplete))
     | AttachmentOption);
 
-export type OptionsList = Record<string, Option>
+export type OptionsList = { [key: string]: Option }
 
 type StringChoiceValue<T extends StringChoices> =
   (T extends Array<infer U> ? U extends string ? U : (U extends ChoiceString ? U["value"] : never) : T[keyof T]);
@@ -124,5 +124,5 @@ export type OptionalContextOption<T extends Option> = T extends { required: true
   ? ContextOption<T> : ContextOption<T> | undefined;
 
 export type ContextOptions<T extends OptionsList> = {
-  [Prob in keyof T]: OptionalContextOption<T[Prob]>
+  [K in keyof T]: OptionalContextOption<T[K]>
 };

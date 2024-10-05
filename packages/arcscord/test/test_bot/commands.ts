@@ -1,15 +1,16 @@
-import type { ArcClient } from "#/base";
 import type { CommandDefinition } from "#/base/command/command_definition.type";
-import { AvatarCommand } from "./commands/avatar";
-import { MessageInfosCommand } from "./commands/message_infos";
-import { ComponentTestCommand } from "./commands/component_test";
-import { AutocompleteTestCommand } from "./commands/autocomplete";
-import { DisableComponentCommand } from "./commands/disable_component";
+import { avatarCommand } from "./commands/avatar";
+import { messageInfosCommand } from "./commands/message_infos";
+import { componentTestCommand } from "./commands/component_test";
+import { autocompleteCommand } from "./commands/autocomplete";
+import { disableComponentCommand } from "./commands/disable_component";
+import { testMiddlewareCommand } from "./commands/middleware";
 
-export const commands = (client: ArcClient): CommandDefinition[] => [
-  new AvatarCommand(client),
-  new MessageInfosCommand(client),
-  new ComponentTestCommand(client),
-  new AutocompleteTestCommand(client),
-  new DisableComponentCommand(client),
+export const commands: CommandDefinition[] = [
+  avatarCommand,
+  messageInfosCommand,
+  componentTestCommand,
+  autocompleteCommand,
+  disableComponentCommand,
+  testMiddlewareCommand,
 ];

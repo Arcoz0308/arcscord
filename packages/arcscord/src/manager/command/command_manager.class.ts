@@ -1,15 +1,13 @@
-import { Command } from "#/base/command/command.class";
 import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import { ApplicationCommandType } from "discord-api-types/v10";
+import type { CommandProps } from "#/base/command";
 import {
   commandInteractionToString,
   hasAutocomplete,
   hasMessageCommand,
   hasSlashCommand,
   hasUserCommand,
-  isMessageCommand,
-  isSlashCommand,
-  isUserCommand,
+  isSubCommand,
   parseOptions
 } from "#/base/command";
 import type {
@@ -31,11 +29,9 @@ import type {
   CommandResultHandlerInfos
 } from "#/manager/command/command_manager.type";
 import type { ArcClient } from "#/base";
-import { SubCommand } from "#/base";
 import type { Result } from "@arcscord/error";
 import { anyToError, error, ok } from "@arcscord/error";
 import type { CommandDefinition } from "#/base/command/command_definition.type";
-import { subCommandDefinitionToAPI } from "#/utils/discord/tranformers/command";
 import { BaseError } from "@arcscord/better-error";
 import {
   DmMessageCommandContext,
@@ -47,6 +43,8 @@ import {
 } from "#/base/command/command_context";
 import { CommandError } from "#/utils";
 import { DmAutoCompleteContext, GuildAutocompleteContext } from "#/base/command/autocomplete_context";
+import { commandToAPI, subCommandListToAPI } from "#/base/command/command_transformer";
+import { preCheck } from "#/base/command/command_precheck";
 
 export class CommandManager extends BaseManager implements CommandResultHandlerImplementer {
 
@@ -85,9 +83,9 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
 
 
     for (const command of commands) {
-      if (command instanceof Command) {
+      if (!isSubCommand(command)) {
         let hasPush = false;
-        const data = command.toAPIObject();
+        const data = commandToAPI(command.build);
 
         if (data.slash) {
           commandsBody.push(data.slash);
@@ -118,7 +116,7 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
         }
         totalCommands++;
       } else {
-        commandsBody.push(subCommandDefinitionToAPI(command));
+        commandsBody.push(subCommandListToAPI(command));
         slashCommands++;
         this.logger.trace(`loaded slash builder of command "${command.name}" in group "${group}"`);
 
@@ -210,46 +208,46 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
 
 
   resolveCommand(command: CommandDefinition, apiCommands: ApplicationCommand[]): void {
-    if (command instanceof Command) {
+    if (!isSubCommand(command)) {
 
-      if (hasSlashCommand(command.definer)) {
-        const name = command.definer.slash.name;
+      if (hasSlashCommand(command.build)) {
+        const name = command.build.slash.name;
         const apiCommand = apiCommands.find((cmd) => (
           cmd.type as ApplicationCommandType === ApplicationCommandType.ChatInput)
         && cmd.name === name);
 
         if (!apiCommand) {
-          this.logger.warning(`slash command "${command.definer.slash.name}" not found in API`);
+          this.logger.warning(`slash command "${command.build.slash.name}" not found in API`);
         } else {
-          this.logger.trace(`resolve slash command ${command.definer.slash.name} (${apiCommand.id}) !`);
+          this.logger.trace(`resolve slash command ${command.build.slash.name} (${apiCommand.id}) !`);
           this.commands.set(this.resolveCommandName(apiCommand), command);
         }
       }
 
-      if (hasMessageCommand(command.definer)) {
-        const name = command.definer.message.name;
+      if (hasMessageCommand(command.build)) {
+        const name = command.build.message.name;
         const apiCommand = apiCommands.find((cmd) => (
           cmd.type as ApplicationCommandType === ApplicationCommandType.Message)
         && cmd.name === name);
 
         if (!apiCommand) {
-          this.logger.warning(`message command "${command.definer.message.name}" not found in API`);
+          this.logger.warning(`message command "${command.build.message.name}" not found in API`);
         } else {
-          this.logger.trace(`resolve message command ${command.definer.message.name} (${apiCommand.id}) !`);
+          this.logger.trace(`resolve message command ${command.build.message.name} (${apiCommand.id}) !`);
           this.commands.set(this.resolveCommandName(apiCommand), command);
         }
       }
 
-      if (hasUserCommand(command.definer)) {
-        const name = command.definer.user.name;
+      if (hasUserCommand(command.build)) {
+        const name = command.build.user.name;
         const apiCommand = apiCommands.find((cmd) => (
           cmd.type as ApplicationCommandType === ApplicationCommandType.User)
         && cmd.name === name);
 
         if (!apiCommand) {
-          this.logger.warning(`user command "${command.definer.user.name}" not found in API`);
+          this.logger.warning(`user command "${command.build.user.name}" not found in API`);
         } else {
-          this.logger.trace(`resolve user command ${command.definer.user.name} (${apiCommand.id}) !`);
+          this.logger.trace(`resolve user command ${command.build.user.name} (${apiCommand.id}) !`);
           this.commands.set(this.resolveCommandName(apiCommand), command);
         }
       }
@@ -282,7 +280,7 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
   }
 
   getCommand(interaction: CommandInteraction | AutocompleteInteraction): Result<{
-    cmd: Command | SubCommand;
+    cmd: CommandProps;
     resolvedName: string;
   }, BaseError> {
     if (!interaction.command) {
@@ -306,7 +304,7 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
       }));
     }
 
-    if (command instanceof Command) {
+    if (!isSubCommand(command)) {
       return ok({
         cmd: command,
         resolvedName: resolvedCommandName,
@@ -335,7 +333,7 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
       list = command.subCommandsGroups[subCommandGroupName].subCommands;
     }
 
-    const cmd = list?.find((cmd) => cmd.definer.name === subCommandName);
+    const cmd = list?.find((cmd) => cmd.build.name === subCommandName);
 
     if (!cmd) {
       return error(new BaseError({
@@ -362,7 +360,7 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
     const command = infos.cmd;
 
     /* PRECHECK */
-    const [next, err2] = await command.preCheck(interaction);
+    const [next, err2] = await preCheck(command.options || {}, this.client, interaction);
     if (err2) {
       this.logger.logError(err2.generateId());
       return this.sendInternalError(interaction, internalErrorEmbed(this.client, err2.id));
@@ -445,9 +443,9 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
 
     /* Slash Commands */
     if (interaction.isChatInputCommand()) {
-      if (command instanceof SubCommand) {
-        const [options, err] = command.definer.options
-          ? await parseOptions<typeof command.definer.options>(interaction, command.definer.options) : [null, null];
+      if ("name" in command.build) {
+        const [options, err] = command.build.options
+          ? await parseOptions<typeof command.build.options>(interaction, command.build.options) : [null, null];
 
         if (err) {
           this.logger.logError(err.generateId());
@@ -455,19 +453,21 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
         }
 
         context = guildInfos
-          ? new GuildSlashCommandContext(command, interaction, {
+          ? new GuildSlashCommandContext<typeof command.build>(command, interaction, {
             resolvedName: infos.resolvedName,
             ...guildInfos,
             // @ts-expect-error fix generic bug
             options: options,
+            client: this.client,
           }) : new DmSlashCommandContext(command, interaction, {
             resolvedName: infos.resolvedName,
             // @ts-expect-error fix generic bug
             options: options,
+            client: this.client,
           });
-      } else if (isSlashCommand(command)) {
-        const [options, err] = command.definer.slash.options
-          ? await parseOptions<typeof command.definer.slash.options>(interaction, command.definer.slash.options) : [null, null];
+      } else if (command.build.slash) {
+        const [options, err] = command.build.slash.options
+          ? await parseOptions<typeof command.build.slash.options>(interaction, command.build.slash.options) : [null, null];
 
         if (err) {
           this.logger.logError(err.generateId());
@@ -480,10 +480,12 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
             ...guildInfos,
             // @ts-expect-error fix generic bug
             options: options,
+            client: this.client,
           }) : new DmSlashCommandContext(command, interaction, {
             resolvedName: infos.resolvedName,
             // @ts-expect-error fix generic bug
             options: options,
+            client: this.client,
           });
       } else {
         const bError = new BaseError({
@@ -495,7 +497,7 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
 
       /* User Context Menu Command*/
     } else if (interaction.isUserContextMenuCommand()) {
-      if (command instanceof Command && isUserCommand(command)) {
+      if ("user" in command.build) {
         let targetMember: GuildMember | null = null;
         if (guildInfos && interaction.targetMember) {
           try {
@@ -516,9 +518,11 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
             ...guildInfos,
             targetUser: interaction.targetUser,
             targetMember: targetMember,
+            client: this.client,
           }) : new DmUserCommandContext(command, interaction, {
             resolvedName: infos.resolvedName,
             targetUser: interaction.targetUser,
+            client: this.client,
           });
       } else {
         const bError = new BaseError({
@@ -530,15 +534,17 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
 
       /* Message Context Menu Command*/
     } else if (interaction.isMessageContextMenuCommand()) {
-      if (command instanceof Command && isMessageCommand(command)) {
+      if ("message" in command.build) {
         context = guildInfos
           ? new GuildMessageCommandContext(command, interaction, {
             resolvedName: infos.resolvedName,
             ...guildInfos,
             message: interaction.targetMessage,
+            client: this.client,
           }) : new DmMessageCommandContext(command, interaction, {
             resolvedName: infos.resolvedName,
             message: interaction.targetMessage,
+            client: this.client,
           });
       } else {
         const bError = new BaseError({
@@ -560,9 +566,9 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
       return;
     }
 
-    if (command.preReply) {
+    if (command.options?.preReply) {
       const [, err3] = await context.deferReply({
-        ephemeral: command.preReplyEphemeral,
+        ephemeral: command.options?.preReplyEphemeral,
       });
 
       if (err3) {
@@ -570,10 +576,58 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
         return this.sendInternalError(interaction, internalErrorEmbed(this.client, err3.id));
       }
     }
-    /* Command Run */
-
 
     const start = Date.now();
+    /* Middlewares */
+
+    if (command.use && command.use.length > 0) {
+      for (const middleware of command.use) {
+        try {
+          // @ts-expect-error fix generics with middleware
+          const result = await middleware.run(context);
+          if (result.cancel) {
+            const [result2, err4] = await result.cancel;
+            if (err4) {
+              this.logger.logError(err4.generateId());
+              return this.sendInternalError(interaction, internalErrorEmbed(this.client, err4.id));
+            }
+            const infos: CommandResultHandlerInfos = {
+              result: ok(`Middleware ${middleware.name} stopped, result : ${result2}`),
+              interaction: interaction,
+              command: command,
+              defer: context.defer,
+              start: start,
+              end: Date.now(),
+            };
+
+            return this._resultHandler(infos);
+          }
+
+          context.additional[middleware.name] = result.next;
+        } catch (e) {
+          const infos: CommandResultHandlerInfos = {
+            result: error(new CommandError({
+              message: `failed to run middleware : ${anyToError(e).message}`,
+              ctx: context,
+              originalError: anyToError(e),
+              debugs: {
+                middlewareName: middleware.name,
+              },
+            })),
+            interaction: interaction,
+            command: command,
+            defer: context.defer,
+            start: start,
+            end: Date.now(),
+          };
+
+          return this._resultHandler(infos);
+        }
+      }
+    }
+
+    /* Command Run */
+
 
     try {
       // @ts-expect-error fix error with never type
@@ -678,8 +732,12 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
     }
 
     const context = guildInfos
-      ? new GuildAutocompleteContext(command, interaction, { ...guildInfos, resolvedName: infos.resolvedName })
-      : new DmAutoCompleteContext(command, interaction, { resolvedName: infos.resolvedName });
+      ? new GuildAutocompleteContext(command, interaction, {
+        ...guildInfos,
+        resolvedName: infos.resolvedName,
+        client: this.client,
+      })
+      : new DmAutoCompleteContext(command, interaction, { resolvedName: infos.resolvedName, client: this.client });
 
     try {
       const [result, err2] = await command.autocomplete(context);

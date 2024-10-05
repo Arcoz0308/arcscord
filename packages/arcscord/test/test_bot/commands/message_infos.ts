@@ -1,21 +1,13 @@
-import type { FullCommandDefinition } from "#/base/command/command_definition.type";
-import { type ArcClient, Command, type CommandRunResult } from "#/base";
-import type { CommandContext } from "#/base/command/command_context";
+import { createCommand } from "#/base/command/command_func";
 
-const definer = {
-  message: {
-    name: "message-infos",
-    integrationTypes: ["userInstall", "guildInstall"],
+export const messageInfosCommand = createCommand({
+  build: {
+    message: {
+      name: "message-infos",
+      integrationTypes: ["userInstall", "guildInstall"],
+    },
   },
-} satisfies FullCommandDefinition;
-
-export class MessageInfosCommand extends Command {
-
-  constructor(client: ArcClient) {
-    super(client, definer);
-  }
-
-  run(ctx: CommandContext<typeof definer>): Promise<CommandRunResult> {
+  run: (ctx) => {
     const infos: Set<string> = new Set();
     const message = ctx.targetMessage;
 
@@ -38,6 +30,5 @@ export class MessageInfosCommand extends Command {
     return ctx.reply(Array.from(infos.values()).join("\n"), {
       ephemeral: true,
     });
-  }
-
-}
+  },
+});
