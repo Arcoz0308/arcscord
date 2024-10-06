@@ -71,7 +71,7 @@ export const componentTestCommand = createCommand({
         });
       case "role_select":
         return ctx.reply({
-          components: [roleSelectMenu.build()],
+          components: [roleSelectMenu.build("Select a role")],
           content: ctx.options.component,
         });
       case "mentionable_select":
