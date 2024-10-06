@@ -15,5 +15,6 @@
   "bugs": {
     "url": "https://github.com/arcoz0308/arcscord/issues"
   },
-  "homepage": "https://github.com/arcoz0308/arcscord#readme"
+  "homepage": "https://github.com/arcoz0308/arcscord#readme",
+  "packageManager": "pnpm@9.3.0"
 }
