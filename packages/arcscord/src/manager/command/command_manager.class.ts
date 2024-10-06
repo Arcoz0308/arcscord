@@ -22,7 +22,6 @@ import type {
 } from "discord.js";
 import { internalErrorEmbed } from "#/utils/discord/embed/embed.const";
 import { BaseManager } from "#/base/manager/manager.class";
-import type { DevConfigKey } from "#/manager/dev";
 import type {
   CommandResultHandler,
   CommandResultHandlerImplementer,
@@ -51,8 +50,6 @@ export class CommandManager extends BaseManager implements CommandResultHandlerI
   commands: Map<string, CommandDefinition> = new Map();
 
   name = "command";
-
-  devConfigKey: DevConfigKey = "commands";
 
   _resultHandler: CommandResultHandler;
 

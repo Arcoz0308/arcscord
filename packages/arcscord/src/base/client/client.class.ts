@@ -1,7 +1,6 @@
 import type { PermissionsString } from "discord.js";
 import { Client as DJSClient, EmbedBuilder, REST } from "discord.js";
 import { CommandManager } from "#/manager/command/command_manager.class";
-import { DevManager } from "#/manager/dev";
 import { ArcLogger } from "#/utils/logger/logger.class";
 import { EventManager } from "#/manager/event/event_manager.class";
 import { TaskManager } from "#/manager/task/task_manager";
@@ -17,8 +16,6 @@ import type { EventHandler } from "#/base/event/event.type";
 export class ArcClient extends DJSClient {
 
   commandManager: CommandManager;
-
-  devManager: DevManager;
 
   eventManager: EventManager;
 
@@ -89,7 +86,6 @@ export class ArcClient extends DJSClient {
     }, options.baseMessages && "default" in options.baseMessages ? options.baseMessages.default : options.baseMessages);
 
     this.arcOptions = options;
-    this.devManager = new DevManager(this);
     this.commandManager = new CommandManager(this);
     this.taskManager = new TaskManager(this);
 

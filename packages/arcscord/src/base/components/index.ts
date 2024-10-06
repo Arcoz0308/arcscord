@@ -4,3 +4,4 @@ export * from "./component.enum";
 export * from "./component.type";
 export * from "./context";
 export * from "./component_props.func";
+export * from "./component_props.type";

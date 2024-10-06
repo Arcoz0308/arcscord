@@ -1,6 +1,5 @@
 import { CronJob } from "cron";
 import { BaseManager } from "#/base/manager/manager.class";
-import type { DevConfigKey } from "#/manager/dev";
 import { anyToError } from "@arcscord/error";
 import type { Task } from "#/base";
 import { TaskContext } from "#/base";
@@ -9,8 +8,6 @@ export class TaskManager extends BaseManager {
 
 
   name = "task";
-
-  devConfigKey: DevConfigKey = "tasks";
 
   crons: Map<string, CronJob|CronJob[]|NodeJS.Timeout> = new Map();
 
@@ -66,7 +63,9 @@ export class TaskManager extends BaseManager {
 
       const next = Array.isArray(cron)
         ? cron.sort((a, b) => a.nextDate().toMillis() - b.nextDate().toMillis())[0].nextDate().toJSDate()
-        : cron instanceof CronJob ? cron.nextDate().toJSDate() : typeof task.interval === "number" ? new Date(Date.now() + task.interval) : new Date();
+        : cron instanceof CronJob
+          ? cron.nextDate().toJSDate()
+          : typeof task.interval === "number" ? new Date(Date.now() + task.interval) : new Date();
       const context = new TaskContext(this.client, task, {
         nextRun: next,
       });

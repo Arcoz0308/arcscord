@@ -8,3 +8,5 @@ export type {
   LoggerInterface,
   LoggerConstructor
 } from "./logger.type";
+export * from "./logger.enum";
+export { createLogger } from "./logger.util";
