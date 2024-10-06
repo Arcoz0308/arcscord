@@ -33,8 +33,8 @@
     "dist"
   ],
   "dependencies": {
-    "@arcscord/better-error": "^1.0.3",
-    "@arcscord/error": "^1.0.1",
+    "@arcscord/better-error": "workspace:*",
+    "@arcscord/error": "workspace:*",
     "cron": "^3.1.6",
     "dayjs": "^1.11.10",
     "discord-api-types": "^0.37.97",
