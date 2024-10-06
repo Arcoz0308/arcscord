@@ -1,4 +1,4 @@
-import type { CommandDefinition } from "#/base/command/command_definition.type";
+import type { CommandDefinition } from "#/base/";
 import { avatarCommand } from "./commands/avatar";
 import { messageInfosCommand } from "./commands/message_infos";
 import { componentTestCommand } from "./commands/component_test";
