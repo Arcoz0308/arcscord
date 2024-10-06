@@ -1,6 +1,7 @@
 # Arcscord
 
-[![npm version](https://badge.fury.io/js/arcscord.svg)](https://github.com/Arcoz0308/arcscord/tree/main/packages/better_error)
+[![npm version](https://badge.fury.io/js/arcscord.svg)](https://www.npmjs.com/package/arcscord)
+[![Discord Shield](https://discord.com/api/guilds/1012097557532528791/widget.png?style=shield)](https://discord.gg/4geBanVWGR)
 
 ## About
 

@@ -25,7 +25,7 @@ export const disableComponentCommand = createCommand({
           url: "https://acz.sh/arcscord",
           label: "Github Link",
         }), editButton.build(), deferEditButton.build()),
-        roleSelectMenu.build(),
+        roleSelectMenu.build("select a role"),
         stringSelectMenu.build("fun", "no fun"),
         userSelectMenu.build(),
       ],
