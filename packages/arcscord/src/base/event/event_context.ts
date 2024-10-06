@@ -15,7 +15,7 @@ export class EventContext {
     this.handler = handler;
   }
 
-  ok(value: string | true): EventHandleResult {
+  ok(value: string | true = true): EventHandleResult {
     return ok(value);
   }
 

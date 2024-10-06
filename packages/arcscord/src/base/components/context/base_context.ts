@@ -96,7 +96,7 @@ export class ComponentContext {
     }
   }
 
-  ok(value: string | true): ComponentRunResult {
+  ok(value: string | true = true): ComponentRunResult {
     return ok(value);
   }
 

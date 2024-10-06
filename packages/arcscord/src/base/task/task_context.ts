@@ -23,7 +23,7 @@ export class TaskContext {
     this.nextRun = options.nextRun;
   }
 
-  ok(value: string | true): TaskResult {
+  ok(value: string | true = true): TaskResult {
     return ok(value);
   }
 

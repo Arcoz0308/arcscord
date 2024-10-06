@@ -157,7 +157,7 @@ export class BaseCommandContext<
     }
   }
 
-  ok(value: string | true): CommandRunResult {
+  ok(value: string | true = true): CommandRunResult {
     return ok(value);
   }
 
