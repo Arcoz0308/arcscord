@@ -11,11 +11,11 @@ importers:
   packages/arcscord:
     dependencies:
       '@arcscord/better-error':
-        specifier: ^1.0.3
-        version: 1.0.3
+        specifier: workspace:*
+        version: link:../better_error
       '@arcscord/error':
-        specifier: ^1.0.1
-        version: 1.0.1
+        specifier: workspace:*
+        version: link:../error
       cron:
         specifier: ^3.1.6
         version: 3.1.7
@@ -123,12 +123,6 @@ packages:
     peerDependencies:
       eslint: '>=8.45.0'
       typescript: '>=5.1.6'
-
-  '@arcscord/better-error@1.0.3':
-    resolution: {integrity: sha512-4ScXE3RILS/Ovj0jXfYSfwW1vow+7Uhwy57fdhnuYAMe+ghIUiXZdkRjQDk4XZrUsr/Xe4YSjrpazhNWNXTb6w==}
-
-  '@arcscord/error@1.0.1':
-    resolution: {integrity: sha512-yMsuEAPRzsfDiiPM1s9vKTpj10UXV63D3xzBgVREtx76dAkxWhRJ19gr3+CK3FmJEtUZ8yn6BWxGkMmNKrdvBw==}
 
   '@discordjs/builders@1.9.0':
     resolution: {integrity: sha512-0zx8DePNVvQibh5ly5kCEei5wtPBIUbSoE9n+91Rlladz4tgtFbJ36PZMxxZrTEOQ7AHMZ/b0crT/0fCy6FTKg==}
@@ -2086,10 +2080,6 @@ snapshots:
       typescript: 5.6.2
     transitivePeerDependencies:
       - supports-color
-
-  '@arcscord/better-error@1.0.3': {}
-
-  '@arcscord/error@1.0.1': {}
 
   '@discordjs/builders@1.9.0':
     dependencies:
