@@ -1,40 +1,10 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "es2022",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
     "paths": {
       "#/*": [
         "./src/*"
       ]
-    },
-    "resolveJsonModule": true,
-    "outDir": "dist",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "experimentalDecorators": true,
-    "sourceMap": true,
-    "removeComments": false,
-    "declaration": true,
-    "strictNullChecks": true
-  },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.js",
-    "src/**/*.cjs",
-    "src/**/*.mjs",
-    "bin",
-    "test"
-  ],
-  "exclude": [
-    "node_modules",
-    "src/**/*.test.ts"
-  ],
-  "ts-node": {
-    "compilerOptions": {
-      "module": "CommonJS"
     }
   }
 }
