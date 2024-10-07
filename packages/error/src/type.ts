@@ -13,7 +13,7 @@ export type Result<T, E> = ResultOk<T> | ResultErr<E>;
 export type ResultOk<T> = [
   value: T,
   error: null,
-]
+];
 
 /**
  * Represents a Result with an error.
@@ -23,4 +23,4 @@ export type ResultOk<T> = [
 export type ResultErr<E> = [
   value: null,
   error: E,
-]
+];

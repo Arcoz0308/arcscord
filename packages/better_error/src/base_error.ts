@@ -1,10 +1,4 @@
-import type {
-  Debugs,
-  DebugStringObject,
-  ErrorOptions,
-  GetDebugOptions,
-  StackFormat,
-} from "./type";
+import type { Debugs, DebugStringObject, ErrorOptions, GetDebugOptions, StackFormat } from "./type";
 import { stringifyUnknown } from "./util";
 
 /**
@@ -42,7 +36,8 @@ export class BaseError extends Error {
 
       if (opt.customId) {
         this._id = opt.customId;
-      } else if (opt.autoGenerateId) {
+      }
+      else if (opt.autoGenerateId) {
         this.generateId();
       }
     }
@@ -111,36 +106,38 @@ export class BaseError extends Error {
 
     if (this._originalError) {
       if (this._originalError instanceof BaseError) {
-        debugs["originalError"] = this._originalError.fullMessage();
+        debugs.originalError = this._originalError.fullMessage();
         if (options.originalErrorDebugs !== false) {
-          const originalOptions =
-            typeof options.originalErrorDebugs === "object"
+          const originalOptions
+            = typeof options.originalErrorDebugs === "object"
               ? options.originalErrorDebugs
               : options;
 
           for (const [key, value] of Object.entries(
             this._originalError.getDebugsObject(originalOptions),
           )) {
-            debugs["originalError - " + key] = value;
+            debugs[`originalError - ${key}`] = value;
           }
-        } else {
+        }
+        else {
           if (options.originalErrorStack) {
             for (const [key, value] of Object.entries(
               this._originalError.getStack(options.stackFormat),
             )) {
-              debugs["originalError - " + key] = value;
+              debugs[`originalError - ${key}`] = value;
             }
           }
         }
-      } else {
-        debugs["originalError"] =
-          `${this._originalError.name}: ${this._originalError}`;
+      }
+      else {
+        debugs.originalError
+          = `${this._originalError.name}: ${this._originalError}`;
 
         if (options.originalErrorStack && this._originalError.stack) {
           for (const [key, value] of Object.entries(
             this.getStack(options.stackFormat, this._originalError.stack),
           )) {
-            debugs["originalError - " + key] = value;
+            debugs[`originalError - ${key}`] = value;
           }
         }
       }

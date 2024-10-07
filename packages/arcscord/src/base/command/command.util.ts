@@ -1,45 +1,63 @@
-import { ApplicationCommandOptionType, ApplicationCommandType } from "discord-api-types/v10";
-import type {
-  AutocompleteInteraction,
-  ChatInputCommandInteraction,
-  CommandInteraction,
-  CommandInteractionOption
-} from "discord.js";
-import { BaseChannel, GuildMember, Role, User } from "discord.js";
+import type { AutocompleteCommand, CommandProps } from "#/base";
 import type {
   FullCommandDefinition,
   PartialCommandDefinitionForMessage,
   PartialCommandDefinitionForSlash,
   PartialCommandDefinitionForUser,
-  SlashWithSubsCommandDefinition
+  SlashWithSubsCommandDefinition,
 } from "#/base/command/command_definition.type";
-import type { ContextOptions, Option, OptionalContextOption, OptionsList } from "#/base/command/option.type";
+import type {
+  ContextOptions,
+  Option,
+  OptionalContextOption,
+  OptionsList,
+} from "#/base/command/option.type";
 import type { Result } from "@arcscord/error";
-import { anyToError, error, ok } from "@arcscord/error";
+import type {
+  AutocompleteInteraction,
+  ChatInputCommandInteraction,
+  CommandInteraction,
+  CommandInteractionOption,
+} from "discord.js";
 import { BaseError } from "@arcscord/better-error";
-import type { AutocompleteCommand, CommandProps } from "#/base";
+import { anyToError, error, ok } from "@arcscord/error";
+import { BaseChannel, GuildMember, Role, User } from "discord.js";
+import {
+  ApplicationCommandOptionType,
+  ApplicationCommandType,
+} from "discord-api-types/v10";
 
-export const isSubCommand = (props: CommandProps | SlashWithSubsCommandDefinition): props is SlashWithSubsCommandDefinition => {
+export function isSubCommand(
+  props: CommandProps | SlashWithSubsCommandDefinition,
+): props is SlashWithSubsCommandDefinition {
   return "name" in props;
-};
+}
 
-export const hasSlashCommand = (definer: FullCommandDefinition): definer is PartialCommandDefinitionForSlash => {
+export function hasSlashCommand(
+  definer: FullCommandDefinition,
+): definer is PartialCommandDefinitionForSlash {
   return "slash" in definer;
-};
+}
 
-export const hasMessageCommand = (definer: FullCommandDefinition): definer is PartialCommandDefinitionForMessage => {
+export function hasMessageCommand(
+  definer: FullCommandDefinition,
+): definer is PartialCommandDefinitionForMessage {
   return "message" in definer;
-};
+}
 
-export const hasUserCommand = (definer: FullCommandDefinition): definer is PartialCommandDefinitionForUser => {
+export function hasUserCommand(
+  definer: FullCommandDefinition,
+): definer is PartialCommandDefinitionForUser {
   return "user" in definer;
-};
+}
 
-export const hasAutocomplete = (command: object): command is AutocompleteCommand => {
+export function hasAutocomplete(
+  command: object,
+): command is AutocompleteCommand {
   return "autocomplete" in command;
-};
+}
 
-export const commandTypeToString = (type: ApplicationCommandType): string => {
+export function commandTypeToString(type: ApplicationCommandType): string {
   switch (type) {
     case ApplicationCommandType.ChatInput:
       return "Slash Command";
@@ -50,9 +68,11 @@ export const commandTypeToString = (type: ApplicationCommandType): string => {
     default:
       return "Unknown Command type";
   }
-};
+}
 
-export const slashCommandOptionValueToString = (option: CommandInteractionOption): string => {
+export function slashCommandOptionValueToString(
+  option: CommandInteractionOption,
+): string {
   switch (option.type as ApplicationCommandOptionType) {
     case ApplicationCommandOptionType.Subcommand: {
       return `Sub<${option.name}>`;
@@ -91,53 +111,68 @@ export const slashCommandOptionValueToString = (option: CommandInteractionOption
       return `Unknown<${option.value}>`;
     }
   }
-};
+}
 
-export const commandInteractionToString = (interaction: CommandInteraction | AutocompleteInteraction, noOptions = true): string => {
+export function commandInteractionToString(
+  interaction: CommandInteraction | AutocompleteInteraction,
+  noOptions = true,
+): string {
   switch (true) {
     case interaction.isChatInputCommand(): {
-
       let commandName = interaction.commandName;
 
       let options = interaction.options.data;
-      if (options[0]?.type as ApplicationCommandOptionType === ApplicationCommandOptionType.SubcommandGroup) {
+      if (
+        (options[0]?.type as ApplicationCommandOptionType)
+        === ApplicationCommandOptionType.SubcommandGroup
+      ) {
         commandName += `.${options[0].name}`;
         options = options[0].options || [];
       }
 
-      if (options[0]?.type as ApplicationCommandOptionType === ApplicationCommandOptionType.Subcommand) {
+      if (
+        (options[0]?.type as ApplicationCommandOptionType)
+        === ApplicationCommandOptionType.Subcommand
+      ) {
         commandName += `.${options[0].name}`;
         options = options[0].options || [];
       }
 
-      const stringOptions = options.map((option) => `${option.name}=${slashCommandOptionValueToString(option)}`).join(" ");
+      const stringOptions = options
+        .map(
+          option =>
+            `${option.name}=${slashCommandOptionValueToString(option)}`,
+        )
+        .join(" ");
 
-      return `slash:${commandName} (${interaction.commandId})${noOptions ? "" : " " + stringOptions}`;
+      return `slash:${commandName} (${interaction.commandId})${noOptions ? "" : ` ${stringOptions}`}`;
     }
-    case  interaction.isUserContextMenuCommand(): {
-
+    case interaction.isUserContextMenuCommand(): {
       return `user:${interaction.commandName} (${interaction.commandId}) targetUser=${interaction.targetId}`;
     }
 
     case interaction.isMessageContextMenuCommand(): {
-
       const targetChannel = interaction.targetMessage.channelId;
       const targetGuild = interaction.targetMessage.guildId;
 
-
-      return `msg:${interaction.commandName} (${interaction.commandId}) targetMessage=${interaction.targetId}`
-        + ` targetChannel=${targetChannel}`
-        + (targetGuild ? ` targetGuild=${targetGuild}` : "");
+      return (
+        `msg:${interaction.commandName} (${interaction.commandId}) targetMessage=${interaction.targetId}`
+        + ` targetChannel=${targetChannel}${
+          targetGuild ? ` targetGuild=${targetGuild}` : ""
+        }`
+      );
     }
     default: {
       return "Unknown Command";
     }
   }
-};
+}
 
-export const parseOptions = async <T extends OptionsList>(interaction: ChatInputCommandInteraction, optionsList: T, required = true):
-  Promise<Result<(ContextOptions<T>), BaseError>> => {
-
+export async function parseOptions<T extends OptionsList>(
+  interaction: ChatInputCommandInteraction,
+  optionsList: T,
+  required = true,
+): Promise<Result<ContextOptions<T>, BaseError>> {
   const result: Record<string, OptionalContextOption<Option>> = {};
 
   for (const [name, option] of Object.entries(optionsList)) {
@@ -145,14 +180,15 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
       case "user": {
         const user = interaction.options.getUser(name, false);
         if (!user && option.required && required) {
-          return error(new BaseError({
-            message: `User is required, get undefined for ${name}`,
-            debugs: {
-              options: interaction.options.data,
-              definer: optionsList,
-            },
-          }));
-
+          return error(
+            new BaseError({
+              message: `User is required, get undefined for ${name}`,
+              debugs: {
+                options: interaction.options.data,
+                definer: optionsList,
+              },
+            }),
+          );
         }
         result[name] = user || undefined;
         break;
@@ -161,40 +197,48 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
       case "role": {
         const role = interaction.options.getRole(name, false);
         if (!role && option.required && required) {
-          return error(new BaseError({
-            message: `Role is required, get undefined for ${name}`,
-            debugs: {
-              options: interaction.options.data,
-              definer: optionsList,
-            },
-          }));
+          return error(
+            new BaseError({
+              message: `Role is required, get undefined for ${name}`,
+              debugs: {
+                options: interaction.options.data,
+                definer: optionsList,
+              },
+            }),
+          );
         }
 
         if (!(role instanceof Role) && role !== null) {
           try {
             const roleObj = await interaction.guild?.roles.fetch(role.id);
             if (!roleObj) {
-              return error(new BaseError({
+              return error(
+                new BaseError({
+                  message: `Failed to fetch role with id ${role.id} in guild ${interaction.guildId}`,
+                  debugs: {
+                    options: interaction.options.data,
+                    definer: optionsList,
+                  },
+                }),
+              );
+            }
+
+            result[name] = roleObj;
+          }
+          catch (e) {
+            return error(
+              new BaseError({
                 message: `Failed to fetch role with id ${role.id} in guild ${interaction.guildId}`,
+                originalError: anyToError(e),
                 debugs: {
                   options: interaction.options.data,
                   definer: optionsList,
                 },
-              }));
-            }
-
-            result[name] = roleObj;
-          } catch (e) {
-            return error(new BaseError({
-              message: `Failed to fetch role with id ${role.id} in guild ${interaction.guildId}`,
-              originalError: anyToError(e),
-              debugs: {
-                options: interaction.options.data,
-                definer: optionsList,
-              },
-            }));
+              }),
+            );
           }
-        } else {
+        }
+        else {
           result[name] = role || undefined;
         }
         break;
@@ -203,40 +247,50 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
       case "channel": {
         const channel = interaction.options.getChannel(name, false);
         if (!channel && option.required && required) {
-          return error(new BaseError({
-            message: `Channel is required, get undefined for ${name}`,
-            debugs: {
-              options: interaction.options.data,
-              definer: optionsList,
-            },
-          }));
-        }
-
-        if (channel instanceof BaseChannel || channel === null) {
-          result[name] = channel || undefined;
-        } else {
-          try {
-            const channelObj = await interaction.guild?.channels.fetch(channel.id);
-            if (!channelObj) {
-              return error(new BaseError({
-                message: `Failed to fetch channel with id ${channel.id} in guild ${interaction.guildId}`,
-                debugs: {
-                  options: interaction.options.data,
-                  definer: optionsList,
-                },
-              }));
-            }
-
-            result[name] = channelObj;
-          } catch (e) {
-            return error(new BaseError({
-              message: `Failed to fetch channel with id ${channel.id} in guild ${interaction.guildId}`,
-              originalError: anyToError(e),
+          return error(
+            new BaseError({
+              message: `Channel is required, get undefined for ${name}`,
               debugs: {
                 options: interaction.options.data,
                 definer: optionsList,
               },
-            }));
+            }),
+          );
+        }
+
+        if (channel instanceof BaseChannel || channel === null) {
+          result[name] = channel || undefined;
+        }
+        else {
+          try {
+            const channelObj = await interaction.guild?.channels.fetch(
+              channel.id,
+            );
+            if (!channelObj) {
+              return error(
+                new BaseError({
+                  message: `Failed to fetch channel with id ${channel.id} in guild ${interaction.guildId}`,
+                  debugs: {
+                    options: interaction.options.data,
+                    definer: optionsList,
+                  },
+                }),
+              );
+            }
+
+            result[name] = channelObj;
+          }
+          catch (e) {
+            return error(
+              new BaseError({
+                message: `Failed to fetch channel with id ${channel.id} in guild ${interaction.guildId}`,
+                originalError: anyToError(e),
+                debugs: {
+                  options: interaction.options.data,
+                  definer: optionsList,
+                },
+              }),
+            );
           }
         }
         break;
@@ -245,13 +299,15 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
       case "mentionable": {
         const mentionable = interaction.options.getMentionable(name, false);
         if (!mentionable && option.required && required) {
-          return error(new BaseError({
-            message: `Mention is required, get undefined for ${name}`,
-            debugs: {
-              options: interaction.options.data,
-              definer: optionsList,
-            },
-          }));
+          return error(
+            new BaseError({
+              message: `Mention is required, get undefined for ${name}`,
+              debugs: {
+                options: interaction.options.data,
+                definer: optionsList,
+              },
+            }),
+          );
         }
 
         if (mentionable instanceof Role || mentionable instanceof User) {
@@ -268,26 +324,30 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
           break;
         }
         // todo handle with partial
-        return error(new BaseError({
-          message: "Current not supported, get ApiRole/ApiMember for mentionable",
-          debugs: {
-            options: interaction.options.data,
-            definer: optionsList,
-          },
-        }));
-
+        return error(
+          new BaseError({
+            message:
+              "Current not supported, get ApiRole/ApiMember for mentionable",
+            debugs: {
+              options: interaction.options.data,
+              definer: optionsList,
+            },
+          }),
+        );
       }
 
       case "boolean": {
         const boolean = interaction.options.getBoolean(name, false);
         if (boolean === null && option.required && required) {
-          return error(new BaseError({
-            message: `Boolean is required, get undefined for ${name}`,
-            debugs: {
-              options: interaction.options.data,
-              definer: optionsList,
-            },
-          }));
+          return error(
+            new BaseError({
+              message: `Boolean is required, get undefined for ${name}`,
+              debugs: {
+                options: interaction.options.data,
+                definer: optionsList,
+              },
+            }),
+          );
         }
 
         result[name] = boolean !== null ? boolean : undefined;
@@ -297,13 +357,15 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
       case "attachment": {
         const attachment = interaction.options.getAttachment(name, false);
         if (!attachment && option.required && required) {
-          return error(new BaseError({
-            message: `Attachment is required, get undefined for ${name}`,
-            debugs: {
-              options: interaction.options.data,
-              definer: optionsList,
-            },
-          }));
+          return error(
+            new BaseError({
+              message: `Attachment is required, get undefined for ${name}`,
+              debugs: {
+                options: interaction.options.data,
+                definer: optionsList,
+              },
+            }),
+          );
         }
 
         result[name] = attachment || undefined;
@@ -313,13 +375,15 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
       case "string": {
         const value = interaction.options.getString(name, false);
         if (!value && option.required && required) {
-          return error(new BaseError({
-            message: `String is required, get undefined for ${name}`,
-            debugs: {
-              options: interaction.options.data,
-              definer: optionsList,
-            },
-          }));
+          return error(
+            new BaseError({
+              message: `String is required, get undefined for ${name}`,
+              debugs: {
+                options: interaction.options.data,
+                definer: optionsList,
+              },
+            }),
+          );
         }
 
         if (value === null) {
@@ -328,50 +392,68 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
         }
 
         if (option.min_length && value.length < option.min_length) {
-          return error(new BaseError({
-            message: `Minimum length is required, get ${value.length}, min required is ${option.min_length}`
-              + `for option ${name}`,
-            debugs: {
-              options: interaction.options.data,
-              definer: optionsList,
-            },
-          }));
+          return error(
+            new BaseError({
+              message:
+                `Minimum length is required, get ${value.length}, min required is ${option.min_length}`
+                + `for option ${name}`,
+              debugs: {
+                options: interaction.options.data,
+                definer: optionsList,
+              },
+            }),
+          );
         }
 
         if (option.max_length && value.length > option.max_length) {
-          return error(new BaseError({
-            message: `Maximum length exceeded, get ${value.length}, max ${option.min_length} for option ${name}`,
-            debugs: {
-              options: interaction.options.data,
-              definer: optionsList,
-            },
-          }));
+          return error(
+            new BaseError({
+              message: `Maximum length exceeded, get ${value.length}, max ${option.min_length} for option ${name}`,
+              debugs: {
+                options: interaction.options.data,
+                definer: optionsList,
+              },
+            }),
+          );
         }
 
         if ("choices" in option && option.choices) {
           if (Array.isArray(option.choices)) {
-            if (!option.choices.find((choice) => (typeof choice === "string" ? choice === value : choice.value === value))) {
-              return error(new BaseError({
-                message: `Invalid choice for ${name} option received`,
-                debugs: {
-                  options: interaction.options.data,
-                  definer: optionsList,
-                  value: value,
-                  valid: option.choices.map((v) => typeof v === "string" ? v : v.value),
-                },
-              }));
+            if (
+              !option.choices.find(choice =>
+                typeof choice === "string"
+                  ? choice === value
+                  : choice.value === value,
+              )
+            ) {
+              return error(
+                new BaseError({
+                  message: `Invalid choice for ${name} option received`,
+                  debugs: {
+                    options: interaction.options.data,
+                    definer: optionsList,
+                    value,
+                    valid: option.choices.map(v =>
+                      typeof v === "string" ? v : v.value,
+                    ),
+                  },
+                }),
+              );
             }
-          } else {
+          }
+          else {
             if (!Object.values(option.choices).includes(value)) {
-              return error(new BaseError({
-                message: `Invalid choice for ${name} option received`,
-                debugs: {
-                  options: interaction.options.data,
-                  definer: optionsList,
-                  value: value,
-                  valid: Object.values(option.choices),
-                },
-              }));
+              return error(
+                new BaseError({
+                  message: `Invalid choice for ${name} option received`,
+                  debugs: {
+                    options: interaction.options.data,
+                    definer: optionsList,
+                    value,
+                    valid: Object.values(option.choices),
+                  },
+                }),
+              );
             }
           }
         }
@@ -382,16 +464,20 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
 
       case "integer":
       case "number": {
-        const value = option.type === "number"
-          ? interaction.options.getNumber(name, false) : interaction.options.getInteger(name, false);
+        const value
+          = option.type === "number"
+            ? interaction.options.getNumber(name, false)
+            : interaction.options.getInteger(name, false);
         if (!value && option.required && required) {
-          return error(new BaseError({
-            message: `Number is required, get undefined for ${name}`,
-            debugs: {
-              options: interaction.options.data,
-              definer: optionsList,
-            },
-          }));
+          return error(
+            new BaseError({
+              message: `Number is required, get undefined for ${name}`,
+              debugs: {
+                options: interaction.options.data,
+                definer: optionsList,
+              },
+            }),
+          );
         }
 
         if (value === null) {
@@ -400,49 +486,66 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
         }
 
         if (option.min_value && value < option.min_value) {
-          return error(new BaseError({
-            message: `Minimum value is required, get ${value}, min required is ${option.min_value} for option ${name}`,
-            debugs: {
-              options: interaction.options.data,
-              definer: optionsList,
-            },
-          }));
+          return error(
+            new BaseError({
+              message: `Minimum value is required, get ${value}, min required is ${option.min_value} for option ${name}`,
+              debugs: {
+                options: interaction.options.data,
+                definer: optionsList,
+              },
+            }),
+          );
         }
 
         if (option.max_value && value > option.max_value) {
-          return error(new BaseError({
-            message: `Maximum value exceeded, get ${value}, max ${option.max_value} for option ${name}`,
-            debugs: {
-              options: interaction.options.data,
-              definer: optionsList,
-            },
-          }));
+          return error(
+            new BaseError({
+              message: `Maximum value exceeded, get ${value}, max ${option.max_value} for option ${name}`,
+              debugs: {
+                options: interaction.options.data,
+                definer: optionsList,
+              },
+            }),
+          );
         }
 
         if ("choices" in option && option.choices) {
           if (Array.isArray(option.choices)) {
-            if (!option.choices.find((choice) => (typeof choice === "number" ? choice === value : choice.value === value))) {
-              return error(new BaseError({
-                message: `Invalid choice for ${name} option received`,
-                debugs: {
-                  options: interaction.options.data,
-                  definer: optionsList,
-                  value: value,
-                  valid: option.choices.map((v) => typeof v === "number" ? v : v.value),
-                },
-              }));
+            if (
+              !option.choices.find(choice =>
+                typeof choice === "number"
+                  ? choice === value
+                  : choice.value === value,
+              )
+            ) {
+              return error(
+                new BaseError({
+                  message: `Invalid choice for ${name} option received`,
+                  debugs: {
+                    options: interaction.options.data,
+                    definer: optionsList,
+                    value,
+                    valid: option.choices.map(v =>
+                      typeof v === "number" ? v : v.value,
+                    ),
+                  },
+                }),
+              );
             }
-          } else {
+          }
+          else {
             if (!Object.values(option.choices).includes(value)) {
-              return error(new BaseError({
-                message: `Invalid choice for ${name} option received`,
-                debugs: {
-                  options: interaction.options.data,
-                  definer: optionsList,
-                  value: value,
-                  valid: Object.values(option.choices),
-                },
-              }));
+              return error(
+                new BaseError({
+                  message: `Invalid choice for ${name} option received`,
+                  debugs: {
+                    options: interaction.options.data,
+                    definer: optionsList,
+                    value,
+                    valid: Object.values(option.choices),
+                  },
+                }),
+              );
             }
           }
         }
@@ -454,6 +557,4 @@ export const parseOptions = async <T extends OptionsList>(interaction: ChatInput
   }
 
   return ok(result as ContextOptions<T>);
-
-
-};
+}

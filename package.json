@@ -1,13 +1,10 @@
 {
   "name": "@arcscord/arcscord",
+  "packageManager": "pnpm@9.3.0",
   "description": "A discord.js framework, slash command first and full typescript !",
-  "keywords": [
-    "discord",
-    "framework",
-    "discord.js"
-  ],
   "author": "Arcoz0308",
   "license": "MIT",
+  "homepage": "https://github.com/arcoz0308/arcscord#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arcoz0308/arcscord.git"
@@ -15,9 +12,18 @@
   "bugs": {
     "url": "https://github.com/arcoz0308/arcscord/issues"
   },
-  "homepage": "https://github.com/arcoz0308/arcscord#readme",
-  "packageManager": "pnpm@9.3.0",
+  "keywords": [
+    "discord",
+    "framework",
+    "discord.js"
+  ],
   "scripts": {
-    "build": "pnpm -r --filter='./packages/**' run build"
+    "build": "pnpm -r --filter='./packages/**' run build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^3.7.3",
+    "eslint": "^9.11.1"
   }
 }

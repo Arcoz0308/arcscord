@@ -1,19 +1,19 @@
 {
   "compilerOptions": {
     "target": "es2022",
+    "experimentalDecorators": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
     "resolveJsonModule": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "declaration": true,
     "outDir": "dist",
+    "removeComments": false,
+    "sourceMap": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "skipLibCheck": true,
-    "experimentalDecorators": true,
-    "sourceMap": true,
-    "removeComments": false,
-    "declaration": true,
-    "strictNullChecks": true
+    "skipLibCheck": true
   },
   "exclude": [
     "node_modules"

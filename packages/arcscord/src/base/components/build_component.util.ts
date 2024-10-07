@@ -4,20 +4,24 @@ import type {
   SelectMenu,
   SelectOptions,
   TextInput,
-  TypedSelectMenuOptions
+  TypedSelectMenuOptions,
 } from "#/base/components/component_definer.type";
 import type {
   APISelectMenuDefaultValue,
   ButtonComponentData,
-  SelectMenuComponentOptionData,
   SelectMenuDefaultValueType as DJSSelectMenuDefaultValueType,
-  TextInputComponentData
+  SelectMenuComponentOptionData,
+  TextInputComponentData,
 } from "discord.js";
-import { ComponentType } from "discord.js";
-import { buttonTypeEnum, componentTypesEnum, textInputStyleEnum } from "#/base/components/component.enum";
+import {
+  buttonTypeEnum,
+  componentTypesEnum,
+  textInputStyleEnum,
+} from "#/base/components/component.enum";
 import { channelTypeEnum } from "#/utils/discord/type/channel.enum";
+import { ComponentType } from "discord.js";
 
-export const buttonToAPI = (button: Button): ButtonComponentData => {
+export function buttonToAPI(button: Button): ButtonComponentData {
   if ("customId" in button) {
     return {
       type: ComponentType.Button,
@@ -36,9 +40,11 @@ export const buttonToAPI = (button: Button): ButtonComponentData => {
     emoji: button.emoji,
     disabled: button.disabled,
   };
-};
+}
 
-export const selectMenuOptionsToAPI = (options: string[] | SelectOptions[] | TypedSelectMenuOptions): SelectMenuComponentOptionData[] => {
+export function selectMenuOptionsToAPI(
+  options: string[] | SelectOptions[] | TypedSelectMenuOptions,
+): SelectMenuComponentOptionData[] {
   if (!Array.isArray(options)) {
     return Object.keys(options).map((key) => {
       const option = options[key];
@@ -56,7 +62,7 @@ export const selectMenuOptionsToAPI = (options: string[] | SelectOptions[] | Typ
     });
   }
 
-  if (options.every((item) => typeof item === "string")) {
+  if (options.every(item => typeof item === "string")) {
     return options.map((option) => {
       return {
         label: option as string,
@@ -65,9 +71,11 @@ export const selectMenuOptionsToAPI = (options: string[] | SelectOptions[] | Typ
     });
   }
   return options as SelectMenuComponentOptionData[];
-};
+}
 
-export const selectMenuToAPI = (selectMenu: SelectMenu): AnySelectMenuComponentData => {
+export function selectMenuToAPI(
+  selectMenu: SelectMenu,
+): AnySelectMenuComponentData {
   if (selectMenu.type === "stringSelect") {
     return {
       type: ComponentType.StringSelect,
@@ -88,10 +96,12 @@ export const selectMenuToAPI = (selectMenu: SelectMenu): AnySelectMenuComponentD
       disabled: selectMenu.disabled,
       minValues: selectMenu.minValues,
       maxValues: selectMenu.maxValues,
-      defaultValues: selectMenu.defaultValues as //fix error with enum
-        APISelectMenuDefaultValue<DJSSelectMenuDefaultValueType.Channel>[] | undefined,
+      defaultValues: selectMenu.defaultValues as // fix error with enum
+      | APISelectMenuDefaultValue<DJSSelectMenuDefaultValueType.Channel>[]
+      | undefined,
       channelTypes: selectMenu.channelTypes
-        ? selectMenu.channelTypes.map((type) => channelTypeEnum[type]) : undefined,
+        ? selectMenu.channelTypes.map(type => channelTypeEnum[type])
+        : undefined,
     };
   }
 
@@ -102,12 +112,16 @@ export const selectMenuToAPI = (selectMenu: SelectMenu): AnySelectMenuComponentD
     disabled: selectMenu.disabled,
     minValues: selectMenu.minValues,
     maxValues: selectMenu.maxValues,
-    defaultValues: selectMenu.defaultValues as //fix error with enum
-      APISelectMenuDefaultValue<DJSSelectMenuDefaultValueType.Role | DJSSelectMenuDefaultValueType.User>[] | undefined,
+    defaultValues: selectMenu.defaultValues as // fix error with enum
+    | APISelectMenuDefaultValue<
+      | DJSSelectMenuDefaultValueType.Role
+      | DJSSelectMenuDefaultValueType.User
+    >[]
+    | undefined,
   };
-};
+}
 
-export const textInputToAPI = (textInput: TextInput): TextInputComponentData => {
+export function textInputToAPI(textInput: TextInput): TextInputComponentData {
   return {
     type: ComponentType.TextInput,
     customId: textInput.customId,
@@ -119,4 +133,4 @@ export const textInputToAPI = (textInput: TextInput): TextInputComponentData => 
     value: textInput.value,
     placeholder: textInput.placeholder,
   };
-};
+}

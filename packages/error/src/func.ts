@@ -9,12 +9,12 @@ import { anyToError } from "./util";
  * @template T - The type of value to be wrapped.
  * @template E - The type of error for the Result.
  */
-export const ok = <T, E>(value: T): Result<T, E> => {
+export function ok<T, E>(value: T): Result<T, E> {
   return [
     value,
     null,
   ];
-};
+}
 
 /**
  * Represents an error result.
@@ -24,13 +24,12 @@ export const ok = <T, E>(value: T): Result<T, E> => {
  * @template T The type of the value that should have been returned if there was no error.
  * @template E The type of the error.
  */
-export const error = <T, E>(err: E): Result<T, E> => {
+export function error<T, E>(err: E): Result<T, E> {
   return [
     null,
     err,
   ];
-};
-
+}
 
 /**
  * A function that executes a given function and returns a Result  wrapping the result or an error.
@@ -39,12 +38,13 @@ export const error = <T, E>(err: E): Result<T, E> => {
  * @returns {Promise<Result<T, Error>>} - A promise that resolves to a Result.
  * @template T - The type of the result value.
  */
-export const forceSafe = async <T>(fn: (...args: unknown[]) => T | Promise<T>): Promise<Result<T, Error>>  => {
+export async function forceSafe<T>(fn: (...args: unknown[]) => T | Promise<T>): Promise<Result<T, Error>> {
   try {
     const result = await fn();
 
     return ok(result);
-  } catch (e) {
+  }
+  catch (e) {
     return error(anyToError(e));
   }
-};
+}

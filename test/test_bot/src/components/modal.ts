@@ -2,7 +2,7 @@ import { buildModal, createModal } from "arcscord";
 
 export const modal = createModal({
   matcher: "modal",
-  build: (title) =>
+  build: title =>
     buildModal(
       title,
       "modal",

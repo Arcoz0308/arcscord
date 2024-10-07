@@ -16,7 +16,7 @@ export const userSelectMenu = createSelectMenu({
         new EmbedBuilder()
           .setTitle("User Select")
           .setDescription(
-            `Selected :\n-${ctx.values.map((user) => user.displayName).join("\n- ")}`,
+            `Selected :\n-${ctx.values.map(user => user.displayName).join("\n- ")}`,
           ),
       ],
     });

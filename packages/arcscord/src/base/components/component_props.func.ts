@@ -2,14 +2,14 @@ import type { TypedSelectMenuOptions } from "#/base/components/component_definer
 import type {
   ButtonComponentProps,
   ModalComponentProps,
-  SelectMenuComponentProps
+  SelectMenuComponentProps,
 } from "#/base/components/component_props.type";
 
 /**
  * Create a select menu
  *
- * @param {SelectMenuComponentProps<O, T>} options - the properties to configure the select menu
- * @returns {SelectMenuComponentProps<O, T>} The complete set of properties for the select menu
+ * @param  options - the properties to configure the select menu
+ * @returns  The complete set of properties for the select menu
  * @example ```ts
  * const selectMenu = createSelectMenu({
  *   type: "userSelect",
@@ -25,17 +25,18 @@ import type {
  * });
  * ```
  */
-export const createSelectMenu = <
-  O extends string[], T extends TypedSelectMenuOptions | undefined>(options: SelectMenuComponentProps<O, T
->): SelectMenuComponentProps<O, T> => {
+export function createSelectMenu<
+  O extends string[],
+  T extends TypedSelectMenuOptions | undefined,
+>(options: SelectMenuComponentProps<O, T>): SelectMenuComponentProps<O, T> {
   return options;
-};
+}
 
 /**
  * create a button
  *
- * @param {Omit<ButtonComponentProps<O>, "type">} options - The properties to configure the modal
- * @returns {ButtonComponentProps<O>} the complete set of properties for the button
+ * @param options - The properties to configure the modal
+ * @returns the complete set of properties for the button
  * @example ```ts
  * const button = createButton({
  *   matcher: "button",
@@ -50,17 +51,17 @@ export const createSelectMenu = <
  * });
  * ```
  */
-export const createButton = <O extends string[]>(options: Omit<ButtonComponentProps<O>, "type">): ButtonComponentProps<O> => {
+export function createButton<O extends string[]>(options: Omit<ButtonComponentProps<O>, "type">): ButtonComponentProps<O> {
   return { ...options, type: "button" };
-};
+}
 
 /**
  * Create a modal
  *
- * @param {Omit<ModalComponentProps<O>, "type">} options - The properties to configure the modal
- * @returns {ModalComponentProps<O>} The complete set of properties for the modal
+ * @param  options - The properties to configure the modal
+ * @returns The complete set of properties for the modal
  * @example ```ts
- * const myFamusModal = createModal({
+ * const myFamousModal = createModal({
  *   matcher: "famousModal",
  *   build: (label) => buildModal(label, "famousModal", {
  *     style: "short",
@@ -74,6 +75,6 @@ export const createButton = <O extends string[]>(options: Omit<ButtonComponentPr
  * ```
  *
  */
-export const createModal = <O extends string[]>(options: Omit<ModalComponentProps<O>, "type">): ModalComponentProps<O> => {
+export function createModal<O extends string[]>(options: Omit<ModalComponentProps<O>, "type">): ModalComponentProps<O> {
   return { ...options, type: "modal" };
-};
+}

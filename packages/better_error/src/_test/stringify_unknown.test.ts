@@ -4,7 +4,7 @@ import { stringifyUnknown } from "../util";
 describe("stringifyUnknown", () => {
   it("should stringify string correctly", () => {
     const result = stringifyUnknown("Hello, world!");
-    assert.equal(result, '"Hello, world!"');
+    assert.equal(result, "\"Hello, world!\"");
   });
 
   it("should stringify number correctly", () => {
@@ -29,7 +29,7 @@ describe("stringifyUnknown", () => {
 
   it("should stringify object correctly", () => {
     const result = stringifyUnknown({ foo: "bar" });
-    assert.equal(result, '{"foo":"bar"}');
+    assert.equal(result, "{\"foo\":\"bar\"}");
   });
 
   it("should stringify null correctly", () => {
@@ -44,7 +44,7 @@ describe("stringifyUnknown", () => {
 
   it("should stringify function correctly", () => {
     const result = stringifyUnknown(() => "foo");
-    assert.equal(result, '() => "foo"');
+    assert.equal(result, "() => \"foo\"");
   });
 
   it("should return unknown for unstringifyable values", () => {

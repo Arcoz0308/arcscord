@@ -1,3 +1,12 @@
-import type { NewsChannel, PrivateThreadChannel, PublicThreadChannel, TextChannel } from "discord.js";
+import type {
+  NewsChannel,
+  PrivateThreadChannel,
+  PublicThreadChannel,
+  TextChannel,
+} from "discord.js";
 
-export type GuildTextFirstBasedChannel =  NewsChannel | TextChannel | PrivateThreadChannel | PublicThreadChannel;
+export type GuildTextFirstBasedChannel =
+  | NewsChannel
+  | TextChannel
+  | PrivateThreadChannel
+  | PublicThreadChannel;

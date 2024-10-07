@@ -1,3 +1,4 @@
+import type { ArcClient, CommandProps, CommandRunResult } from "#/base";
 import type {
   CommandContexts,
   CommandIntegrationType,
@@ -5,9 +6,11 @@ import type {
   PartialCommandDefinitionForMessage,
   PartialCommandDefinitionForSlash,
   PartialCommandDefinitionForUser,
-  SubCommandDefinition
+  SubCommandDefinition,
 } from "#/base/command/command_definition.type";
-import type { ArcClient, CommandProps, CommandRunResult } from "#/base";
+import type { CommandMiddleware } from "#/base/command/command_middleware";
+import type { ContextOptions, OptionsList } from "#/base/command/option.type";
+import type { CommandErrorOptions } from "#/utils";
 import type {
   ChatInputCommandInteraction,
   CommandInteraction,
@@ -22,29 +25,29 @@ import type {
   MessagePayload,
   ModalComponentData,
   User,
-  UserContextMenuCommandInteraction
+  UserContextMenuCommandInteraction,
 } from "discord.js";
-import { InteractionContextType } from "discord.js";
-import type { CommandErrorOptions } from "#/utils";
 import { CommandError } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";
-import type { ContextOptions, OptionsList } from "#/base/command/option.type";
-import type { CommandMiddleware } from "#/base/command/command_middleware";
+import { InteractionContextType } from "discord.js";
 
 export type MiddlewaresResults<M extends CommandMiddleware[]> = {
-  [K in M[number] as K["name"]]: NonNullable<Awaited<ReturnType<K["run"]>>["next"]>;
-}
+  [K in M[number] as K["name"]]: NonNullable<
+    Awaited<ReturnType<K["run"]>>["next"]
+  >;
+};
 
-export type BaseCommandContextBuilderOptions<M extends CommandMiddleware[] = CommandMiddleware[]> = {
+export type BaseCommandContextBuilderOptions<
+  M extends CommandMiddleware[] = CommandMiddleware[],
+> = {
   resolvedName: string;
   additional?: MiddlewaresResults<M>;
   client: ArcClient;
-}
+};
 
 export class BaseCommandContext<
-  M extends CommandMiddleware[] = CommandMiddleware[]
+  M extends CommandMiddleware[] = CommandMiddleware[],
 > {
-
   /**
    * the command class
    */
@@ -69,78 +72,109 @@ export class BaseCommandContext<
 
   additional: MiddlewaresResults<M>;
 
-  constructor(command: CommandProps, interaction: CommandInteraction, options: BaseCommandContextBuilderOptions<M>) {
+  constructor(
+    command: CommandProps,
+    interaction: CommandInteraction,
+    options: BaseCommandContextBuilderOptions<M>,
+  ) {
     this.command = command;
     this.interaction = interaction;
 
     this.user = interaction.user;
 
-    this.interactionContext = this.#interactionContextConverter(interaction.context);
-    this.interactionSource = interaction.authorizingIntegrationOwners["0"] ? "guildInstall" : "userInstall";
+    this.interactionContext = this.#interactionContextConverter(
+      interaction.context,
+    );
+    this.interactionSource = interaction.authorizingIntegrationOwners["0"]
+      ? "guildInstall"
+      : "userInstall";
 
     this.client = options.client;
 
     this.resolvedCommandName = options.resolvedName;
-    this.additional = options.additional || {} as MiddlewaresResults<M>;
+    this.additional = options.additional || ({} as MiddlewaresResults<M>);
   }
 
-  async reply(message: string, options?: Omit<InteractionReplyOptions, "content">): Promise<CommandRunResult>;
+  async reply(
+    message: string,
+    options?: Omit<InteractionReplyOptions, "content">,
+  ): Promise<CommandRunResult>;
 
-  async reply(options: MessagePayload | InteractionReplyOptions): Promise<CommandRunResult>;
+  async reply(
+    options: MessagePayload | InteractionReplyOptions,
+  ): Promise<CommandRunResult>;
 
-  async reply(message: string | MessagePayload | InteractionReplyOptions, options?: Omit<InteractionReplyOptions, "content">):
-    Promise<CommandRunResult> {
+  async reply(
+    message: string | MessagePayload | InteractionReplyOptions,
+    options?: Omit<InteractionReplyOptions, "content">,
+  ): Promise<CommandRunResult> {
     try {
-
       if (options && typeof message === "string") {
         message = { ...options, content: message };
       }
 
       await this.interaction.reply(message);
       return ok(true);
-    } catch (e) {
-      return error(new CommandError({
-        ctx: this,
-        message: `failed to reply to interaction : ${anyToError(e).message}`,
-        originalError: anyToError(e),
-      }));
+    }
+    catch (e) {
+      return error(
+        new CommandError({
+          ctx: this,
+          message: `failed to reply to interaction : ${anyToError(e).message}`,
+          originalError: anyToError(e),
+        }),
+      );
     }
   }
 
-  async editReply(message: string, options?: Omit<InteractionEditReplyOptions, "content">): Promise<CommandRunResult>;
+  async editReply(
+    message: string,
+    options?: Omit<InteractionEditReplyOptions, "content">,
+  ): Promise<CommandRunResult>;
 
-  async editReply(options: MessagePayload | InteractionEditReplyOptions): Promise<CommandRunResult>;
+  async editReply(
+    options: MessagePayload | InteractionEditReplyOptions,
+  ): Promise<CommandRunResult>;
 
-  async editReply(message: string | MessagePayload | InteractionEditReplyOptions, options?: Omit<InteractionReplyOptions, "content">):
-    Promise<CommandRunResult> {
+  async editReply(
+    message: string | MessagePayload | InteractionEditReplyOptions,
+    options?: Omit<InteractionReplyOptions, "content">,
+  ): Promise<CommandRunResult> {
     try {
-
       if (options && typeof message === "string") {
         message = { ...options, content: message };
       }
 
       await this.interaction.editReply(message);
       return ok(true);
-    } catch (e) {
-      return error(new CommandError({
-        ctx: this,
-        message: `failed to edit reply to interaction : ${anyToError(e).message}`,
-        originalError: anyToError(e),
-      }));
+    }
+    catch (e) {
+      return error(
+        new CommandError({
+          ctx: this,
+          message: `failed to edit reply to interaction : ${anyToError(e).message}`,
+          originalError: anyToError(e),
+        }),
+      );
     }
   }
 
-  async deferReply(options: InteractionDeferReplyOptions): Promise<CommandRunResult> {
+  async deferReply(
+    options: InteractionDeferReplyOptions,
+  ): Promise<CommandRunResult> {
     try {
       await this.interaction.deferReply(options);
       this.defer = true;
       return ok(true);
-    } catch (e) {
-      return error(new CommandError({
-        ctx: this,
-        message: `failed to defer reply to interaction : ${anyToError(e).message}`,
-        originalError: anyToError(e),
-      }));
+    }
+    catch (e) {
+      return error(
+        new CommandError({
+          ctx: this,
+          message: `failed to defer reply to interaction : ${anyToError(e).message}`,
+          originalError: anyToError(e),
+        }),
+      );
     }
   }
 
@@ -148,12 +182,15 @@ export class BaseCommandContext<
     try {
       await this.interaction.showModal(modal);
       return ok(true);
-    } catch (e) {
-      return error(new CommandError({
-        ctx: this,
-        message: `failed to show modal : ${anyToError(e).message}`,
-        originalError: anyToError(e),
-      }));
+    }
+    catch (e) {
+      return error(
+        new CommandError({
+          ctx: this,
+          message: `failed to show modal : ${anyToError(e).message}`,
+          originalError: anyToError(e),
+        }),
+      );
     }
   }
 
@@ -165,7 +202,9 @@ export class BaseCommandContext<
     return error(new CommandError({ ...options, ctx: this }));
   }
 
-  async multiple(...funcList: Promise<CommandRunResult>[]): Promise<CommandRunResult> {
+  async multiple(
+    ...funcList: Promise<CommandRunResult>[]
+  ): Promise<CommandRunResult> {
     for (const func of funcList) {
       const [, err] = await func;
 
@@ -177,8 +216,9 @@ export class BaseCommandContext<
     return ok(true);
   }
 
-
-  #interactionContextConverter(ctx: InteractionContextType | null): CommandContexts | null {
+  #interactionContextConverter(
+    ctx: InteractionContextType | null,
+  ): CommandContexts | null {
     switch (ctx) {
       case null:
         return null;
@@ -192,12 +232,11 @@ export class BaseCommandContext<
         return null;
     }
   }
-
 }
 
-export type GuildCommandContextBuilderOptions<M extends CommandMiddleware[] = CommandMiddleware[]> =
-  BaseCommandContextBuilderOptions<M>
-  & {
+export type GuildCommandContextBuilderOptions<
+  M extends CommandMiddleware[] = CommandMiddleware[],
+> = BaseCommandContextBuilderOptions<M> & {
   guild: Guild;
   channel: GuildBasedChannel;
   member: GuildMember;
@@ -206,7 +245,6 @@ export type GuildCommandContextBuilderOptions<M extends CommandMiddleware[] = Co
 export class GuildCommandContext<
   M extends CommandMiddleware[] = CommandMiddleware[],
 > extends BaseCommandContext<M> {
-
   guildId: string;
 
   guild: Guild;
@@ -221,7 +259,11 @@ export class GuildCommandContext<
 
   readonly inDM = false;
 
-  constructor(command: CommandProps, interaction: CommandInteraction, options: GuildCommandContextBuilderOptions<M>) {
+  constructor(
+    command: CommandProps,
+    interaction: CommandInteraction,
+    options: GuildCommandContextBuilderOptions<M>,
+  ) {
     super(command, interaction, options);
 
     this.guildId = options.guild.id;
@@ -230,13 +272,11 @@ export class GuildCommandContext<
     this.channel = options.channel;
     this.member = options.member;
   }
-
 }
 
 export class DmCommandContext<
   M extends CommandMiddleware[] = CommandMiddleware[],
 > extends BaseCommandContext<M> {
-
   guildId = null;
 
   guild = null;
@@ -250,28 +290,33 @@ export class DmCommandContext<
   readonly inGuild = false;
 
   readonly inDM = true;
-
 }
 
-type ContextOptionsDef<T extends PartialCommandDefinitionForSlash | SubCommandDefinition> = (
-  T extends PartialCommandDefinitionForSlash ?
-    T["slash"]["options"] extends OptionsList ? ContextOptions<T["slash"]["options"]> : null
-    : T extends SubCommandDefinition ?
-      T["options"] extends OptionsList ? ContextOptions<T["options"]> : null : never);
-
+type ContextOptionsDef<
+  T extends PartialCommandDefinitionForSlash | SubCommandDefinition,
+> = T extends PartialCommandDefinitionForSlash
+  ? T["slash"]["options"] extends OptionsList
+    ? ContextOptions<T["slash"]["options"]>
+    : null
+  : T extends SubCommandDefinition
+    ? T["options"] extends OptionsList
+      ? ContextOptions<T["options"]>
+      : null
+    : never;
 
 export type GuildSlashCommandContextBuilderOptions<
-  T extends PartialCommandDefinitionForSlash | SubCommandDefinition = PartialCommandDefinitionForSlash | SubCommandDefinition,
-  M extends CommandMiddleware[] = CommandMiddleware[]
+  T extends PartialCommandDefinitionForSlash | SubCommandDefinition = | PartialCommandDefinitionForSlash
+  | SubCommandDefinition,
+  M extends CommandMiddleware[] = CommandMiddleware[],
 > = GuildCommandContextBuilderOptions<M> & {
   options: ContextOptionsDef<T>;
-}
+};
 
 export class GuildSlashCommandContext<
-  T extends PartialCommandDefinitionForSlash | SubCommandDefinition = PartialCommandDefinitionForSlash | SubCommandDefinition,
+  T extends PartialCommandDefinitionForSlash | SubCommandDefinition = | PartialCommandDefinitionForSlash
+  | SubCommandDefinition,
   M extends CommandMiddleware[] = CommandMiddleware[],
 > extends GuildCommandContext<M> {
-
   options: ContextOptionsDef<T>;
 
   readonly type = "slash" as const;
@@ -284,26 +329,28 @@ export class GuildSlashCommandContext<
 
   interaction: ChatInputCommandInteraction;
 
-  constructor(command: CommandProps, interaction: ChatInputCommandInteraction, options: GuildSlashCommandContextBuilderOptions<T, M>) {
+  constructor(
+    command: CommandProps,
+    interaction: ChatInputCommandInteraction,
+    options: GuildSlashCommandContextBuilderOptions<T, M>,
+  ) {
     super(command, interaction, options);
 
     this.options = options.options;
 
     this.interaction = interaction;
   }
-
 }
 
-export type GuildMessageCommandContextBuilderOptions<M extends CommandMiddleware[] = CommandMiddleware[]> =
-  GuildCommandContextBuilderOptions<M>
-  & {
+export type GuildMessageCommandContextBuilderOptions<
+  M extends CommandMiddleware[] = CommandMiddleware[],
+> = GuildCommandContextBuilderOptions<M> & {
   message: Message;
-}
+};
 
 export class GuildMessageCommandContext<
   M extends CommandMiddleware[] = CommandMiddleware[],
 > extends GuildCommandContext<M> {
-
   targetMessage: Message;
 
   readonly type = "message" as const;
@@ -316,27 +363,29 @@ export class GuildMessageCommandContext<
 
   interaction: MessageContextMenuCommandInteraction;
 
-  constructor(command: CommandProps, interaction: MessageContextMenuCommandInteraction, options: GuildMessageCommandContextBuilderOptions<M>) {
+  constructor(
+    command: CommandProps,
+    interaction: MessageContextMenuCommandInteraction,
+    options: GuildMessageCommandContextBuilderOptions<M>,
+  ) {
     super(command, interaction, options);
 
     this.targetMessage = options.message;
 
     this.interaction = interaction;
   }
-
 }
 
-export type GuildUserCommandContextBuilderOptions<M extends CommandMiddleware[] = CommandMiddleware[]> =
-  GuildCommandContextBuilderOptions<M>
-  & {
+export type GuildUserCommandContextBuilderOptions<
+  M extends CommandMiddleware[] = CommandMiddleware[],
+> = GuildCommandContextBuilderOptions<M> & {
   targetUser: User;
   targetMember: GuildMember | null;
-}
+};
 
 export class GuildUserCommandContext<
   M extends CommandMiddleware[] = CommandMiddleware[],
 > extends GuildCommandContext<M> {
-
   targetUser: User;
 
   targetMember: GuildMember | null;
@@ -351,7 +400,11 @@ export class GuildUserCommandContext<
 
   interaction: UserContextMenuCommandInteraction;
 
-  constructor(command: CommandProps, interaction: UserContextMenuCommandInteraction, options: GuildUserCommandContextBuilderOptions<M>) {
+  constructor(
+    command: CommandProps,
+    interaction: UserContextMenuCommandInteraction,
+    options: GuildUserCommandContextBuilderOptions<M>,
+  ) {
     super(command, interaction, options);
 
     this.targetUser = options.targetUser;
@@ -359,23 +412,25 @@ export class GuildUserCommandContext<
 
     this.interaction = interaction;
   }
-
 }
 
 export type DmSlashCommandContextBuilderOptions<
-  T extends (PartialCommandDefinitionForSlash & FullCommandDefinition) | SubCommandDefinition =
-      PartialCommandDefinitionForSlash | SubCommandDefinition,
-  M extends CommandMiddleware[] = CommandMiddleware[]
+  T extends
+    | (PartialCommandDefinitionForSlash & FullCommandDefinition)
+    | SubCommandDefinition = | PartialCommandDefinitionForSlash
+    | SubCommandDefinition,
+  M extends CommandMiddleware[] = CommandMiddleware[],
 > = BaseCommandContextBuilderOptions<M> & {
   options: ContextOptionsDef<T>;
-}
+};
 
 export class DmSlashCommandContext<
-  T extends (PartialCommandDefinitionForSlash & FullCommandDefinition) | SubCommandDefinition =
-      (PartialCommandDefinitionForSlash & FullCommandDefinition) | SubCommandDefinition,
+  T extends
+    | (PartialCommandDefinitionForSlash & FullCommandDefinition)
+    | SubCommandDefinition = | (PartialCommandDefinitionForSlash & FullCommandDefinition)
+    | SubCommandDefinition,
   M extends CommandMiddleware[] = CommandMiddleware[],
 > extends DmCommandContext<M> {
-
   options: ContextOptionsDef<T>;
 
   readonly type = "slash" as const;
@@ -388,26 +443,28 @@ export class DmSlashCommandContext<
 
   interaction: ChatInputCommandInteraction;
 
-  constructor(command: CommandProps, interaction: ChatInputCommandInteraction, options: DmSlashCommandContextBuilderOptions<T, M>) {
+  constructor(
+    command: CommandProps,
+    interaction: ChatInputCommandInteraction,
+    options: DmSlashCommandContextBuilderOptions<T, M>,
+  ) {
     super(command, interaction, options);
 
     this.options = options.options;
 
     this.interaction = interaction;
   }
-
 }
 
-export type DmMessageCommandContextBuilderOptions<M extends CommandMiddleware[] = CommandMiddleware[]> =
-  BaseCommandContextBuilderOptions<M>
-  & {
+export type DmMessageCommandContextBuilderOptions<
+  M extends CommandMiddleware[] = CommandMiddleware[],
+> = BaseCommandContextBuilderOptions<M> & {
   message: Message;
-}
+};
 
 export class DmMessageCommandContext<
   M extends CommandMiddleware[] = CommandMiddleware[],
 > extends DmCommandContext<M> {
-
   targetMessage: Message;
 
   readonly type = "message" as const;
@@ -420,26 +477,28 @@ export class DmMessageCommandContext<
 
   interaction: MessageContextMenuCommandInteraction;
 
-  constructor(command: CommandProps, interaction: MessageContextMenuCommandInteraction, options: DmMessageCommandContextBuilderOptions<M>) {
+  constructor(
+    command: CommandProps,
+    interaction: MessageContextMenuCommandInteraction,
+    options: DmMessageCommandContextBuilderOptions<M>,
+  ) {
     super(command, interaction, options);
 
     this.targetMessage = options.message;
 
     this.interaction = interaction;
   }
-
 }
 
-export type DmUserCommandContextBuilderOptions<M extends CommandMiddleware[] = CommandMiddleware[]> =
-  BaseCommandContextBuilderOptions<M>
-  & {
+export type DmUserCommandContextBuilderOptions<
+  M extends CommandMiddleware[] = CommandMiddleware[],
+> = BaseCommandContextBuilderOptions<M> & {
   targetUser: User;
-}
+};
 
 export class DmUserCommandContext<
   M extends CommandMiddleware[] = CommandMiddleware[],
 > extends DmCommandContext<M> {
-
   targetUser: User;
 
   targetMember = null;
@@ -454,23 +513,34 @@ export class DmUserCommandContext<
 
   interaction: UserContextMenuCommandInteraction;
 
-  constructor(command: CommandProps, interaction: UserContextMenuCommandInteraction, options: DmUserCommandContextBuilderOptions<M>) {
+  constructor(
+    command: CommandProps,
+    interaction: UserContextMenuCommandInteraction,
+    options: DmUserCommandContextBuilderOptions<M>,
+  ) {
     super(command, interaction, options);
 
     this.targetUser = options.targetUser;
 
     this.interaction = interaction;
   }
-
 }
 
 export type CommandContext<
-  T extends FullCommandDefinition | SubCommandDefinition = FullCommandDefinition | SubCommandDefinition,
+  T extends FullCommandDefinition | SubCommandDefinition = | FullCommandDefinition
+  | SubCommandDefinition,
   M extends CommandMiddleware[] = CommandMiddleware[],
-> =
-  T extends FullCommandDefinition ? (
-    | (T extends PartialCommandDefinitionForSlash ? GuildSlashCommandContext<T, M> | DmSlashCommandContext<T, M> : never)
-    | (T extends PartialCommandDefinitionForMessage ? GuildMessageCommandContext<M> | DmMessageCommandContext<M> : never)
-    | (T extends PartialCommandDefinitionForUser ? GuildUserCommandContext<M> | DmUserCommandContext<M> : never)
-    ) : T extends SubCommandDefinition ?
-    GuildSlashCommandContext<T, M> | DmSlashCommandContext<T, M> : never;
+> = T extends FullCommandDefinition
+  ?
+      | (T extends PartialCommandDefinitionForSlash
+        ? GuildSlashCommandContext<T, M> | DmSlashCommandContext<T, M>
+        : never)
+        | (T extends PartialCommandDefinitionForMessage
+          ? GuildMessageCommandContext<M> | DmMessageCommandContext<M>
+          : never)
+          | (T extends PartialCommandDefinitionForUser
+            ? GuildUserCommandContext<M> | DmUserCommandContext<M>
+            : never)
+  : T extends SubCommandDefinition
+    ? GuildSlashCommandContext<T, M> | DmSlashCommandContext<T, M>
+    : never;

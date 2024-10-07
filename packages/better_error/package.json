@@ -2,19 +2,9 @@
   "name": "@arcscord/better-error",
   "version": "1.0.3",
   "description": "A better error class",
-  "scripts": {
-    "test": "vitest",
-    "build": "tsup",
-    "lint": "eslint ./src",
-    "lint:fix": "eslint ./src --fix"
-  },
-  "keywords": [
-    "arcscord",
-    "error",
-    "bettererror"
-  ],
   "author": "Arcoz0308",
   "license": "MIT",
+  "homepage": "https://github.com/Arcoz0308/arcscord/tree/main/packages/better-error#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arcoz0308/arcscord.git"
@@ -22,24 +12,31 @@
   "bugs": {
     "url": "https://github.com/arcoz0308/arcscord/issues"
   },
-  "homepage": "https://github.com/Arcoz0308/arcscord/tree/main/packages/better-error#readme",
+  "keywords": [
+    "arcscord",
+    "error",
+    "bettererror"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "vitest",
+    "build": "tsup",
+    "lint": "eslint ./src",
+    "lint:fix": "eslint ./src --fix"
+  },
   "devDependencies": {
     "@arcoz/eslint-config": "^1.1.1",
     "@types/node": "^20.11.24",
-    "eslint": "^8.56.0",
-    "eslint-config-prettier": "^9.1.0",
-    "prettier": "^3.3.3",
     "tsup": "^8.2.4",
     "typescript": "^5.3.3",
     "vitest": "^2.0.5"
   },
   "directories": {
     "lib": "./src"
-  },
-  "types": "./dist/index.d.ts",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "files": [
-    "dist"
-  ]
+  }
 }

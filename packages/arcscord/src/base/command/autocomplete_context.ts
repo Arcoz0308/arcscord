@@ -4,7 +4,7 @@ import type {
   CommandRunResult,
   GuildCommandContextBuilderOptions,
   NumberChoices,
-  StringChoices
+  StringChoices,
 } from "#/base";
 import type {
   ApplicationCommandOptionChoiceData,
@@ -12,18 +12,17 @@ import type {
   AutocompleteInteraction,
   Guild,
   GuildBasedChannel,
-  GuildMember
+  GuildMember,
 } from "discord.js";
-import { error, ok } from "@arcscord/error";
 import { CommandError, type CommandErrorOptions } from "#/utils";
+import { anyToError, error, ok } from "@arcscord/error";
 
 type BaseAutocompleteOptions = {
   resolvedName: string;
   client: ArcClient;
-}
+};
 
 export class BaseAutocompleteContext {
-
   client: ArcClient;
 
   command: CommandProps;
@@ -32,7 +31,11 @@ export class BaseAutocompleteContext {
 
   resolvedCommandName: string;
 
-  constructor(command: CommandProps, interaction: AutocompleteInteraction, options: BaseAutocompleteOptions) {
+  constructor(
+    command: CommandProps,
+    interaction: AutocompleteInteraction,
+    options: BaseAutocompleteOptions,
+  ) {
     this.command = command;
     this.interaction = interaction;
     this.resolvedCommandName = options.resolvedName;
@@ -47,7 +50,9 @@ export class BaseAutocompleteContext {
     return this.interaction.options.getFocused(true);
   }
 
-  async sendChoices(choices: StringChoices | NumberChoices): Promise<CommandRunResult> {
+  async sendChoices(
+    choices: StringChoices | NumberChoices,
+  ): Promise<CommandRunResult> {
     try {
       const apiChoices: ApplicationCommandOptionChoiceData[] = [];
 
@@ -55,14 +60,16 @@ export class BaseAutocompleteContext {
         for (const choice of choices) {
           if (typeof choice === "object") {
             apiChoices.push(choice);
-          } else {
+          }
+          else {
             apiChoices.push({
               name: `${choice}`,
               value: choice,
             });
           }
         }
-      } else {
+      }
+      else {
         for (const choice of Object.keys(choices)) {
           apiChoices.push({
             name: choice,
@@ -73,11 +80,15 @@ export class BaseAutocompleteContext {
 
       await this.interaction.respond(apiChoices);
       return ok(true);
-    } catch (e) {
-      return error(new CommandError({
-        message: "Failed to send choices for command",
-        ctx: this,
-      }));
+    }
+    catch (e) {
+      return error(
+        new CommandError({
+          message: `Failed to send choices for command, error : ${anyToError(e).message}`,
+          ctx: this,
+          originalError: anyToError(e),
+        }),
+      );
     }
   }
 
@@ -89,7 +100,9 @@ export class BaseAutocompleteContext {
     return error(new CommandError({ ...options, ctx: this }));
   }
 
-  async multiple(...funcList: Promise<CommandRunResult>[]): Promise<CommandRunResult> {
+  async multiple(
+    ...funcList: Promise<CommandRunResult>[]
+  ): Promise<CommandRunResult> {
     for (const func of funcList) {
       const [, err] = await func;
 
@@ -100,11 +113,9 @@ export class BaseAutocompleteContext {
 
     return ok(true);
   }
-
 }
 
 export class DmAutoCompleteContext extends BaseAutocompleteContext {
-
   guildId = null;
 
   guild = null;
@@ -118,11 +129,9 @@ export class DmAutoCompleteContext extends BaseAutocompleteContext {
   readonly inGuild = false;
 
   readonly inDM = true;
-
 }
 
 export class GuildAutocompleteContext extends BaseAutocompleteContext {
-
   guildId: string;
 
   guild: Guild;
@@ -140,7 +149,7 @@ export class GuildAutocompleteContext extends BaseAutocompleteContext {
   constructor(
     command: CommandProps,
     interaction: AutocompleteInteraction,
-    options: GuildCommandContextBuilderOptions & BaseAutocompleteOptions
+    options: GuildCommandContextBuilderOptions & BaseAutocompleteOptions,
   ) {
     super(command, interaction, options);
 
@@ -150,7 +159,8 @@ export class GuildAutocompleteContext extends BaseAutocompleteContext {
     this.channel = options.channel;
     this.member = options.member;
   }
-
 }
 
-export type AutocompleteContext = GuildAutocompleteContext | DmAutoCompleteContext;
+export type AutocompleteContext =
+  | GuildAutocompleteContext
+  | DmAutoCompleteContext;

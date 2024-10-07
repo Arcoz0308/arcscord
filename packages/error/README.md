@@ -5,9 +5,9 @@ A error handling package, inspired of golang error handling.
 ### Exemple
 
 ```ts
-import { Result, error, ok } from "@arscord/error";
+import { error, ok, Result } from "@arscord/error";
 
-const foo = (num: number): Result<boolean, Error> => {
+function foo(num: number): Result<boolean, Error> {
   if (num <= 0) {
     return error(new Error("Get negative number"));
   }
@@ -17,7 +17,8 @@ const foo = (num: number): Result<boolean, Error> => {
 const [isFoo, err] = foo(3);
 if (err) {
   console.error(err);
-} else {
+}
+else {
   console.log(isFoo);
 }
 ```

@@ -1,4 +1,9 @@
-import { MessageComponentContext } from "#/base/components/context/message_component_context";
+import type { ArcClient } from "#/base";
+import type {
+  StringSelectMenuValues,
+  TypedSelectMenuOptions,
+} from "#/base/components";
+import type { GuildComponentContextOptions } from "#/base/components/context/base_context";
 import type {
   APIChannel,
   APIRole,
@@ -13,16 +18,13 @@ import type {
   RoleSelectMenuInteraction,
   StringSelectMenuInteraction,
   User,
-  UserSelectMenuInteraction
+  UserSelectMenuInteraction,
 } from "discord.js";
-import type { ArcClient } from "#/base";
-import type { GuildComponentContextOptions } from "#/base/components/context/base_context";
-import type { StringSelectMenuValues, TypedSelectMenuOptions } from "#/base/components";
+import { MessageComponentContext } from "#/base/components/context/message_component_context";
 
 /* Guild */
 
 export class GuildSelectMenuContext extends MessageComponentContext {
-
   guildId: string;
 
   guild: Guild;
@@ -37,7 +39,11 @@ export class GuildSelectMenuContext extends MessageComponentContext {
 
   readonly inDM = false;
 
-  constructor(client: ArcClient, interaction: MessageComponentInteraction, options: GuildComponentContextOptions) {
+  constructor(
+    client: ArcClient,
+    interaction: MessageComponentInteraction,
+    options: GuildComponentContextOptions,
+  ) {
     super(client, interaction);
 
     this.guildId = options.guild.id;
@@ -46,14 +52,11 @@ export class GuildSelectMenuContext extends MessageComponentContext {
     this.channel = options.channel;
     this.member = options.member;
   }
-
 }
-
 
 /* DM */
 
 export class DmSelectMenuContext extends MessageComponentContext {
-
   guildId = null;
 
   guild = null;
@@ -67,145 +70,160 @@ export class DmSelectMenuContext extends MessageComponentContext {
   readonly inGuild = false;
 
   readonly inDM = true;
-
 }
-
 
 /* String Select */
 
 export type StringSelectMenuContextOptions<
-  T extends TypedSelectMenuOptions | undefined = undefined
+  T extends TypedSelectMenuOptions | undefined = undefined,
 > = {
-  values: T extends TypedSelectMenuOptions ? StringSelectMenuValues<T> : string[];
-}
+  values: T extends TypedSelectMenuOptions
+    ? StringSelectMenuValues<T>
+    : string[];
+};
 
 export class GuildStringSelectMenuContext<
-  T extends TypedSelectMenuOptions | undefined
+  T extends TypedSelectMenuOptions | undefined,
 > extends GuildSelectMenuContext {
-
-  values: T extends TypedSelectMenuOptions ? StringSelectMenuValues<T> : string[];
+  values: T extends TypedSelectMenuOptions
+    ? StringSelectMenuValues<T>
+    : string[];
 
   interaction: StringSelectMenuInteraction;
 
-  constructor(client: ArcClient, interaction: StringSelectMenuInteraction, options:
-    (GuildComponentContextOptions & StringSelectMenuContextOptions<T>)) {
+  constructor(
+    client: ArcClient,
+    interaction: StringSelectMenuInteraction,
+    options: GuildComponentContextOptions & StringSelectMenuContextOptions<T>,
+  ) {
     super(client, interaction, options);
 
     this.values = options.values;
     this.interaction = interaction;
   }
-
 }
 
 export class DmStringSelectMenuContext<
-  T extends TypedSelectMenuOptions | undefined
+  T extends TypedSelectMenuOptions | undefined,
 > extends DmSelectMenuContext {
-
-  values: T extends TypedSelectMenuOptions ? StringSelectMenuValues<T> : string[];
+  values: T extends TypedSelectMenuOptions
+    ? StringSelectMenuValues<T>
+    : string[];
 
   interaction: StringSelectMenuInteraction;
 
-  constructor(client: ArcClient, interaction: StringSelectMenuInteraction, options: StringSelectMenuContextOptions<T>) {
+  constructor(
+    client: ArcClient,
+    interaction: StringSelectMenuInteraction,
+    options: StringSelectMenuContextOptions<T>,
+  ) {
     super(client, interaction);
 
     this.values = options.values;
     this.interaction = interaction;
   }
-
 }
 
 export type StringSelectMenuContext<
-  T extends TypedSelectMenuOptions | undefined = undefined
+  T extends TypedSelectMenuOptions | undefined = undefined,
 > = GuildStringSelectMenuContext<T> | DmStringSelectMenuContext<T>;
-
 
 /* User Select */
 
 export type UserSelectMenuContextOptions = {
   values: User[];
-}
+};
 
 export class GuildUserSelectMenuContext extends GuildSelectMenuContext {
-
   values: User[];
 
   interaction: UserSelectMenuInteraction;
 
-  constructor(client: ArcClient, interaction: UserSelectMenuInteraction, options: GuildComponentContextOptions & UserSelectMenuContextOptions) {
+  constructor(
+    client: ArcClient,
+    interaction: UserSelectMenuInteraction,
+    options: GuildComponentContextOptions & UserSelectMenuContextOptions,
+  ) {
     super(client, interaction, options);
 
     this.values = options.values;
     this.interaction = interaction;
   }
-
 }
 
 export class DmUserSelectMenuContext extends DmSelectMenuContext {
-
   values: User[];
 
   interaction: UserSelectMenuInteraction;
 
-  constructor(client: ArcClient, interaction: UserSelectMenuInteraction, options: UserSelectMenuContextOptions) {
+  constructor(
+    client: ArcClient,
+    interaction: UserSelectMenuInteraction,
+    options: UserSelectMenuContextOptions,
+  ) {
     super(client, interaction);
 
     this.values = options.values;
     this.interaction = interaction;
   }
-
 }
 
-export type UserSelectMenuContext = GuildUserSelectMenuContext | DmUserSelectMenuContext;
+export type UserSelectMenuContext =
+  | GuildUserSelectMenuContext
+  | DmUserSelectMenuContext;
 
-
-/* Role Select*/
+/* Role Select */
 
 export type RoleSelectMenuContextOptions = {
   values: (Role | APIRole)[];
-}
+};
 
 export class GuildRoleSelectMenuContext extends GuildSelectMenuContext {
-
   values: (Role | APIRole)[];
 
   interaction: RoleSelectMenuInteraction;
 
-  constructor(client: ArcClient, interaction: RoleSelectMenuInteraction, options: GuildComponentContextOptions & RoleSelectMenuContextOptions) {
+  constructor(
+    client: ArcClient,
+    interaction: RoleSelectMenuInteraction,
+    options: GuildComponentContextOptions & RoleSelectMenuContextOptions,
+  ) {
     super(client, interaction, options);
 
     this.values = options.values;
     this.interaction = interaction;
   }
-
 }
 
 export class DmRoleSelectMenuContext extends DmSelectMenuContext {
-
   values: (Role | APIRole)[];
 
   interaction: RoleSelectMenuInteraction;
 
-  constructor(client: ArcClient, interaction: RoleSelectMenuInteraction, options: RoleSelectMenuContextOptions) {
+  constructor(
+    client: ArcClient,
+    interaction: RoleSelectMenuInteraction,
+    options: RoleSelectMenuContextOptions,
+  ) {
     super(client, interaction);
 
     this.values = options.values;
     this.interaction = interaction;
   }
-
 }
 
-export type RoleSelectMenuContext = GuildRoleSelectMenuContext | DmRoleSelectMenuContext;
-
+export type RoleSelectMenuContext =
+  | GuildRoleSelectMenuContext
+  | DmRoleSelectMenuContext;
 
 /* Mentionable Select */
 
 export type MentionableSelectMenuContextOptions = {
   roles: (Role | APIRole)[];
   users: User[];
-}
+};
 
 export class GuildMentionableSelectMenuContext extends GuildSelectMenuContext {
-
   values: (Role | User | APIRole)[];
 
   roles: (Role | APIRole)[];
@@ -214,8 +232,11 @@ export class GuildMentionableSelectMenuContext extends GuildSelectMenuContext {
 
   interaction: MentionableSelectMenuInteraction;
 
-  constructor(client: ArcClient, interaction: MentionableSelectMenuInteraction, options:
-    (GuildComponentContextOptions & MentionableSelectMenuContextOptions)) {
+  constructor(
+    client: ArcClient,
+    interaction: MentionableSelectMenuInteraction,
+    options: GuildComponentContextOptions & MentionableSelectMenuContextOptions,
+  ) {
     super(client, interaction, options);
 
     this.interaction = interaction;
@@ -223,11 +244,9 @@ export class GuildMentionableSelectMenuContext extends GuildSelectMenuContext {
     this.users = options.users;
     this.values = [...options.roles, ...options.users];
   }
-
 }
 
 export class DmMentionableSelectMenuContext extends DmSelectMenuContext {
-
   values: (Role | User | APIRole)[];
 
   roles: (Role | APIRole)[];
@@ -236,7 +255,11 @@ export class DmMentionableSelectMenuContext extends DmSelectMenuContext {
 
   interaction: MentionableSelectMenuInteraction;
 
-  constructor(client: ArcClient, interaction: MentionableSelectMenuInteraction, options: MentionableSelectMenuContextOptions) {
+  constructor(
+    client: ArcClient,
+    interaction: MentionableSelectMenuInteraction,
+    options: MentionableSelectMenuContextOptions,
+  ) {
     super(client, interaction);
 
     this.interaction = interaction;
@@ -244,46 +267,52 @@ export class DmMentionableSelectMenuContext extends DmSelectMenuContext {
     this.users = options.users;
     this.values = [...options.roles, ...options.users];
   }
-
 }
 
-export type MentionableSelectMenuContext = GuildMentionableSelectMenuContext | DmMentionableSelectMenuContext;
-
+export type MentionableSelectMenuContext =
+  | GuildMentionableSelectMenuContext
+  | DmMentionableSelectMenuContext;
 
 /* Channel Select */
 
 export type ChannelSelectMenuContextOptions = {
   values: (Channel | APIChannel)[];
-}
+};
 
 export class GuildChannelSelectMenuContext extends GuildSelectMenuContext {
-
   values: (Channel | APIChannel)[];
 
   interaction: ChannelSelectMenuInteraction;
 
-  constructor(client: ArcClient, interaction: ChannelSelectMenuInteraction, options: GuildComponentContextOptions & ChannelSelectMenuContextOptions) {
+  constructor(
+    client: ArcClient,
+    interaction: ChannelSelectMenuInteraction,
+    options: GuildComponentContextOptions & ChannelSelectMenuContextOptions,
+  ) {
     super(client, interaction, options);
 
     this.values = options.values;
     this.interaction = interaction;
   }
-
 }
 
 export class DmChannelSelectMenuContext extends DmSelectMenuContext {
-
   values: (Channel | APIChannel)[];
 
   interaction: ChannelSelectMenuInteraction;
 
-  constructor(client: ArcClient, interaction: ChannelSelectMenuInteraction, options: ChannelSelectMenuContextOptions) {
+  constructor(
+    client: ArcClient,
+    interaction: ChannelSelectMenuInteraction,
+    options: ChannelSelectMenuContextOptions,
+  ) {
     super(client, interaction);
 
     this.values = options.values;
     this.interaction = interaction;
   }
-
 }
 
-export type ChannelSelectMenuContext = GuildChannelSelectMenuContext | DmChannelSelectMenuContext;
+export type ChannelSelectMenuContext =
+  | GuildChannelSelectMenuContext
+  | DmChannelSelectMenuContext;

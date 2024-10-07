@@ -36,7 +36,7 @@ export type ErrorOptions = {
   /**
    * if a uuid v4 id need to be generated auto (ignored if customId given)
    * @default false
-   * */
+   */
   autoGenerateId?: boolean;
   /**
    * set a custom id for the error

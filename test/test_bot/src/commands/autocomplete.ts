@@ -1,5 +1,5 @@
-import { animeList } from "../utils/test_values";
 import { createCommand } from "arcscord";
+import { animeList } from "../utils/test_values";
 
 export const autocompleteCommand = createCommand({
   build: {
@@ -24,7 +24,7 @@ export const autocompleteCommand = createCommand({
   },
   autocomplete: (ctx) => {
     const choices = animeList
-      .filter((anime) => anime.includes(ctx.focus))
+      .filter(anime => anime.includes(ctx.focus))
       .slice(0, 25);
     return ctx.sendChoices(choices);
   },

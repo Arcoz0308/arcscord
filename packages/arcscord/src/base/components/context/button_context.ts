@@ -1,10 +1,14 @@
-import type { ButtonInteraction, Guild, GuildBasedChannel, GuildMember } from "discord.js";
 import type { ArcClient } from "#/base";
 import type { GuildComponentContextOptions } from "#/base/components/context/base_context";
+import type {
+  ButtonInteraction,
+  Guild,
+  GuildBasedChannel,
+  GuildMember,
+} from "discord.js";
 import { MessageComponentContext } from "#/base/components/context/message_component_context";
 
 export class BaseButtonContext extends MessageComponentContext {
-
   interaction: ButtonInteraction;
 
   constructor(client: ArcClient, interaction: ButtonInteraction) {
@@ -12,11 +16,9 @@ export class BaseButtonContext extends MessageComponentContext {
 
     this.interaction = interaction;
   }
-
 }
 
 export class GuildButtonContext extends BaseButtonContext {
-
   guildId: string;
 
   guild: Guild;
@@ -31,7 +33,11 @@ export class GuildButtonContext extends BaseButtonContext {
 
   readonly inDM = false;
 
-  constructor(client: ArcClient, interaction: ButtonInteraction, options: GuildComponentContextOptions) {
+  constructor(
+    client: ArcClient,
+    interaction: ButtonInteraction,
+    options: GuildComponentContextOptions,
+  ) {
     super(client, interaction);
 
     this.guildId = options.guild.id;
@@ -40,11 +46,9 @@ export class GuildButtonContext extends BaseButtonContext {
     this.channel = options.channel;
     this.member = options.member;
   }
-
 }
 
 export class DmButtonContext extends BaseButtonContext {
-
   guildId = null;
 
   guild = null;
@@ -58,7 +62,6 @@ export class DmButtonContext extends BaseButtonContext {
   readonly inGuild = false;
 
   readonly inDM = true;
-
 }
 
 export type ButtonContext = GuildButtonContext | DmButtonContext;

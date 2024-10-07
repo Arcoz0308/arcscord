@@ -59,7 +59,8 @@ export const avatarCommand = createCommand({
   },
   run: (ctx) => {
     const user = ctx.isSlashCommand
-      ? ctx.options.user || ctx.user : ctx.targetUser;
+      ? ctx.options.user || ctx.user
+      : ctx.targetUser;
 
     return ctx.reply({
       embeds: [
@@ -96,7 +97,7 @@ export const simpleButton = createButton({
   },
 });
 
-// usage 
+// usage
 message.reply({
   components: [buildButtonActionRow(simpleButton.build())]
 });
@@ -115,7 +116,7 @@ import { EmbedBuilder } from "discord.js";
 export const roleSelectMenu = createSelectMenu({
   type: "roleSelect",
   matcher: "role_select_menu",
-  build: (placeHolder) => buildRoleSelectMenu({
+  build: placeHolder => buildRoleSelectMenu({
     placeholder: placeHolder,
     customId: "role_select_menu",
     maxValues: 1,
@@ -152,7 +153,7 @@ import { buildModal, createModal } from "arcscord";
 
 export const modal = createModal({
   matcher: "modal",
-  build: (title) => buildModal(title, "modal", {
+  build: title => buildModal(title, "modal", {
     label: "name",
     style: "short",
     customId: "name",
@@ -188,7 +189,7 @@ export const messageEvent = createEvent({
   },
 });
 
-// register 
+// register
 client.loadEvents([messageEvent]);
 ```
 

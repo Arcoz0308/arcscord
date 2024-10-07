@@ -1,11 +1,11 @@
-import { ArcClient } from "arcscord";
-import { commands } from "./commands";
-import "dotenv/config";
 import process from "node:process";
-import { messageEvent } from "./event/message";
+import { ArcClient } from "arcscord";
 import { Partials } from "discord.js";
+import { commands } from "./commands";
 import { components } from "./components";
+import { messageEvent } from "./event/message";
 import { tasks } from "./task";
+import "dotenv/config";
 
 const client = new ArcClient(process.env.TOKEN as string, {
   intents: [
@@ -21,7 +21,6 @@ const client = new ArcClient(process.env.TOKEN as string, {
 
 client.loadEvents([messageEvent]);
 
-// eslint-disable-next-line @typescript-eslint/no-misused-promises
 client.on("ready", async () => {
   await client.loadCommands(commands);
   client.loadComponents(components);

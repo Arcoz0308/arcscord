@@ -1,25 +1,30 @@
-import type { PermissionsString } from "discord.js";
-import { Client as DJSClient, EmbedBuilder, REST } from "discord.js";
-import { CommandManager } from "#/manager/command/command_manager.class";
-import { ArcLogger } from "#/utils/logger/logger.class";
-import { EventManager } from "#/manager/event/event_manager.class";
-import { TaskManager } from "#/manager/task/task_manager";
-import type { ArcClientOptions, MessageOptions } from "#/base/client/client.type";
-import type { LoggerConstructor, LoggerInterface } from "#/utils/logger/logger.type";
-import { createLogger } from "#/utils/logger/logger.util";
-import { ComponentManager } from "#/manager";
-import type { CommandDefinition } from "#/base/command/command_definition.type";
 import type { Task } from "#/base";
+import type {
+  ArcClientOptions,
+  MessageOptions,
+} from "#/base/client/client.type";
+import type { CommandDefinition } from "#/base/command/command_definition.type";
 import type { ComponentProps } from "#/base/components/component_props.type";
 import type { EventHandler } from "#/base/event/event.type";
+import type {
+  LoggerConstructor,
+  LoggerInterface,
+} from "#/utils/logger/logger.type";
+import type { PermissionsString } from "discord.js";
+import { ComponentManager } from "#/manager";
+import { CommandManager } from "#/manager/command/command_manager.class";
+import { EventManager } from "#/manager/event/event_manager.class";
+import { TaskManager } from "#/manager/task/task_manager";
+import { ArcLogger } from "#/utils/logger/logger.class";
+import { createLogger } from "#/utils/logger/logger.util";
+import { Client as DJSClient, EmbedBuilder, REST } from "discord.js";
 
 export class ArcClient extends DJSClient {
-
   commandManager: CommandManager;
 
   eventManager: EventManager;
 
-  taskManager : TaskManager;
+  taskManager: TaskManager;
 
   componentManager: ComponentManager;
 
@@ -46,44 +51,58 @@ export class ArcClient extends DJSClient {
 
     this.loggerConstructor = options.logger?.customLogger ?? ArcLogger;
 
-    this.defaultMessages = Object.assign<Required<MessageOptions>, MessageOptions | undefined>({
-      error: (errId?: string) => {
-        return {
+    this.defaultMessages = Object.assign<
+      Required<MessageOptions>,
+      MessageOptions | undefined
+    >(
+      {
+        error: (errId?: string) => {
+          return {
+            embeds: [
+              new EmbedBuilder()
+                .setTitle("Internal Error.")
+                .setColor("Orange")
+                .setDescription(
+                  `A internal error happen, error id ${errId}, please contact bot owner if error repeat`,
+                ),
+            ],
+          };
+        },
+        missingPermissions: (permissionsMissing: PermissionsString[]) => {
+          return {
+            embeds: [
+              new EmbedBuilder()
+                .setTitle("Bot missing permissions")
+                .setDescription(
+                  `The bot missing permissions : \`${permissionsMissing.join("`, `")}\``,
+                )
+                .setColor("Orange"),
+            ],
+          };
+        },
+        devOnly: {
           embeds: [
             new EmbedBuilder()
-              .setTitle("Internal Error.")
-              .setColor("Orange")
-              .setDescription(`A internal error happen, error id ${errId}, please contact bot owner if error repeat`),
+              .setTitle("Reserved to Developer")
+              .setDescription("This command is reserved for bot developers")
+              .setColor("Red"),
           ],
-        };
-      },
-      missingPermissions: (permissionsMissing: PermissionsString[]) => {
-        return {
+        },
+        authorOnly: {
           embeds: [
             new EmbedBuilder()
-              .setTitle("Bot missing permissions")
-              .setDescription(`The bot missing permissions : \`${permissionsMissing.join("`, `")}\``)
+              .setTitle("Author Only")
+              .setDescription(
+                "This command is reserved for author of interaction",
+              )
               .setColor("Orange"),
           ],
-        };
+        },
       },
-      devOnly: {
-        embeds: [
-          new EmbedBuilder()
-            .setTitle("Reserved to Developer")
-            .setDescription("This command is reserved for bot developers")
-            .setColor("Red"),
-        ],
-      },
-      authorOnly: {
-        embeds: [
-          new EmbedBuilder()
-            .setTitle("Author Only")
-            .setDescription("This command is reserved for author of interaction")
-            .setColor("Orange"),
-        ],
-      },
-    }, options.baseMessages && "default" in options.baseMessages ? options.baseMessages.default : options.baseMessages);
+      options.baseMessages && "default" in options.baseMessages
+        ? options.baseMessages.default
+        : options.baseMessages,
+    );
 
     this.arcOptions = options;
     this.commandManager = new CommandManager(this);
@@ -93,15 +112,17 @@ export class ArcClient extends DJSClient {
 
     this.componentManager = new ComponentManager(this);
 
-    this.logger = createLogger(this.loggerConstructor, "main", options.logger?.loggerFunc);
-
+    this.logger = createLogger(
+      this.loggerConstructor,
+      "main",
+      options.logger?.loggerFunc,
+    );
 
     this.token = token;
 
     this.rest = new REST({
       version: "10",
     }).setToken(token);
-
 
     this.on("ready", () => {
       this.ready = true;
@@ -115,7 +136,6 @@ export class ArcClient extends DJSClient {
         return resolve();
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
       setTimeout(() => {
         if (this.ready) {
           return resolve();
@@ -123,39 +143,43 @@ export class ArcClient extends DJSClient {
 
         // delay : 0.05s, 0.1s, 0.2s 0.4s, 0.8s, 0.5s, 1s, and repeat infinity last two
         return this.waitReady(delay <= 500 ? delay * 2 : 500);
-
       }, delay);
-
     });
   }
 
   createLogger(name: string): LoggerInterface {
-    return createLogger(this.loggerConstructor, name, this.arcOptions.logger?.loggerFunc);
+    return createLogger(
+      this.loggerConstructor,
+      name,
+      this.arcOptions.logger?.loggerFunc,
+    );
   }
 
-  async loadCommands(commands: CommandDefinition[], group = "default", guild?: string): Promise<void> {
+  async loadCommands(
+    commands: CommandDefinition[],
+    group = "default",
+    guild?: string,
+  ): Promise<void> {
     const data = this.commandManager.loadCommands(commands, group);
     let data2;
     if (guild) {
       data2 = await this.commandManager.pushGuildCommands(guild, data);
-    } else {
+    }
+    else {
       data2 = await this.commandManager.pushGlobalCommands(data);
     }
     this.commandManager.resolveCommands(commands, data2);
-
-    return;
   }
 
-  loadEvents(events: EventHandler[]) {
+  loadEvents(events: EventHandler[]): void {
     return this.eventManager.loadEvents(events);
   }
 
-  loadTasks(tasks: Task[]) {
+  loadTasks(tasks: Task[]): void {
     return this.taskManager.loadTasks(tasks);
   }
 
-  loadComponents(components: ComponentProps[]) {
+  loadComponents(components: ComponentProps[]): void {
     return this.componentManager.loadComponents(components);
   }
-
 }

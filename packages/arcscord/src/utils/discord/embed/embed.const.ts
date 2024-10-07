@@ -1,3 +1,9 @@
 import type { ArcClient } from "#/base";
+import type { BaseMessageOptions } from "discord.js";
 
-export const internalErrorEmbed = (client: ArcClient, id?: string) => client.defaultMessages.error(id);
+export function internalErrorEmbed(
+  client: ArcClient,
+  id?: string,
+): BaseMessageOptions {
+  return client.defaultMessages.error(id);
+}

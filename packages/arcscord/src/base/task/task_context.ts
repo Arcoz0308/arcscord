@@ -6,10 +6,9 @@ import { error, ok } from "@arcscord/error";
 
 type TaskContextOptions = {
   nextRun: Date;
-}
+};
 
 export class TaskContext {
-
   client: ArcClient;
 
   task: Task;
@@ -17,7 +16,6 @@ export class TaskContext {
   nextRun: Date;
 
   constructor(client: ArcClient, task: Task, options: TaskContextOptions) {
-
     this.client = client;
     this.task = task;
     this.nextRun = options.nextRun;
@@ -42,5 +40,4 @@ export class TaskContext {
 
     return ok(true);
   }
-
 }

@@ -1,8 +1,11 @@
+import type { CommandProps } from "#/base";
+import type {
+  commandContextsEnum,
+  commandIntegrationTypesEnum,
+} from "#/base/command/command.enum";
+import type { OptionsList } from "#/base/command/option.type";
 import type { LocaleMap } from "#/utils/discord/type/locale.type";
 import type { PermissionsString } from "discord.js";
-import type { commandContextsEnum, commandIntegrationTypesEnum } from "#/base/command/command.enum";
-import type { OptionsList } from "#/base/command/option.type";
-import type { CommandProps } from "#/base";
 
 export type CommandIntegrationType = keyof typeof commandIntegrationTypesEnum;
 
@@ -15,13 +18,13 @@ export type BaseCommandDefinition = {
   nsfw?: boolean;
   integrationTypes?: CommandIntegrationType[];
   contexts?: CommandContexts[];
-}
+};
 
 export type SlashCommandDefinition = BaseCommandDefinition & {
   description: string;
   descriptionLocalizations?: LocaleMap;
   options?: OptionsList;
-}
+};
 
 export type SubCommandDefinition = {
   name: string;
@@ -29,9 +32,12 @@ export type SubCommandDefinition = {
   description: string;
   descriptionLocalizations?: LocaleMap;
   options?: OptionsList;
-}
+};
 
-export type SubCommandGroupDefinition = Omit<SubCommandDefinition, "options" | "name"> & {
+export type SubCommandGroupDefinition = Omit<
+  SubCommandDefinition,
+  "options" | "name"
+> & {
   subCommands: CommandProps<SubCommandDefinition>[];
 };
 
@@ -40,24 +46,26 @@ export type SlashWithSubsCommandDefinition = BaseCommandDefinition & {
   descriptionLocalizations?: LocaleMap;
   subCommands?: CommandProps<SubCommandDefinition>[];
   subCommandsGroups?: Record<string, SubCommandGroupDefinition>;
-}
+};
 
 export type PartialCommandDefinitionForSlash = {
   slash: SlashCommandDefinition;
-}
+};
 
 export type PartialCommandDefinitionForMessage = {
   message: BaseCommandDefinition;
-}
+};
 
 export type PartialCommandDefinitionForUser = {
   user: BaseCommandDefinition;
-}
+};
 
 export type FullCommandDefinition = Partial<
-  PartialCommandDefinitionForSlash
-  & PartialCommandDefinitionForMessage
-  & PartialCommandDefinitionForUser
->
+  PartialCommandDefinitionForSlash &
+  PartialCommandDefinitionForMessage &
+  PartialCommandDefinitionForUser
+>;
 
-export type CommandDefinition = CommandProps<FullCommandDefinition> | SlashWithSubsCommandDefinition;
+export type CommandDefinition =
+  | CommandProps<FullCommandDefinition>
+  | SlashWithSubsCommandDefinition;

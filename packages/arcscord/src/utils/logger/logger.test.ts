@@ -1,8 +1,8 @@
-import { describe, expect, it } from "vitest";
-import { formatLog } from "./logger.util";
-import * as console from "console";
-import { defaultLogger } from "./logger.class";
+import * as console from "node:console";
 import { BaseError } from "@arcscord/better-error";
+import { describe, expect, it } from "vitest";
+import { defaultLogger } from "./logger.class";
+import { formatLog } from "./logger.util";
 
 describe("logs texts", () => {
   it("some logs tests", () => {
@@ -15,7 +15,6 @@ describe("logs texts", () => {
 
     console.log(formatLog("info", "test2", "database"));
 
-
     defaultLogger.debug(["name", "zghgu"]);
     defaultLogger.error("erroooor", [
       ["author", "arcoz"],
@@ -25,7 +24,8 @@ describe("logs texts", () => {
 
     try {
       throw new BaseError({ message: "oook" });
-    } catch (error) {
+    }
+    catch (error) {
       if (error instanceof BaseError) {
         defaultLogger.logError(error);
       }

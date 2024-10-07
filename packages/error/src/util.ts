@@ -4,7 +4,7 @@
  * @param {unknown} obj - The value to be converted.
  * @returns {Error} - The converted Error object.
  */
-export const anyToError = (obj: unknown): Error => {
+export function anyToError(obj: unknown): Error {
   if (obj instanceof Error) {
     return obj;
   }
@@ -16,4 +16,4 @@ export const anyToError = (obj: unknown): Error => {
     return new Error(JSON.stringify(obj));
   }
   return new Error(String(obj));
-};
+}

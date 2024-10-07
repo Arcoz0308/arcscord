@@ -32,4 +32,4 @@ export type Locale =
   "zh-TW" |
   "ko";
 
-export type LocaleMap = Partial<Record<Locale, string>>
+export type LocaleMap = Partial<Record<Locale, string>>;

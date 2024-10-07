@@ -1,9 +1,16 @@
-import { ComponentContext, type GuildComponentContextOptions } from "#/base/components/context/base_context";
-import type { Guild, GuildBasedChannel, GuildMember, ModalSubmitInteraction } from "discord.js";
 import type { ArcClient } from "#/base";
+import type {
+  Guild,
+  GuildBasedChannel,
+  GuildMember,
+  ModalSubmitInteraction,
+} from "discord.js";
+import {
+  ComponentContext,
+  type GuildComponentContextOptions,
+} from "#/base/components/context/base_context";
 
 export class DmModalContext extends ComponentContext {
-
   guildId = null;
 
   guild = null;
@@ -27,13 +34,13 @@ export class DmModalContext extends ComponentContext {
 
     this.interaction = interaction;
 
-    this.values = new Map<string, string>(interaction.fields.fields.map((field) => [field.customId, field.value]));
+    this.values = new Map<string, string>(
+      interaction.fields.fields.map(field => [field.customId, field.value]),
+    );
   }
-
 }
 
 export class GuildModalContext extends ComponentContext {
-
   guildId: string;
 
   guild: Guild;
@@ -52,7 +59,11 @@ export class GuildModalContext extends ComponentContext {
 
   values: Map<string, string>;
 
-  constructor(client: ArcClient, interaction: ModalSubmitInteraction, options: GuildComponentContextOptions) {
+  constructor(
+    client: ArcClient,
+    interaction: ModalSubmitInteraction,
+    options: GuildComponentContextOptions,
+  ) {
     super(client, interaction);
 
     this.guildId = options.guild.id;
@@ -63,9 +74,10 @@ export class GuildModalContext extends ComponentContext {
 
     this.interaction = interaction;
 
-    this.values = new Map<string, string>(interaction.fields.fields.map((field) => [field.customId, field.value]));
+    this.values = new Map<string, string>(
+      interaction.fields.fields.map(field => [field.customId, field.value]),
+    );
   }
-
 }
 
 export type ModalContext = DmModalContext | GuildModalContext;

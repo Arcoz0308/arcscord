@@ -1,28 +1,51 @@
-import type { CommandContexts, CommandIntegrationType } from "#/base/command/command_definition.type";
-import { commandContextsEnum, commandIntegrationTypesEnum, commandOptionTypesEnum } from "#/base/command/command.enum";
-import type { ChoiceNumber, ChoiceString, CommandOptionType, Option, OptionsList } from "#/base/command/option.type";
+import type {
+  CommandContexts,
+  CommandIntegrationType,
+} from "#/base/command/command_definition.type";
+import type {
+  ChoiceNumber,
+  ChoiceString,
+  CommandOptionType,
+  Option,
+  OptionsList,
+} from "#/base/command/option.type";
 import type { ChannelType } from "#/utils/discord/type/channel.type";
+import type {
+  APIApplicationCommandBasicOption,
+  APIApplicationCommandOptionChoice,
+} from "discord-api-types/v10";
+import {
+  commandContextsEnum,
+  commandIntegrationTypesEnum,
+  commandOptionTypesEnum,
+} from "#/base/command/command.enum";
 import { channelTypeEnum } from "#/utils/discord/type/channel.enum";
-import type { APIApplicationCommandBasicOption, APIApplicationCommandOptionChoice } from "discord-api-types/v10";
 
-export const contextsToAPI = (contexts: CommandContexts[]): number[] => {
-  return contexts.map((context) => commandContextsEnum[context]);
-};
+export function contextsToAPI(contexts: CommandContexts[]): number[] {
+  return contexts.map(context => commandContextsEnum[context]);
+}
 
-export const integrationTypeToAPI = (interactionTypes: CommandIntegrationType[]) => {
-  return interactionTypes.map((interactionType) => commandIntegrationTypesEnum[interactionType]);
-};
+export function integrationTypeToAPI(
+  interactionTypes: CommandIntegrationType[],
+): number[] {
+  return interactionTypes.map(
+    interactionType => commandIntegrationTypesEnum[interactionType],
+  );
+}
 
-export const optionTypeToAPI = (type: CommandOptionType) => {
+export function optionTypeToAPI(type: CommandOptionType): number {
   return commandOptionTypesEnum[type];
-};
+}
 
-export const optionChannelTypeToAPI = (channelTypes: Exclude<ChannelType, "dm" | "groupDm">[]): number[] => {
-  return channelTypes.map((channelType) => channelTypeEnum[channelType]);
-};
+export function optionChannelTypeToAPI(
+  channelTypes: Exclude<ChannelType, "dm" | "groupDm">[],
+): number[] {
+  return channelTypes.map(channelType => channelTypeEnum[channelType]);
+}
 
-export const stringChoiceToAPI = (choices: (string | ChoiceString)[] | Record<string, string> | undefined):
-  APIApplicationCommandOptionChoice<string>[] | undefined => {
+export function stringChoiceToAPI(
+  choices: (string | ChoiceString)[] | Record<string, string> | undefined,
+): APIApplicationCommandOptionChoice<string>[] | undefined {
   if (!choices) {
     return undefined;
   }
@@ -45,10 +68,11 @@ export const stringChoiceToAPI = (choices: (string | ChoiceString)[] | Record<st
       value: choices[choice],
     };
   });
-};
+}
 
-export const numberChoiceToAPI = (choices: (number | ChoiceNumber)[] | Record<string, number> | undefined):
-  APIApplicationCommandOptionChoice<number>[] | undefined => {
+export function numberChoiceToAPI(
+  choices: (number | ChoiceNumber)[] | Record<string, number> | undefined,
+): APIApplicationCommandOptionChoice<number>[] | undefined {
   if (!choices) {
     return undefined;
   }
@@ -71,13 +95,14 @@ export const numberChoiceToAPI = (choices: (number | ChoiceNumber)[] | Record<st
       value: choices[choice],
     };
   });
-};
+}
 
-
-export const optionToAPI = (name: string, option: Option): APIApplicationCommandBasicOption => {
-
+export function optionToAPI(
+  name: string,
+  option: Option,
+): APIApplicationCommandBasicOption {
   const baseOption: Omit<APIApplicationCommandBasicOption, "type"> = {
-    name: name,
+    name,
     description: option.description,
     name_localizations: option.nameLocalizations,
     description_localizations: option.descriptionLocalizations,
@@ -102,7 +127,8 @@ export const optionToAPI = (name: string, option: Option): APIApplicationCommand
         min_length: option.min_length,
         max_length: option.max_length,
         choices: undefined,
-        autocomplete: "autocomplete" in option ? option.autocomplete : undefined,
+        autocomplete:
+          "autocomplete" in option ? option.autocomplete : undefined,
       };
     }
 
@@ -125,7 +151,8 @@ export const optionToAPI = (name: string, option: Option): APIApplicationCommand
         min_value: option.min_value,
         max_value: option.max_value,
         choices: undefined,
-        autocomplete: "autocomplete" in option ? option.autocomplete : undefined,
+        autocomplete:
+          "autocomplete" in option ? option.autocomplete : undefined,
       };
     }
 
@@ -133,7 +160,9 @@ export const optionToAPI = (name: string, option: Option): APIApplicationCommand
       return {
         ...baseOption,
         type: optionTypeToAPI(option.type),
-        channel_types: option.channel_types ? optionChannelTypeToAPI(option.channel_types) : undefined,
+        channel_types: option.channel_types
+          ? optionChannelTypeToAPI(option.channel_types)
+          : undefined,
       };
     }
 
@@ -148,13 +177,15 @@ export const optionToAPI = (name: string, option: Option): APIApplicationCommand
       };
     }
   }
-};
+}
 
-export const optionListToAPI = (list: OptionsList): APIApplicationCommandBasicOption[] => {
+export function optionListToAPI(
+  list: OptionsList,
+): APIApplicationCommandBasicOption[] {
   const options: APIApplicationCommandBasicOption[] = [];
   for (const [name, option] of Object.entries(list)) {
     options.push(optionToAPI(name, option));
   }
 
   return options;
-};
+}

@@ -12,7 +12,8 @@ export const mentionableSelectMenu = createSelectMenu({
     const value = ctx.values[0];
     if (value instanceof User) {
       return ctx.reply("Select a user");
-    } else {
+    }
+    else {
       return ctx.reply("select a role");
     }
   },

@@ -4,7 +4,7 @@ import { EmbedBuilder } from "discord.js";
 export const roleSelectMenu = createSelectMenu({
   type: "roleSelect",
   matcher: "role_select_menu",
-  build: (placeHolder) =>
+  build: placeHolder =>
     buildRoleSelectMenu({
       placeholder: placeHolder,
       customId: "role_select_menu",

@@ -2,20 +2,9 @@
   "name": "@arcscord/error",
   "version": "1.0.1",
   "description": "A custom error handling system",
-  "scripts": {
-    "test": "vitest",
-    "build": "tsup",
-    "lint": "eslint ./src",
-    "lint:fix": "eslint ./src --fix"
-  },
-  "keywords": [
-    "arcscord",
-    "error",
-    "golang",
-    "errorhandling"
-  ],
   "author": "Arcoz0308",
   "license": "MIT",
+  "homepage": "https://github.com/Arcoz0308/arcscord/tree/main/packages/error#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arcoz0308/arcscord.git"
@@ -23,20 +12,30 @@
   "bugs": {
     "url": "https://github.com/arcoz0308/arcscord/issues"
   },
-  "homepage": "https://github.com/Arcoz0308/arcscord/tree/main/packages/error#readme",
+  "keywords": [
+    "arcscord",
+    "error",
+    "golang",
+    "errorhandling"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "test": "vitest",
+    "build": "tsup",
+    "lint": "eslint ./src",
+    "lint:fix": "eslint ./src --fix"
+  },
   "devDependencies": {
     "@arcoz/eslint-config": "^1.1.1",
-    "eslint": "^8.56.0",
     "tsup": "^8.2.4",
     "vitest": "^2.0.5"
   },
   "directories": {
     "lib": "./src"
-  },
-  "types": "./dist/index.d.ts",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "files": [
-    "dist"
-  ]
+  }
 }

@@ -1,5 +1,5 @@
 import type { Task } from "#/base/task/task.type";
 
-export const createTask = (options: Task): Task => {
+export function createTask(options: Task): Task {
   return options;
-};
+}

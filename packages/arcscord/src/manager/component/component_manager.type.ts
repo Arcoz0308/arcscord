@@ -5,7 +5,7 @@ import type {
   ModalComponentProps,
   RoleSelectMenuComponentProps,
   StringSelectMenuComponentProps,
-  UserSelectMenuComponentProps
+  UserSelectMenuComponentProps,
 } from "#/base/components/component_props.type";
 
 export type ComponentList = {
@@ -16,4 +16,4 @@ export type ComponentList = {
   mentionableSelectMenu: Map<string, MentionableSelectMenuComponentProps>;
   channelSelectMenu: Map<string, ChannelSelectMenuComponentProps>;
   modal: Map<string, ModalComponentProps>;
-}
+};

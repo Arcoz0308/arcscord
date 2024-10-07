@@ -1,18 +1,25 @@
-import type { LogFunc, LoggerInterface, LogLevel } from "#/utils/logger/logger.type";
-import { colorDebugValue, formatLog, formatShortDebug } from "#/utils/logger/logger.util";
-import * as process from "process";
 import type { DebugValues, DebugValueString } from "#/utils/error/error.type";
+import type {
+  LogFunc,
+  LoggerInterface,
+  LogLevel,
+} from "#/utils/logger/logger.type";
 import type { BaseError } from "@arcscord/better-error";
+import * as process from "node:process";
 import { stringifyDebugValues } from "#/utils";
-
+import {
+  colorDebugValue,
+  formatLog,
+  formatShortDebug,
+} from "#/utils/logger/logger.util";
 
 export class ArcLogger implements LoggerInterface {
-
   processName: string;
 
   // if you want to change logger
   loggerFunction: LogFunc;
 
+  // eslint-disable-next-line no-console
   constructor(name: string, loggerFunction: LogFunc = console.log) {
     this.processName = name;
     this.loggerFunction = loggerFunction;
@@ -27,7 +34,8 @@ export class ArcLogger implements LoggerInterface {
   debug(message: string | DebugValueString): void {
     if (typeof message === "string") {
       this.log("debug", message);
-    } else {
+    }
+    else {
       this.log("debug", colorDebugValue(message));
     }
   }
@@ -40,7 +48,10 @@ export class ArcLogger implements LoggerInterface {
     this.log("warning", message);
   }
 
-  error(message: string, debugs: (string | DebugValueString)[] | DebugValues = []): void {
+  error(
+    message: string,
+    debugs: (string | DebugValueString)[] | DebugValues = [],
+  ): void {
     this.log("error", message);
 
     if (!Array.isArray(debugs)) {
@@ -56,7 +67,10 @@ export class ArcLogger implements LoggerInterface {
     this.error(error.fullMessage(), error.getDebugString());
   }
 
-  fatal(message: string, debugs: (string | DebugValueString)[] | DebugValues = []): never {
+  fatal(
+    message: string,
+    debugs: (string | DebugValueString)[] | DebugValues = [],
+  ): never {
     this.log("fatal", message);
 
     if (!Array.isArray(debugs)) {
@@ -76,7 +90,6 @@ export class ArcLogger implements LoggerInterface {
   log(level: LogLevel, message: string): void {
     this.loggerFunction(formatLog(level, message, this.processName));
   }
-
 }
 
 export const defaultLogger = new ArcLogger("main");

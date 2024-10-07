@@ -2,18 +2,25 @@ import type {
   APICommandObject,
   FullCommandDefinition,
   SlashWithSubsCommandDefinition,
-  SubCommandDefinition
+  SubCommandDefinition,
 } from "#/base";
 import type {
   APIApplicationCommandSubcommandGroupOption,
   APIApplicationCommandSubcommandOption,
-  RESTPostAPIChatInputApplicationCommandsJSONBody
+  RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
-import { ApplicationCommandOptionType, ApplicationCommandType } from "discord-api-types/v10";
+import {
+  contextsToAPI,
+  integrationTypeToAPI,
+  optionListToAPI,
+} from "#/utils/discord/tranformers/command";
 import { permissionToAPI } from "#/utils/discord/tranformers/permission";
-import { contextsToAPI, integrationTypeToAPI, optionListToAPI } from "#/utils/discord/tranformers/command";
+import {
+  ApplicationCommandOptionType,
+  ApplicationCommandType,
+} from "discord-api-types/v10";
 
-export const commandToAPI = (definer: FullCommandDefinition): APICommandObject => {
+export function commandToAPI(definer: FullCommandDefinition): APICommandObject {
   const obj: APICommandObject = {};
 
   if (definer.slash) {
@@ -26,10 +33,13 @@ export const commandToAPI = (definer: FullCommandDefinition): APICommandObject =
       name_localizations: def.nameLocalizations,
       description_localizations: def.descriptionLocalizations,
       default_member_permissions: def.defaultMemberPermissions
-        ? permissionToAPI(def.defaultMemberPermissions) : undefined,
+        ? permissionToAPI(def.defaultMemberPermissions)
+        : undefined,
       nsfw: def.nsfw,
       contexts: def.contexts ? contextsToAPI(def.contexts) : undefined,
-      integration_types: def.integrationTypes ? integrationTypeToAPI(def.integrationTypes) : undefined,
+      integration_types: def.integrationTypes
+        ? integrationTypeToAPI(def.integrationTypes)
+        : undefined,
       options: def.options ? optionListToAPI(def.options) : undefined,
     };
   }
@@ -42,10 +52,13 @@ export const commandToAPI = (definer: FullCommandDefinition): APICommandObject =
       name: def.name,
       name_localizations: def.nameLocalizations,
       default_member_permissions: def.defaultMemberPermissions
-        ? permissionToAPI(def.defaultMemberPermissions) : undefined,
+        ? permissionToAPI(def.defaultMemberPermissions)
+        : undefined,
       nsfw: def.nsfw,
       contexts: def.contexts ? contextsToAPI(def.contexts) : undefined,
-      integration_types: def.integrationTypes ? integrationTypeToAPI(def.integrationTypes) : undefined,
+      integration_types: def.integrationTypes
+        ? integrationTypeToAPI(def.integrationTypes)
+        : undefined,
     };
   }
 
@@ -57,17 +70,22 @@ export const commandToAPI = (definer: FullCommandDefinition): APICommandObject =
       name: def.name,
       name_localizations: def.nameLocalizations,
       default_member_permissions: def.defaultMemberPermissions
-        ? permissionToAPI(def.defaultMemberPermissions) : undefined,
+        ? permissionToAPI(def.defaultMemberPermissions)
+        : undefined,
       nsfw: def.nsfw,
       contexts: def.contexts ? contextsToAPI(def.contexts) : undefined,
-      integration_types: def.integrationTypes ? integrationTypeToAPI(def.integrationTypes) : undefined,
+      integration_types: def.integrationTypes
+        ? integrationTypeToAPI(def.integrationTypes)
+        : undefined,
     };
   }
 
   return obj;
-};
+}
 
-export const subCommandToAPI = (definer: SubCommandDefinition): APIApplicationCommandSubcommandOption => {
+export function subCommandToAPI(
+  definer: SubCommandDefinition,
+): APIApplicationCommandSubcommandOption {
   return {
     type: ApplicationCommandOptionType.Subcommand,
     name: definer.name,
@@ -76,26 +94,31 @@ export const subCommandToAPI = (definer: SubCommandDefinition): APIApplicationCo
     description_localizations: definer.descriptionLocalizations,
     options: definer.options ? optionListToAPI(definer.options) : undefined,
   };
-};
+}
 
-export const subCommandListToAPI = (def: SlashWithSubsCommandDefinition):
-  RESTPostAPIChatInputApplicationCommandsJSONBody => {
-
-  const subCommands: (APIApplicationCommandSubcommandOption | APIApplicationCommandSubcommandGroupOption)[] = [];
+export function subCommandListToAPI(
+  def: SlashWithSubsCommandDefinition,
+): RESTPostAPIChatInputApplicationCommandsJSONBody {
+  const subCommands: (
+    | APIApplicationCommandSubcommandOption
+    | APIApplicationCommandSubcommandGroupOption
+  )[] = [];
 
   if (def.subCommands) {
-    subCommands.push(...def.subCommands.map((cmd) => subCommandToAPI(cmd.build)));
+    subCommands.push(
+      ...def.subCommands.map(cmd => subCommandToAPI(cmd.build)),
+    );
   }
 
   if (def.subCommandsGroups) {
     for (const [name, option] of Object.entries(def.subCommandsGroups)) {
       subCommands.push({
         type: ApplicationCommandOptionType.SubcommandGroup,
-        name: name,
+        name,
         description: option.description,
         name_localizations: option.nameLocalizations,
         description_localizations: option.descriptionLocalizations,
-        options: option.subCommands.map((cmd) => subCommandToAPI(cmd.build)),
+        options: option.subCommands.map(cmd => subCommandToAPI(cmd.build)),
       });
     }
   }
@@ -106,11 +129,13 @@ export const subCommandListToAPI = (def: SlashWithSubsCommandDefinition):
     name_localizations: def.nameLocalizations,
     description_localizations: def.descriptionLocalizations,
     default_member_permissions: def.defaultMemberPermissions
-      ? permissionToAPI(def.defaultMemberPermissions) : undefined,
+      ? permissionToAPI(def.defaultMemberPermissions)
+      : undefined,
     nsfw: def.nsfw,
     contexts: def.contexts ? contextsToAPI(def.contexts) : undefined,
-    integration_types: def.integrationTypes ? integrationTypeToAPI(def.integrationTypes) : undefined,
+    integration_types: def.integrationTypes
+      ? integrationTypeToAPI(def.integrationTypes)
+      : undefined,
     options: subCommands,
   };
-
-};
+}

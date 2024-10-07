@@ -5,7 +5,7 @@ export const stringSelectMenu = createSelectMenu({
   matcher: "string_select_menu",
   build: (...options) =>
     buildStringSelectMenu({
-      options: options,
+      options,
       customId: "string_select_menu",
     }),
   run: (ctx) => {

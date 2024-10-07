@@ -1,9 +1,15 @@
-import type { CommandProps, FullCommandDefinition, SubCommandDefinition } from "#/base";
+import type {
+  CommandProps,
+  FullCommandDefinition,
+  SubCommandDefinition,
+} from "#/base";
 import type { CommandMiddleware } from "#/base/command/command_middleware";
 
-export const createCommand = <
+export function createCommand<
   Definer extends SubCommandDefinition | FullCommandDefinition,
-  Middlewares extends CommandMiddleware[] = []
->(options: CommandProps<Definer, Middlewares>): CommandProps<Definer, Middlewares> => {
+  Middlewares extends CommandMiddleware[] = [],
+>(
+  options: CommandProps<Definer, Middlewares>,
+): CommandProps<Definer, Middlewares> {
   return options;
-};
+}

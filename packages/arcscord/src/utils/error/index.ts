@@ -1,9 +1,9 @@
 export * from "./class";
 export type {
   DebugValues,
-  DebugValueString
+  DebugValueString,
 } from "./error.type";
 export {
+  stringifyDebugValue,
   stringifyDebugValues,
-  stringifyDebugValue
 } from "./error.util";

@@ -1,4 +1,6 @@
-export const stringifyUnknown = (value: unknown): string => {
+import process from "node:process";
+
+export function stringifyUnknown(value: unknown): string {
   try {
     switch (typeof value) {
       case "string": {
@@ -10,7 +12,7 @@ export const stringifyUnknown = (value: unknown): string => {
       }
 
       case "bigint": {
-        return value.toString(10) + "n";
+        return `${value.toString(10)}n`;
       }
 
       case "boolean": {
@@ -40,7 +42,8 @@ export const stringifyUnknown = (value: unknown): string => {
         return "unknown";
       }
     }
-  } catch (e) {
+  }
+  catch (e) {
     if (process.env?.DEBUG) {
       console.error("Failed to parse value into string");
       console.warn("Value : ", value);
@@ -48,4 +51,4 @@ export const stringifyUnknown = (value: unknown): string => {
     }
     return "unknown";
   }
-};
+}
