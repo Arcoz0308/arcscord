@@ -1,0 +1,17 @@
+name: Type check
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Loading NodeJS
+        uses: actions/setup-node@v1
+        with:
+          node-version: '22.x'
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Type check
+        run: pnpm run typecheck
