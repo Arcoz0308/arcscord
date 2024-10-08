@@ -5,6 +5,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Loading NodeJS
+        uses: actions/setup-node@v1
+        with:
+          node-version: '22.x'
       - name: Install modules
         run: pnpm install --frozen-lockfile
       - name: Run ESLint
