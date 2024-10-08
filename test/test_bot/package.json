@@ -1,5 +1,6 @@
 {
-  "name": "test_bot",
+  "name": "@arcscord/test-bot",
+  "private": true,
   "version": "1.0.0",
   "description": "",
   "author": "",
@@ -7,7 +8,7 @@
   "keywords": [],
   "main": "index.js",
   "scripts": {
-    "run": "node -r @swc-node/register -r tsconfig-paths/register src/index.ts debug"
+    "start": "node -r @swc-node/register -r tsconfig-paths/register src/index.ts debug"
   },
   "dependencies": {
     "arcscord": "workspace:*",

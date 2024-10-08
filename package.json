@@ -22,7 +22,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "pnpm -r run typecheck",
-    "test": "pnpm -r --filter='./packages/**' run test"
+    "test": "pnpm -r --filter='./packages/**' run test",
+    "test:test-bot": "pnpm -r --filter '@arcscord/test-bot' run start"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.7.3",
