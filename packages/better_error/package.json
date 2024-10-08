@@ -29,7 +29,6 @@
     "typecheck": "tsc --project tsconfig.typecheck.json && tsc-alias -p tsconfig.typecheck.json"
   },
   "devDependencies": {
-    "@arcoz/eslint-config": "^1.1.1",
     "@types/node": "^20.11.24",
     "tsup": "^8.2.4",
     "typescript": "^5.3.3",
