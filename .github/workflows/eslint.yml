@@ -14,4 +14,4 @@ jobs:
       - name: Install modules
         run: pnpm install --frozen-lockfile
       - name: Run ESLint
-        run: eslint . --ext .js,.jsx,.ts,.tsx
+        run: pnpm run lint
