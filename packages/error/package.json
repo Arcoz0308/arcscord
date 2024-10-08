@@ -25,10 +25,9 @@
     "dist"
   ],
   "scripts": {
-    "test": "vitest",
+    "test": "vitest run",
     "build": "tsup",
-    "lint": "eslint ./src",
-    "lint:fix": "eslint ./src --fix"
+    "typecheck": "tsc --project tsconfig.typecheck.json && tsc-alias -p tsconfig.typecheck.json"
   },
   "devDependencies": {
     "@arcoz/eslint-config": "^1.1.1",

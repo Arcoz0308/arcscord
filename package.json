@@ -20,10 +20,13 @@
   "scripts": {
     "build": "pnpm -r --filter='./packages/**' run build",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm -r --filter='./packages/**' run test"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.7.3",
-    "eslint": "^9.11.1"
+    "eslint": "^9.11.1",
+    "typescript": "^5.3.3"
   }
 }
