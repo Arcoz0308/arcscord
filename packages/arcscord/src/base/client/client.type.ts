@@ -14,6 +14,8 @@ export type ArcClientLoggerOptions = {
 
   /**
    * Change the logger used by the framework, need a constructor, not a class !
+   *
+   * Only update logger builds in Client, defaultLogger don't are updated !
    * @default ArcLogger
    */
   customLogger?: LoggerConstructor;

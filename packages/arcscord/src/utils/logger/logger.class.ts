@@ -1,17 +1,9 @@
 import type { DebugValues, DebugValueString } from "#/utils/error/error.type";
-import type {
-  LogFunc,
-  LoggerInterface,
-  LogLevel,
-} from "#/utils/logger/logger.type";
+import type { LogFunc, LoggerInterface, LogLevel } from "#/utils/logger/logger.type";
 import type { BaseError } from "@arcscord/better-error";
 import * as process from "node:process";
 import { stringifyDebugValues } from "#/utils";
-import {
-  colorDebugValue,
-  formatLog,
-  formatShortDebug,
-} from "#/utils/logger/logger.util";
+import { colorDebugValue, formatLog, formatShortDebug } from "#/utils/logger/logger.util";
 
 export class ArcLogger implements LoggerInterface {
   processName: string;
@@ -92,4 +84,9 @@ export class ArcLogger implements LoggerInterface {
   }
 }
 
+/**
+ * Have a default logger easy to use
+ *
+ * Don't are changed with options in client, always ArcLogger with console.log
+ */
 export const defaultLogger = new ArcLogger("main");
