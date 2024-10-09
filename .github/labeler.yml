@@ -1,0 +1,12 @@
+pkg/better-error:
+  - changed-files:
+      - any-glob-to-any-file:
+          - packages/better_error/*
+pkg/core:
+  - changed-files:
+      - any-glob-to-any-file:
+          - packages/arcscord/*
+pkg/error:
+  - changed-files:
+      - any-glob-to-any-file:
+          - packages/error/*
