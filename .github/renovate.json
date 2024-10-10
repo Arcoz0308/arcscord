@@ -1,0 +1,41 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "group:allNonMajor"],
+  "labels": ["dependencies"],
+  "schedule": ["before 12pm on Sunday"],
+  "cloneSubmodules": true,
+  "npm": {
+    "postUpdateOptions": ["pnpmDedupe"],
+    "rangeStrategy": "bump",
+    "packageRules": [
+      {
+        "matchUpdateTypes": ["patch"],
+        "matchCurrentVersion": "/^0\\./",
+        "automerge": true,
+        "platformAutomerge": true
+      },
+      {
+        "matchUpdateTypes": ["minor", "patch"],
+        "matchCurrentVersion": ">=1.0.0",
+        "automerge": true,
+        "platformAutomerge": true
+      },
+      {
+        "matchDepTypes": ["engines"],
+        "enabled": false
+      },
+      {
+        "matchPackagePatterns": ["typescript"],
+        "enabled": false
+      },
+      {
+        "matchPackagePatterns": ["typedoc"],
+        "enabled": false
+      },
+      {
+        "matchPackagePatterns": ["discord-api-types"],
+        "enabled": false
+      }
+    ]
+  }
+}
