@@ -1,6 +1,6 @@
 {
   "name": "@arcscord/arcscord",
-  "packageManager": "pnpm@9.3.0",
+  "packageManager": "pnpm@9.12.1",
   "description": "A discord.js framework, slash command first and full typescript !",
   "author": "Arcoz0308",
   "license": "MIT",
@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.7.3",
-    "eslint": "^9.11.1",
+    "eslint": "^9.12.0",
     "tsc-alias": "^1.8.10",
     "typescript": "^5.3.3"
   }
