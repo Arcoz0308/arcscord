@@ -1,5 +1,8 @@
 import process from "node:process";
 
+/**
+ * make a proper string from unknown value
+ */
 export function stringifyUnknown(value: unknown): string {
   try {
     switch (typeof value) {
