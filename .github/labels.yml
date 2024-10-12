@@ -34,3 +34,9 @@
 - name: pkg/error
   color: 0E8A16
   description: About error package
+- name: pkg/dynamic-loader
+  color: 0E8A16
+  description: About dynamic loaded package
+- name: pkg/middleware
+  color: 0E8A16
+  description: About middleware package
