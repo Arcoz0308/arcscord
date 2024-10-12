@@ -6,12 +6,7 @@ import type {
   PartialCommandDefinitionForUser,
   SlashWithSubsCommandDefinition,
 } from "#/base/command/command_definition.type";
-import type {
-  ContextOptions,
-  Option,
-  OptionalContextOption,
-  OptionsList,
-} from "#/base/command/option.type";
+import type { ContextOptions, Option, OptionalContextOption, OptionsList } from "#/base/command/option.type";
 import type { Result } from "@arcscord/error";
 import type {
   AutocompleteInteraction,
@@ -22,54 +17,59 @@ import type {
 import { BaseError } from "@arcscord/better-error";
 import { anyToError, error, ok } from "@arcscord/error";
 import { BaseChannel, GuildMember, Role, User } from "discord.js";
-import {
-  ApplicationCommandOptionType,
-  ApplicationCommandType,
-} from "discord-api-types/v10";
+import { ApplicationCommandOptionType } from "discord-api-types/v10";
 
+/**
+ * @internal
+ */
 export function isSubCommand(
   props: CommandProps | SlashWithSubsCommandDefinition,
 ): props is SlashWithSubsCommandDefinition {
   return "name" in props;
 }
 
+/**
+ * @internal
+ */
 export function hasSlashCommand(
   definer: FullCommandDefinition,
 ): definer is PartialCommandDefinitionForSlash {
   return "slash" in definer;
 }
 
+/**
+ * @internal
+ */
 export function hasMessageCommand(
   definer: FullCommandDefinition,
 ): definer is PartialCommandDefinitionForMessage {
   return "message" in definer;
 }
 
+/**
+ * @internal
+ */
 export function hasUserCommand(
   definer: FullCommandDefinition,
 ): definer is PartialCommandDefinitionForUser {
   return "user" in definer;
 }
 
+/**
+ * @internal
+ */
 export function hasAutocomplete(
   command: object,
 ): command is AutocompleteCommand {
   return "autocomplete" in command;
 }
 
-export function commandTypeToString(type: ApplicationCommandType): string {
-  switch (type) {
-    case ApplicationCommandType.ChatInput:
-      return "Slash Command";
-    case ApplicationCommandType.Message:
-      return "Message Command";
-    case ApplicationCommandType.User:
-      return "User Command";
-    default:
-      return "Unknown Command type";
-  }
-}
-
+/**
+ * Converts a CommandInteractionOption to a string representation based on its ApplicationCommandOptionType, like `Number<30>`
+ *
+ * @param option - The option to be converted to string.
+ * @returns The string representation of the command option.
+ */
 export function slashCommandOptionValueToString(
   option: CommandInteractionOption,
 ): string {
@@ -113,6 +113,11 @@ export function slashCommandOptionValueToString(
   }
 }
 
+/**
+ * Make a full string of the command like `slash:ping (1292499977658040353)`
+ * @param interaction the interaction of the command
+ * @param noOptions if add value of options for slashCommands
+ */
 export function commandInteractionToString(
   interaction: CommandInteraction | AutocompleteInteraction,
   noOptions = true,
@@ -168,6 +173,9 @@ export function commandInteractionToString(
   }
 }
 
+/**
+ * @internal
+ */
 export async function parseOptions<T extends OptionsList>(
   interaction: ChatInputCommandInteraction,
   optionsList: T,

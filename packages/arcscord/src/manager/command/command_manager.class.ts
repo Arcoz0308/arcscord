@@ -27,10 +27,7 @@ import {
   isSubCommand,
   parseOptions,
 } from "#/base/command";
-import {
-  DmAutoCompleteContext,
-  GuildAutocompleteContext,
-} from "#/base/command/autocomplete_context";
+import { DmAutoCompleteContext, GuildAutocompleteContext } from "#/base/command/autocomplete_context";
 import {
   DmMessageCommandContext,
   DmSlashCommandContext,
@@ -40,10 +37,7 @@ import {
   GuildUserCommandContext,
 } from "#/base/command/command_context";
 import { preCheck } from "#/base/command/command_precheck";
-import {
-  commandToAPI,
-  subCommandListToAPI,
-} from "#/base/command/command_transformer";
+import { commandToAPI, subCommandListToAPI } from "#/base/command/command_transformer";
 import { BaseManager } from "#/base/manager/manager.class";
 import { CommandError } from "#/utils";
 import { internalErrorEmbed } from "#/utils/discord/embed/embed.const";
@@ -332,6 +326,14 @@ export class CommandManager
     }
   }
 
+  /**
+   * resolve the command name, for always same format in internal work
+   *
+   * Format : commandId_commandName
+   *
+   * GuildFormat : g_commandId_commandName
+   * @param apiCommand the command to resolve
+   */
   resolveCommandName(apiCommand: ApplicationCommand): string {
     if (apiCommand.guildId) {
       return `g_${apiCommand.id}_${apiCommand.name}`;

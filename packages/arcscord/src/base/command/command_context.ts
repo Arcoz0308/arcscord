@@ -10,6 +10,15 @@ import type {
 } from "#/base/command/command_definition.type";
 import type { CommandMiddleware } from "#/base/command/command_middleware";
 import type { ContextOptions, OptionsList } from "#/base/command/option.type";
+import type {
+  CommandContextDocs,
+  ContextDocs,
+  DmContextDocs,
+  GuildContextDocs,
+  MessageCommandContextDocs,
+  SlashCommandContextDocs,
+  UserCommandContextDocs,
+} from "#/base/utils";
 import type { CommandErrorOptions } from "#/utils";
 import type {
   ChatInputCommandInteraction,
@@ -31,12 +40,18 @@ import { CommandError } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";
 import { InteractionContextType } from "discord.js";
 
-export type MiddlewaresResults<M extends CommandMiddleware[]> = {
+/**
+ * @internal
+ */
+type MiddlewaresResults<M extends CommandMiddleware[]> = {
   [K in M[number] as K["name"]]: NonNullable<
     Awaited<ReturnType<K["run"]>>["next"]
   >;
 };
 
+/**
+ * Options for building a base command context
+ */
 export type BaseCommandContextBuilderOptions<
   M extends CommandMiddleware[] = CommandMiddleware[],
 > = {
@@ -45,33 +60,58 @@ export type BaseCommandContextBuilderOptions<
   client: ArcClient;
 };
 
+/**
+ * Base class for creating a command context
+ */
 export class BaseCommandContext<
   M extends CommandMiddleware[] = CommandMiddleware[],
-> {
+> implements ContextDocs {
   /**
-   * the command class
+   * The command properties
    */
   command: CommandProps;
 
   /**
-   * djs original interaction
+   * The original Discord.js interaction
    */
   interaction: CommandInteraction;
 
   user: User;
 
+  /**
+   * The context of the interaction
+   * @see [Discord Docs](https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-interaction-context-types)
+   */
   interactionContext: CommandContexts | null;
 
+  /**
+   * The source of the integration that triggered the interaction
+   * @see [Discord Docs](https://discord.com/developers/docs/resources/application#application-object-application-integration-types)
+   */
   interactionSource: CommandIntegrationType;
 
+  /**
+   * Whether the reply to the interaction is deferred
+   */
   defer: boolean = false;
 
   client: ArcClient;
 
+  /**
+   * The resolved name of the command
+   */
   resolvedCommandName: string;
 
+  /**
+   * Additional middleware results
+   *
+   * @remarks is an object with each name of used middleware and results of him
+   */
   additional: MiddlewaresResults<M>;
 
+  /**
+   * Construct a new BaseCommandContext
+   */
   constructor(
     command: CommandProps,
     interaction: CommandInteraction,
@@ -95,13 +135,19 @@ export class BaseCommandContext<
     this.additional = options.additional || ({} as MiddlewaresResults<M>);
   }
 
+  /**
+   * Reply to the interaction with a message
+   */
   async reply(
     message: string,
-    options?: Omit<InteractionReplyOptions, "content">,
+    options?: Omit<InteractionReplyOptions, "content">
   ): Promise<CommandRunResult>;
 
+  /**
+   * Reply to the interaction with options
+   */
   async reply(
-    options: MessagePayload | InteractionReplyOptions,
+    options: MessagePayload | InteractionReplyOptions
   ): Promise<CommandRunResult>;
 
   async reply(
@@ -127,13 +173,19 @@ export class BaseCommandContext<
     }
   }
 
+  /**
+   * Edit the reply to the interaction with a message
+   */
   async editReply(
     message: string,
-    options?: Omit<InteractionEditReplyOptions, "content">,
+    options?: Omit<InteractionEditReplyOptions, "content">
   ): Promise<CommandRunResult>;
 
+  /**
+   * Edit the reply to the interaction with options
+   */
   async editReply(
-    options: MessagePayload | InteractionEditReplyOptions,
+    options: MessagePayload | InteractionEditReplyOptions
   ): Promise<CommandRunResult>;
 
   async editReply(
@@ -159,6 +211,9 @@ export class BaseCommandContext<
     }
   }
 
+  /**
+   * Defer the reply to the interaction
+   */
   async deferReply(
     options: InteractionDeferReplyOptions,
   ): Promise<CommandRunResult> {
@@ -178,6 +233,9 @@ export class BaseCommandContext<
     }
   }
 
+  /**
+   * send a modal to user that created interaction
+   */
   async showModal(modal: ModalComponentData): Promise<CommandRunResult> {
     try {
       await this.interaction.showModal(modal);
@@ -194,14 +252,23 @@ export class BaseCommandContext<
     }
   }
 
+  /**
+   * Create a success result
+   */
   ok(value: string | true = true): CommandRunResult {
     return ok(value);
   }
 
+  /**
+   * Create an error result
+   */
   error(options: Omit<CommandErrorOptions, "ctx">): CommandRunResult {
     return error(new CommandError({ ...options, ctx: this }));
   }
 
+  /**
+   * Execute multiple functions sequentially, stopping if any function returns an error
+   */
   async multiple(
     ...funcList: Promise<CommandRunResult>[]
   ): Promise<CommandRunResult> {
@@ -216,6 +283,9 @@ export class BaseCommandContext<
     return ok(true);
   }
 
+  /**
+   * @internal
+   */
   #interactionContextConverter(
     ctx: InteractionContextType | null,
   ): CommandContexts | null {
@@ -234,6 +304,9 @@ export class BaseCommandContext<
   }
 }
 
+/**
+ * Options for building a guild command context
+ */
 export type GuildCommandContextBuilderOptions<
   M extends CommandMiddleware[] = CommandMiddleware[],
 > = BaseCommandContextBuilderOptions<M> & {
@@ -242,9 +315,12 @@ export type GuildCommandContextBuilderOptions<
   member: GuildMember;
 };
 
+/**
+ * Class for creating a guild command context
+ */
 export class GuildCommandContext<
   M extends CommandMiddleware[] = CommandMiddleware[],
-> extends BaseCommandContext<M> {
+> extends BaseCommandContext<M> implements GuildContextDocs {
   guildId: string;
 
   guild: Guild;
@@ -274,9 +350,12 @@ export class GuildCommandContext<
   }
 }
 
+/**
+ * Class for creating a DM command context
+ */
 export class DmCommandContext<
   M extends CommandMiddleware[] = CommandMiddleware[],
-> extends BaseCommandContext<M> {
+> extends BaseCommandContext<M> implements DmContextDocs {
   guildId = null;
 
   guild = null;
@@ -292,6 +371,9 @@ export class DmCommandContext<
   readonly inDM = true;
 }
 
+/**
+ * @internal
+ */
 type ContextOptionsDef<
   T extends PartialCommandDefinitionForSlash | SubCommandDefinition,
 > = T extends PartialCommandDefinitionForSlash
@@ -304,6 +386,9 @@ type ContextOptionsDef<
       : null
     : never;
 
+/**
+ * Options for building a guild slash command context
+ */
 export type GuildSlashCommandContextBuilderOptions<
   T extends PartialCommandDefinitionForSlash | SubCommandDefinition = | PartialCommandDefinitionForSlash
   | SubCommandDefinition,
@@ -312,11 +397,14 @@ export type GuildSlashCommandContextBuilderOptions<
   options: ContextOptionsDef<T>;
 };
 
+/**
+ * Class for creating a guild slash command context
+ */
 export class GuildSlashCommandContext<
   T extends PartialCommandDefinitionForSlash | SubCommandDefinition = | PartialCommandDefinitionForSlash
   | SubCommandDefinition,
   M extends CommandMiddleware[] = CommandMiddleware[],
-> extends GuildCommandContext<M> {
+> extends GuildCommandContext<M> implements CommandContextDocs, SlashCommandContextDocs {
   options: ContextOptionsDef<T>;
 
   readonly type = "slash" as const;
@@ -342,15 +430,21 @@ export class GuildSlashCommandContext<
   }
 }
 
+/**
+ * Options for building a guild message command context
+ */
 export type GuildMessageCommandContextBuilderOptions<
   M extends CommandMiddleware[] = CommandMiddleware[],
 > = GuildCommandContextBuilderOptions<M> & {
   message: Message;
 };
 
+/**
+ * Class for creating a guild message command context
+ */
 export class GuildMessageCommandContext<
   M extends CommandMiddleware[] = CommandMiddleware[],
-> extends GuildCommandContext<M> {
+> extends GuildCommandContext<M> implements CommandContextDocs, MessageCommandContextDocs {
   targetMessage: Message;
 
   readonly type = "message" as const;
@@ -376,6 +470,9 @@ export class GuildMessageCommandContext<
   }
 }
 
+/**
+ * Options for building a guild user command context
+ */
 export type GuildUserCommandContextBuilderOptions<
   M extends CommandMiddleware[] = CommandMiddleware[],
 > = GuildCommandContextBuilderOptions<M> & {
@@ -383,9 +480,12 @@ export type GuildUserCommandContextBuilderOptions<
   targetMember: GuildMember | null;
 };
 
+/**
+ * Class for creating a guild user command context
+ */
 export class GuildUserCommandContext<
   M extends CommandMiddleware[] = CommandMiddleware[],
-> extends GuildCommandContext<M> {
+> extends GuildCommandContext<M> implements CommandContextDocs, UserCommandContextDocs {
   targetUser: User;
 
   targetMember: GuildMember | null;
@@ -414,23 +514,27 @@ export class GuildUserCommandContext<
   }
 }
 
+/**
+ * Options for building a DM slash command context
+ */
 export type DmSlashCommandContextBuilderOptions<
-  T extends
-    | (PartialCommandDefinitionForSlash & FullCommandDefinition)
-    | SubCommandDefinition = | PartialCommandDefinitionForSlash
-    | SubCommandDefinition,
+  T extends | (PartialCommandDefinitionForSlash & FullCommandDefinition)
+  | SubCommandDefinition = | PartialCommandDefinitionForSlash
+  | SubCommandDefinition,
   M extends CommandMiddleware[] = CommandMiddleware[],
 > = BaseCommandContextBuilderOptions<M> & {
   options: ContextOptionsDef<T>;
 };
 
+/**
+ * Class for creating a DM slash command context
+ */
 export class DmSlashCommandContext<
-  T extends
-    | (PartialCommandDefinitionForSlash & FullCommandDefinition)
-    | SubCommandDefinition = | (PartialCommandDefinitionForSlash & FullCommandDefinition)
-    | SubCommandDefinition,
+  T extends | (PartialCommandDefinitionForSlash & FullCommandDefinition)
+  | SubCommandDefinition = | (PartialCommandDefinitionForSlash & FullCommandDefinition)
+  | SubCommandDefinition,
   M extends CommandMiddleware[] = CommandMiddleware[],
-> extends DmCommandContext<M> {
+> extends DmCommandContext<M> implements CommandContextDocs, SlashCommandContextDocs {
   options: ContextOptionsDef<T>;
 
   readonly type = "slash" as const;
@@ -456,15 +560,21 @@ export class DmSlashCommandContext<
   }
 }
 
+/**
+ * Options for building a DM message command context
+ */
 export type DmMessageCommandContextBuilderOptions<
   M extends CommandMiddleware[] = CommandMiddleware[],
 > = BaseCommandContextBuilderOptions<M> & {
   message: Message;
 };
 
+/**
+ * Class for creating a DM message command context
+ */
 export class DmMessageCommandContext<
   M extends CommandMiddleware[] = CommandMiddleware[],
-> extends DmCommandContext<M> {
+> extends DmCommandContext<M> implements CommandContextDocs, MessageCommandContextDocs {
   targetMessage: Message;
 
   readonly type = "message" as const;
@@ -490,15 +600,21 @@ export class DmMessageCommandContext<
   }
 }
 
+/**
+ * Options for building a DM user command context
+ */
 export type DmUserCommandContextBuilderOptions<
   M extends CommandMiddleware[] = CommandMiddleware[],
 > = BaseCommandContextBuilderOptions<M> & {
   targetUser: User;
 };
 
+/**
+ * Class for creating a DM user command context
+ */
 export class DmUserCommandContext<
   M extends CommandMiddleware[] = CommandMiddleware[],
-> extends DmCommandContext<M> {
+> extends DmCommandContext<M> implements CommandContextDocs, UserCommandContextDocs {
   targetUser: User;
 
   targetMember = null;
@@ -526,21 +642,24 @@ export class DmUserCommandContext<
   }
 }
 
+/**
+ * A command context
+ */
 export type CommandContext<
   T extends FullCommandDefinition | SubCommandDefinition = | FullCommandDefinition
   | SubCommandDefinition,
   M extends CommandMiddleware[] = CommandMiddleware[],
 > = T extends FullCommandDefinition
   ?
-      | (T extends PartialCommandDefinitionForSlash
-        ? GuildSlashCommandContext<T, M> | DmSlashCommandContext<T, M>
+  | (T extends PartialCommandDefinitionForSlash
+    ? GuildSlashCommandContext<T, M> | DmSlashCommandContext<T, M>
+    : never)
+    | (T extends PartialCommandDefinitionForMessage
+      ? GuildMessageCommandContext<M> | DmMessageCommandContext<M>
+      : never)
+      | (T extends PartialCommandDefinitionForUser
+        ? GuildUserCommandContext<M> | DmUserCommandContext<M>
         : never)
-        | (T extends PartialCommandDefinitionForMessage
-          ? GuildMessageCommandContext<M> | DmMessageCommandContext<M>
-          : never)
-          | (T extends PartialCommandDefinitionForUser
-            ? GuildUserCommandContext<M> | DmUserCommandContext<M>
-            : never)
   : T extends SubCommandDefinition
     ? GuildSlashCommandContext<T, M> | DmSlashCommandContext<T, M>
     : never;

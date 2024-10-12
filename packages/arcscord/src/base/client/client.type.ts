@@ -16,7 +16,7 @@ export type ArcClientLoggerOptions = {
    * Change the logger used by the framework, need a constructor, not a class !
    *
    * Only update logger builds in Client, defaultLogger don't are updated !
-   * @default ArcLogger
+   * @default {@link ArcLogger}
    */
   customLogger?: LoggerConstructor;
 };
@@ -56,13 +56,13 @@ export type MessageOptions = {
   error?: (errId?: string) => BaseMessageOptions;
   /**
    * Message if someone use a command that are reserved for dev
-   * @see {CommandOptions.developerCommand}
+   * @see {@link CommandOptions.developerCommand}
    */
   devOnly?: BaseMessageOptions;
   /**
    * Message if bot missing some perms for execute a command
    * @param permissionsMissing the missing permissions for the execute the command
-   * @see {CommandOptions.neededPermissions}
+   * @see {@link CommandOptions.neededPermissions}
    */
   missingPermissions?: (
     permissionsMissing: PermissionsString[],

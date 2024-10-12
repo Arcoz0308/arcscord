@@ -6,6 +6,7 @@ import type {
   NumberChoices,
   StringChoices,
 } from "#/base";
+import type { ContextDocs, DmContextDocs, GuildContextDocs } from "#/base/utils/context.type";
 import type {
   ApplicationCommandOptionChoiceData,
   AutocompleteFocusedOption,
@@ -13,6 +14,7 @@ import type {
   Guild,
   GuildBasedChannel,
   GuildMember,
+  User,
 } from "discord.js";
 import { CommandError, type CommandErrorOptions } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";
@@ -22,7 +24,10 @@ type BaseAutocompleteOptions = {
   client: ArcClient;
 };
 
-export class BaseAutocompleteContext {
+/**
+ * Base class for handling autocomplete context.
+ */
+export class BaseAutocompleteContext implements ContextDocs {
   client: ArcClient;
 
   command: CommandProps;
@@ -31,6 +36,15 @@ export class BaseAutocompleteContext {
 
   resolvedCommandName: string;
 
+  user: User;
+
+  /**
+   * Constructs a new BaseAutocompleteContext.
+   *
+   * @param command - The command props.
+   * @param interaction - The autocomplete interaction.
+   * @param options - The base autocomplete options.
+   */
   constructor(
     command: CommandProps,
     interaction: AutocompleteInteraction,
@@ -40,16 +54,29 @@ export class BaseAutocompleteContext {
     this.interaction = interaction;
     this.resolvedCommandName = options.resolvedName;
     this.client = options.client;
+    this.user = interaction.user;
   }
 
+  /**
+   * Gets the focused option's value as a string.
+   */
   get focus(): string {
     return this.interaction.options.getFocused(false);
   }
 
+  /**
+   * Gets the full focused option.
+   */
   get fullFocus(): AutocompleteFocusedOption {
     return this.interaction.options.getFocused(true);
   }
 
+  /**
+   * Sends choices to the interaction.
+   *
+   * @param choices - The choices to send.
+   * @returns A promise that resolves to CommandRunResult.
+   */
   async sendChoices(
     choices: StringChoices | NumberChoices,
   ): Promise<CommandRunResult> {
@@ -92,14 +119,30 @@ export class BaseAutocompleteContext {
     }
   }
 
-  ok(value: string | true): CommandRunResult {
+  /**
+   * Returns a successfully CommandRunResult
+   *
+   * @param value A value to pass to the command. Can be a string or true.
+   */
+  ok(value: string | true = true): CommandRunResult {
     return ok(value);
   }
 
+  /**
+   * return a failed CommandRunResult
+   *
+   * @param options - The options for creating the CommandError, excluding the context (`ctx`).
+   */
   error(options: Omit<CommandErrorOptions, "ctx">): CommandRunResult {
     return error(new CommandError({ ...options, ctx: this }));
   }
 
+  /**
+   * Executes multiple functions in sequence, returning an error if any fail.
+   *
+   * @param funcList - The list of functions to execute.
+   * @returns A promise that resolves to CommandRunResult.
+   */
   async multiple(
     ...funcList: Promise<CommandRunResult>[]
   ): Promise<CommandRunResult> {
@@ -115,7 +158,10 @@ export class BaseAutocompleteContext {
   }
 }
 
-export class DmAutoCompleteContext extends BaseAutocompleteContext {
+/**
+ * Context for handling DM-based autocomplete interactions.
+ */
+export class DmAutoCompleteContext extends BaseAutocompleteContext implements DmContextDocs {
   guildId = null;
 
   guild = null;
@@ -131,7 +177,10 @@ export class DmAutoCompleteContext extends BaseAutocompleteContext {
   readonly inDM = true;
 }
 
-export class GuildAutocompleteContext extends BaseAutocompleteContext {
+/**
+ * Context for handling guild-based autocomplete interactions.
+ */
+export class GuildAutocompleteContext extends BaseAutocompleteContext implements GuildContextDocs {
   guildId: string;
 
   guild: Guild;
@@ -146,6 +195,13 @@ export class GuildAutocompleteContext extends BaseAutocompleteContext {
 
   readonly inDM = false;
 
+  /**
+   * Constructs a new GuildAutocompleteContext.
+   *
+   * @param command - The command props.
+   * @param interaction - The autocomplete interaction.
+   * @param options - The guild command context builder options and base autocomplete options.
+   */
   constructor(
     command: CommandProps,
     interaction: AutocompleteInteraction,
@@ -161,6 +217,9 @@ export class GuildAutocompleteContext extends BaseAutocompleteContext {
   }
 }
 
+/**
+ * Union type for different types of autocomplete contexts.
+ */
 export type AutocompleteContext =
   | GuildAutocompleteContext
   | DmAutoCompleteContext;
