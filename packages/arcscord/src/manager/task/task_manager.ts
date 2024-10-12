@@ -1,18 +1,33 @@
 import type { Task } from "#/base";
-import { TaskContext } from "#/base";
-import { BaseManager } from "#/base/manager/manager.class";
+import { BaseManager, TaskContext } from "#/base";
 import { anyToError } from "@arcscord/error";
 import { CronJob } from "cron";
 
+/**
+ * Represents a manager for handling tasks.
+ */
 export class TaskManager extends BaseManager {
   name = "task";
 
+  /**
+   * A map to store tasks and their corresponding cron jobs or intervals.
+   */
   crons: Map<string, CronJob | CronJob[] | NodeJS.Timeout> = new Map();
 
+  /**
+   * Loads multiple tasks into the TaskManager.
+   *
+   * @param tasks - An array of tasks to load.
+   */
   loadTasks(tasks: Task[]): void {
     tasks.forEach(task => this.loadTask(task));
   }
 
+  /**
+   * Loads a single task into the TaskManager.
+   *
+   * @param task - The task to load.
+   */
   loadTask(task: Task): void {
     if (this.crons.has(task.name)) {
       return this.logger.fatal(`a task with name ${task.name} already exist !`);
@@ -69,7 +84,7 @@ export class TaskManager extends BaseManager {
     );
   }
 
-  async runTask(task: Task): Promise<void> {
+  private async runTask(task: Task): Promise<void> {
     try {
       const cron = this.crons.get(task.name);
       if (!cron) {

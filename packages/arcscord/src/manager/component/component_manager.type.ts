@@ -8,6 +8,9 @@ import type {
   UserSelectMenuComponentProps,
 } from "#/base/components/component_props.type";
 
+/**
+ * @internal
+ */
 export type ComponentList = {
   button: Map<string, ButtonComponentProps>;
   stringSelectMenu: Map<string, StringSelectMenuComponentProps>;
