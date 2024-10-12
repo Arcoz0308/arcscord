@@ -1,4 +1,5 @@
-import type { ArcClient } from "#/base";
+import type { ArcClient, BaseComponentContextOptions } from "#/base";
+import type { ComponentMiddleware } from "#/base/components/component_middleware";
 import type { DmContextDocs, GuildContextDocs } from "#/base/utils";
 import type { Guild, GuildBasedChannel, GuildMember, ModalSubmitInteraction } from "discord.js";
 import { ComponentContext, type GuildComponentContextOptions } from "#/base/components/context/base_context";
@@ -6,7 +7,7 @@ import { ComponentContext, type GuildComponentContextOptions } from "#/base/comp
 /**
  * `DmModalContext` is a class representing the context of a modal interaction within a direct message (DM).
  */
-export class DmModalContext extends ComponentContext implements DmContextDocs {
+export class DmModalContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends ComponentContext<M> implements DmContextDocs {
   guildId = null;
 
   guild = null;
@@ -32,9 +33,10 @@ export class DmModalContext extends ComponentContext implements DmContextDocs {
    * Constructs a DM modal context.
    * @param client - The ArcClient instance.
    * @param interaction - The modal submit interaction.
+   * @param options
    */
-  constructor(client: ArcClient, interaction: ModalSubmitInteraction) {
-    super(client, interaction);
+  constructor(client: ArcClient, interaction: ModalSubmitInteraction, options: BaseComponentContextOptions<M>) {
+    super(client, interaction, options);
 
     this.interaction = interaction;
 
@@ -47,7 +49,7 @@ export class DmModalContext extends ComponentContext implements DmContextDocs {
 /**
  * Represents the context for a guild modal interaction.
  */
-export class GuildModalContext extends ComponentContext implements GuildContextDocs {
+export class GuildModalContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends ComponentContext<M> implements GuildContextDocs {
   guildId: string;
 
   guild: Guild;
@@ -78,9 +80,9 @@ export class GuildModalContext extends ComponentContext implements GuildContextD
   constructor(
     client: ArcClient,
     interaction: ModalSubmitInteraction,
-    options: GuildComponentContextOptions,
+    options: GuildComponentContextOptions<M>,
   ) {
-    super(client, interaction);
+    super(client, interaction, options);
 
     this.guildId = options.guild.id;
     this.guild = options.guild;
@@ -99,4 +101,4 @@ export class GuildModalContext extends ComponentContext implements GuildContextD
 /**
  * Type alias representing either a DM or guild modal context.
  */
-export type ModalContext = DmModalContext | GuildModalContext;
+export type ModalContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> = DmModalContext<M> | GuildModalContext<M>;

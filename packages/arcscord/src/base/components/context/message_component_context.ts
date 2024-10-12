@@ -1,5 +1,6 @@
-import type { ArcClient } from "#/base";
+import type { ArcClient, BaseComponentContextOptions } from "#/base";
 import type { ComponentRunResult } from "#/base/components";
+import type { ComponentMiddleware } from "#/base/components/component_middleware";
 import type {
   ActionRow,
   MessageActionRowComponent,
@@ -16,16 +17,17 @@ import { anyToError, error, ok } from "@arcscord/error";
  * MessageComponentContext class.
  * Extends ComponentContext and provides context for message component interactions.
  */
-export class MessageComponentContext extends ComponentContext {
+export class MessageComponentContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends ComponentContext<M> {
   interaction: MessageComponentInteraction;
 
   /**
    * Creates an instance of MessageComponentContext.
    * @param client - The ArcClient instance.
    * @param interaction - The MessageComponentInteraction instance.
+   * @param options
    */
-  constructor(client: ArcClient, interaction: MessageComponentInteraction) {
-    super(client, interaction);
+  constructor(client: ArcClient, interaction: MessageComponentInteraction, options: BaseComponentContextOptions<M>) {
+    super(client, interaction, options);
 
     this.interaction = interaction;
   }

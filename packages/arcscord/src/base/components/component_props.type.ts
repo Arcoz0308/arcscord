@@ -1,5 +1,6 @@
 import type { ComponentRunResult } from "#/base/components/component.type";
 import type { Button, ComponentType, TypedSelectMenuOptions } from "#/base/components/component_definer.type";
+import type { ComponentMiddleware } from "#/base/components/component_middleware";
 import type { ButtonContext } from "#/base/components/context/button_context";
 import type { ModalContext } from "#/base/components/context/modal_context";
 import type {
@@ -27,7 +28,7 @@ export type MatcherType = "begin" | "full";
 /**
  * Base properties for all component types.
  */
-export type BaseComponentProps = {
+export type BaseComponentProps<Middlewares extends ComponentMiddleware[] = ComponentMiddleware[]> = {
   /**
    * The type of the component.
    */
@@ -53,12 +54,17 @@ export type BaseComponentProps = {
    * Whether the pre-reply should be ephemeral.
    */
   ephemeralPreReply?: boolean;
+
+  use?: Middlewares;
 };
 
 /**
  * Properties for a button component.
  */
-export type ButtonComponentProps<O extends string[] = string[]> = BaseComponentProps & {
+export type ButtonComponentProps<
+  O extends string[] = string[],
+  M extends ComponentMiddleware[] = ComponentMiddleware[],
+> = BaseComponentProps<M> & {
   type: Extract<BaseComponentProps["type"], "button">;
 
   /**
@@ -69,7 +75,7 @@ export type ButtonComponentProps<O extends string[] = string[]> = BaseComponentP
   /**
    * Function to run when the button is clicked.
    */
-  run: (ctx: ButtonContext) => Promise<ComponentRunResult>;
+  run: (ctx: ButtonContext<M>) => Promise<ComponentRunResult>;
 };
 
 /**
@@ -77,8 +83,9 @@ export type ButtonComponentProps<O extends string[] = string[]> = BaseComponentP
  */
 export type StringSelectMenuComponentProps<
   O extends string[] = string[],
+  M extends ComponentMiddleware[] = ComponentMiddleware[],
   Typed extends TypedSelectMenuOptions | undefined = undefined,
-> = BaseComponentProps & {
+> = BaseComponentProps<M> & {
   type: Extract<BaseComponentProps["type"], "stringSelect">;
 
   /**
@@ -89,17 +96,16 @@ export type StringSelectMenuComponentProps<
   /**
    * Function to run when the select menu is used.
    */
-  run: (ctx: StringSelectMenuContext<Typed>) => Promise<ComponentRunResult>;
-} & (Typed extends TypedSelectMenuOptions
-  ? {
-      values: Typed;
-    }
-  : object);
+  run: (ctx: StringSelectMenuContext<M, Typed>) => Promise<ComponentRunResult>;
+} & (Typed extends TypedSelectMenuOptions ? { values: Typed } : NonNullable<unknown>);
 
 /**
  * Properties for a user select menu component.
  */
-export type UserSelectMenuComponentProps<O extends string[] = string[]> = BaseComponentProps & {
+export type UserSelectMenuComponentProps<
+  O extends string[] = string[],
+  M extends ComponentMiddleware[] = ComponentMiddleware[],
+> = BaseComponentProps & {
   type: Extract<BaseComponentProps["type"], "userSelect">;
 
   /**
@@ -110,13 +116,16 @@ export type UserSelectMenuComponentProps<O extends string[] = string[]> = BaseCo
   /**
    * Function to run when the select menu is used.
    */
-  run: (ctx: UserSelectMenuContext) => Promise<ComponentRunResult>;
+  run: (ctx: UserSelectMenuContext<M>) => Promise<ComponentRunResult>;
 };
 
 /**
  * Properties for a role select menu component.
  */
-export type RoleSelectMenuComponentProps<O extends string[] = string[]> = BaseComponentProps & {
+export type RoleSelectMenuComponentProps<
+  O extends string[] = string[],
+  M extends ComponentMiddleware[] = ComponentMiddleware[],
+> = BaseComponentProps & {
   type: Extract<BaseComponentProps["type"], "roleSelect">;
 
   /**
@@ -127,13 +136,16 @@ export type RoleSelectMenuComponentProps<O extends string[] = string[]> = BaseCo
   /**
    * Function to run when the select menu is used.
    */
-  run: (ctx: RoleSelectMenuContext) => Promise<ComponentRunResult>;
+  run: (ctx: RoleSelectMenuContext<M>) => Promise<ComponentRunResult>;
 };
 
 /**
  * Properties for a mentionable select menu component.
  */
-export type MentionableSelectMenuComponentProps<O extends string[] = string[]> = BaseComponentProps & {
+export type MentionableSelectMenuComponentProps<
+  O extends string[] = string[],
+  M extends ComponentMiddleware[] = ComponentMiddleware[],
+> = BaseComponentProps & {
   type: Extract<BaseComponentProps["type"], "mentionableSelect">;
 
   /**
@@ -144,13 +156,16 @@ export type MentionableSelectMenuComponentProps<O extends string[] = string[]> =
   /**
    * Function to run when the select menu is used.
    */
-  run: (ctx: MentionableSelectMenuContext) => Promise<ComponentRunResult>;
+  run: (ctx: MentionableSelectMenuContext<M>) => Promise<ComponentRunResult>;
 };
 
 /**
  * Properties for a channel select menu component.
  */
-export type ChannelSelectMenuComponentProps<O extends string[] = string[]> = BaseComponentProps & {
+export type ChannelSelectMenuComponentProps<
+  O extends string[] = string[],
+  M extends ComponentMiddleware[] = ComponentMiddleware[],
+> = BaseComponentProps & {
   type: Extract<BaseComponentProps["type"], "channelSelect">;
 
   /**
@@ -161,13 +176,16 @@ export type ChannelSelectMenuComponentProps<O extends string[] = string[]> = Bas
   /**
    * Function to run when the select menu is used.
    */
-  run: (ctx: ChannelSelectMenuContext) => Promise<ComponentRunResult>;
+  run: (ctx: ChannelSelectMenuContext<M>) => Promise<ComponentRunResult>;
 };
 
 /**
  * Properties for a modal component.
  */
-export type ModalComponentProps<O extends string[] = string[]> = BaseComponentProps & {
+export type ModalComponentProps<
+  O extends string[] = string[],
+  M extends ComponentMiddleware[] = ComponentMiddleware[],
+> = BaseComponentProps & {
   type: Extract<BaseComponentProps["type"], "modal">;
 
   /**
@@ -178,7 +196,7 @@ export type ModalComponentProps<O extends string[] = string[]> = BaseComponentPr
   /**
    * Function to run when the modal is submitted.
    */
-  run: (ctx: ModalContext) => Promise<ComponentRunResult>;
+  run: (ctx: ModalContext<M>) => Promise<ComponentRunResult>;
 };
 
 /**
@@ -186,12 +204,12 @@ export type ModalComponentProps<O extends string[] = string[]> = BaseComponentPr
  */
 export type SelectMenuComponentProps<
   O extends string[] = string[],
-  T extends TypedSelectMenuOptions | undefined = undefined,
-> = StringSelectMenuComponentProps<O, T>
-| UserSelectMenuComponentProps<O>
-| RoleSelectMenuComponentProps<O>
-| MentionableSelectMenuComponentProps<O>
-| ChannelSelectMenuComponentProps<O>;
+  M extends ComponentMiddleware[] = ComponentMiddleware[],
+> = StringSelectMenuComponentProps<O, M>
+| UserSelectMenuComponentProps<O, M>
+| RoleSelectMenuComponentProps<O, M>
+| MentionableSelectMenuComponentProps<O, M>
+| ChannelSelectMenuComponentProps<O, M>;
 
 /**
  * Union type for all component properties.

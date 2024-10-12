@@ -1,5 +1,6 @@
 import type { ArcClient } from "#/base";
 import type { ComponentRunResult } from "#/base/components";
+import type { ComponentMiddleware } from "#/base/components/component_middleware";
 import type { ContextDocs } from "#/base/utils";
 import type {
   Guild,
@@ -17,9 +18,21 @@ import { ComponentError, type ComponentErrorOptions } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";
 
 /**
+ * @internal
+ */
+type MiddlewaresResults<M extends ComponentMiddleware[]> = {
+  [K in M[number] as K["name"]]: NonNullable<
+    Awaited<ReturnType<K["run"]>>["next"]
+  >;
+};
+
+export type BaseComponentContextOptions<M extends ComponentMiddleware[] = ComponentMiddleware[]> = {
+  additional?: MiddlewaresResults<M>;
+};
+/**
  * Base Component context
  */
-export class ComponentContext implements Omit<ContextDocs, "command" | "resolvedCommandName"> {
+export class ComponentContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> implements Omit<ContextDocs, "command" | "resolvedCommandName"> {
   /**
    * The custom id of the component
    */
@@ -36,14 +49,18 @@ export class ComponentContext implements Omit<ContextDocs, "command" | "resolved
 
   client: ArcClient;
 
+  additional: MiddlewaresResults<M>;
+
   /**
    * Constructor for ComponentContext.
    * @param client The ArcClient instance.
    * @param interaction The interaction object.
+   * @param options additional options
    */
   constructor(
     client: ArcClient,
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
+    options: BaseComponentContextOptions<M>,
   ) {
     this.customId = interaction.customId;
     this.user = interaction.user;
@@ -51,6 +68,8 @@ export class ComponentContext implements Omit<ContextDocs, "command" | "resolved
     this.interaction = interaction;
 
     this.client = client;
+
+    this.additional = options.additional || ({} as MiddlewaresResults<M>);
   }
 
   /**
@@ -208,7 +227,7 @@ export class ComponentContext implements Omit<ContextDocs, "command" | "resolved
 /**
  * GuildComponentContextOptions type declaration.
  */
-export type GuildComponentContextOptions = {
+export type GuildComponentContextOptions<M extends ComponentMiddleware[] = ComponentMiddleware[]> = BaseComponentContextOptions<M> & {
   member: GuildMember;
   guild: Guild;
   channel: GuildBasedChannel;

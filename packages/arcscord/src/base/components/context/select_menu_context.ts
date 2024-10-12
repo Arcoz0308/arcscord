@@ -1,5 +1,6 @@
-import type { ArcClient } from "#/base";
+import type { ArcClient, BaseComponentContextOptions } from "#/base";
 import type { StringSelectMenuValues, TypedSelectMenuOptions } from "#/base/components";
+import type { ComponentMiddleware } from "#/base/components/component_middleware";
 import type { GuildComponentContextOptions } from "#/base/components/context/base_context";
 import type { DmContextDocs, GuildContextDocs } from "#/base/utils";
 import type {
@@ -23,7 +24,7 @@ import { MessageComponentContext } from "#/base/components/context/message_compo
 /**
  * Guild context for select menu interactions.
  */
-export class GuildSelectMenuContext extends MessageComponentContext implements GuildContextDocs {
+export class GuildSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends MessageComponentContext<M> implements GuildContextDocs {
   guildId: string;
 
   guild: Guild;
@@ -47,9 +48,9 @@ export class GuildSelectMenuContext extends MessageComponentContext implements G
   constructor(
     client: ArcClient,
     interaction: MessageComponentInteraction,
-    options: GuildComponentContextOptions,
+    options: GuildComponentContextOptions<M>,
   ) {
-    super(client, interaction);
+    super(client, interaction, options);
 
     this.guildId = options.guild.id;
     this.guild = options.guild;
@@ -62,7 +63,7 @@ export class GuildSelectMenuContext extends MessageComponentContext implements G
 /**
  * DM context for select menu interactions.
  */
-export class DmSelectMenuContext extends MessageComponentContext implements DmContextDocs {
+export class DmSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends MessageComponentContext<M> implements DmContextDocs {
   guildId = null;
 
   guild = null;
@@ -93,8 +94,9 @@ export type StringSelectMenuContextOptions<
  * Guild context for string select menu interactions.
  */
 export class GuildStringSelectMenuContext<
-  T extends TypedSelectMenuOptions | undefined,
-> extends GuildSelectMenuContext {
+  M extends ComponentMiddleware[] = ComponentMiddleware[],
+  T extends TypedSelectMenuOptions | undefined = undefined,
+> extends GuildSelectMenuContext<M> {
   /**
    * Selected Values (typed soon)
    */
@@ -113,7 +115,7 @@ export class GuildStringSelectMenuContext<
   constructor(
     client: ArcClient,
     interaction: StringSelectMenuInteraction,
-    options: GuildComponentContextOptions & StringSelectMenuContextOptions<T>,
+    options: GuildComponentContextOptions<M> & StringSelectMenuContextOptions<T>,
   ) {
     super(client, interaction, options);
 
@@ -126,8 +128,9 @@ export class GuildStringSelectMenuContext<
  * DM context for string select menu interactions.
  */
 export class DmStringSelectMenuContext<
-  T extends TypedSelectMenuOptions | undefined,
-> extends DmSelectMenuContext {
+  M extends ComponentMiddleware[] = ComponentMiddleware[],
+  T extends TypedSelectMenuOptions | undefined = undefined,
+> extends DmSelectMenuContext<M> {
   /**
    * Selected Values (typed soon)
    */
@@ -146,9 +149,9 @@ export class DmStringSelectMenuContext<
   constructor(
     client: ArcClient,
     interaction: StringSelectMenuInteraction,
-    options: StringSelectMenuContextOptions<T>,
+    options: StringSelectMenuContextOptions<T> & BaseComponentContextOptions<M>,
   ) {
-    super(client, interaction);
+    super(client, interaction, options);
 
     this.values = options.values;
     this.interaction = interaction;
@@ -159,8 +162,9 @@ export class DmStringSelectMenuContext<
  * Type for StringSelectMenuContext.
  */
 export type StringSelectMenuContext<
+  M extends ComponentMiddleware[] = ComponentMiddleware[],
   T extends TypedSelectMenuOptions | undefined = undefined,
-> = GuildStringSelectMenuContext<T> | DmStringSelectMenuContext<T>;
+> = GuildStringSelectMenuContext<M, T> | DmStringSelectMenuContext<M, T>;
 
 /**
  * Options for the UserSelectMenuContext.
@@ -172,7 +176,7 @@ export type UserSelectMenuContextOptions = {
 /**
  * Guild context for user select menu interactions.
  */
-export class GuildUserSelectMenuContext extends GuildSelectMenuContext {
+export class GuildUserSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends GuildSelectMenuContext<M> {
   /**
    * Selected users
    */
@@ -189,7 +193,7 @@ export class GuildUserSelectMenuContext extends GuildSelectMenuContext {
   constructor(
     client: ArcClient,
     interaction: UserSelectMenuInteraction,
-    options: GuildComponentContextOptions & UserSelectMenuContextOptions,
+    options: GuildComponentContextOptions<M> & UserSelectMenuContextOptions,
   ) {
     super(client, interaction, options);
 
@@ -201,7 +205,7 @@ export class GuildUserSelectMenuContext extends GuildSelectMenuContext {
 /**
  * DM context for user select menu interactions.
  */
-export class DmUserSelectMenuContext extends DmSelectMenuContext {
+export class DmUserSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends DmSelectMenuContext<M> {
   /**
    * Selected users
    */
@@ -218,9 +222,9 @@ export class DmUserSelectMenuContext extends DmSelectMenuContext {
   constructor(
     client: ArcClient,
     interaction: UserSelectMenuInteraction,
-    options: UserSelectMenuContextOptions,
+    options: UserSelectMenuContextOptions & BaseComponentContextOptions<M>,
   ) {
-    super(client, interaction);
+    super(client, interaction, options);
 
     this.values = options.values;
     this.interaction = interaction;
@@ -230,9 +234,9 @@ export class DmUserSelectMenuContext extends DmSelectMenuContext {
 /**
  * Type for UserSelectMenuContext.
  */
-export type UserSelectMenuContext =
-  | GuildUserSelectMenuContext
-  | DmUserSelectMenuContext;
+export type UserSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> =
+  | GuildUserSelectMenuContext<M>
+  | DmUserSelectMenuContext<M>;
 
 /**
  * Options for the RoleSelectMenuContext.
@@ -244,7 +248,7 @@ export type RoleSelectMenuContextOptions = {
 /**
  * Guild context for role select menu interactions.
  */
-export class GuildRoleSelectMenuContext extends GuildSelectMenuContext {
+export class GuildRoleSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends GuildSelectMenuContext<M> {
   /**
    * Selected roles
    */
@@ -261,7 +265,7 @@ export class GuildRoleSelectMenuContext extends GuildSelectMenuContext {
   constructor(
     client: ArcClient,
     interaction: RoleSelectMenuInteraction,
-    options: GuildComponentContextOptions & RoleSelectMenuContextOptions,
+    options: GuildComponentContextOptions<M> & RoleSelectMenuContextOptions,
   ) {
     super(client, interaction, options);
 
@@ -273,7 +277,7 @@ export class GuildRoleSelectMenuContext extends GuildSelectMenuContext {
 /**
  * DM context for role select menu interactions.
  */
-export class DmRoleSelectMenuContext extends DmSelectMenuContext {
+export class DmRoleSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends DmSelectMenuContext<M> {
   /**
    * Selected roles
    */
@@ -290,9 +294,9 @@ export class DmRoleSelectMenuContext extends DmSelectMenuContext {
   constructor(
     client: ArcClient,
     interaction: RoleSelectMenuInteraction,
-    options: RoleSelectMenuContextOptions,
+    options: RoleSelectMenuContextOptions & BaseComponentContextOptions<M>,
   ) {
-    super(client, interaction);
+    super(client, interaction, options);
 
     this.values = options.values;
     this.interaction = interaction;
@@ -302,9 +306,9 @@ export class DmRoleSelectMenuContext extends DmSelectMenuContext {
 /**
  * Type for RoleSelectMenuContext.
  */
-export type RoleSelectMenuContext =
-  | GuildRoleSelectMenuContext
-  | DmRoleSelectMenuContext;
+export type RoleSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> =
+  | GuildRoleSelectMenuContext<M>
+  | DmRoleSelectMenuContext<M>;
 
 /**
  * Options for the MentionableSelectMenuContext.
@@ -317,7 +321,7 @@ export type MentionableSelectMenuContextOptions = {
 /**
  * Guild context for mentionable select menu interactions.
  */
-export class GuildMentionableSelectMenuContext extends GuildSelectMenuContext {
+export class GuildMentionableSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends GuildSelectMenuContext<M> {
   /**
    * All selected Users and/or Role
    */
@@ -344,7 +348,7 @@ export class GuildMentionableSelectMenuContext extends GuildSelectMenuContext {
   constructor(
     client: ArcClient,
     interaction: MentionableSelectMenuInteraction,
-    options: GuildComponentContextOptions & MentionableSelectMenuContextOptions,
+    options: GuildComponentContextOptions<M> & MentionableSelectMenuContextOptions,
   ) {
     super(client, interaction, options);
 
@@ -358,7 +362,7 @@ export class GuildMentionableSelectMenuContext extends GuildSelectMenuContext {
 /**
  * DM context for mentionable select menu interactions.
  */
-export class DmMentionableSelectMenuContext extends DmSelectMenuContext {
+export class DmMentionableSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends DmSelectMenuContext<M> {
   /**
    * All selected Users and/or Role
    */
@@ -385,9 +389,9 @@ export class DmMentionableSelectMenuContext extends DmSelectMenuContext {
   constructor(
     client: ArcClient,
     interaction: MentionableSelectMenuInteraction,
-    options: MentionableSelectMenuContextOptions,
+    options: MentionableSelectMenuContextOptions & BaseComponentContextOptions<M>,
   ) {
-    super(client, interaction);
+    super(client, interaction, options);
 
     this.interaction = interaction;
     this.roles = options.roles;
@@ -399,9 +403,9 @@ export class DmMentionableSelectMenuContext extends DmSelectMenuContext {
 /**
  * Type for MentionableSelectMenuContext.
  */
-export type MentionableSelectMenuContext =
-  | GuildMentionableSelectMenuContext
-  | DmMentionableSelectMenuContext;
+export type MentionableSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> =
+  | GuildMentionableSelectMenuContext<M>
+  | DmMentionableSelectMenuContext<M>;
 
 /**
  * Options for the ChannelSelectMenuContext.
@@ -413,7 +417,7 @@ export type ChannelSelectMenuContextOptions = {
 /**
  * Guild context for channel select menu interactions.
  */
-export class GuildChannelSelectMenuContext extends GuildSelectMenuContext {
+export class GuildChannelSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends GuildSelectMenuContext<M> {
   /**
    * Selected channels
    */
@@ -430,7 +434,7 @@ export class GuildChannelSelectMenuContext extends GuildSelectMenuContext {
   constructor(
     client: ArcClient,
     interaction: ChannelSelectMenuInteraction,
-    options: GuildComponentContextOptions & ChannelSelectMenuContextOptions,
+    options: GuildComponentContextOptions<M> & ChannelSelectMenuContextOptions,
   ) {
     super(client, interaction, options);
 
@@ -442,7 +446,7 @@ export class GuildChannelSelectMenuContext extends GuildSelectMenuContext {
 /**
  * DM context for channel select menu interactions.
  */
-export class DmChannelSelectMenuContext extends DmSelectMenuContext {
+export class DmChannelSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends DmSelectMenuContext<M> {
   /**
    * Selected channels
    */
@@ -459,9 +463,9 @@ export class DmChannelSelectMenuContext extends DmSelectMenuContext {
   constructor(
     client: ArcClient,
     interaction: ChannelSelectMenuInteraction,
-    options: ChannelSelectMenuContextOptions,
+    options: ChannelSelectMenuContextOptions & BaseComponentContextOptions<M>,
   ) {
-    super(client, interaction);
+    super(client, interaction, options);
 
     this.values = options.values;
     this.interaction = interaction;
@@ -471,6 +475,6 @@ export class DmChannelSelectMenuContext extends DmSelectMenuContext {
 /**
  * Type for ChannelSelectMenuContext.
  */
-export type ChannelSelectMenuContext =
-  | GuildChannelSelectMenuContext
-  | DmChannelSelectMenuContext;
+export type ChannelSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> =
+  | GuildChannelSelectMenuContext<M>
+  | DmChannelSelectMenuContext<M>;

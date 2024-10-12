@@ -1,4 +1,4 @@
-import type { TypedSelectMenuOptions } from "#/base/components/component_definer.type";
+import type { ComponentMiddleware } from "#/base/components/component_middleware";
 import type {
   ButtonComponentProps,
   ModalComponentProps,
@@ -28,8 +28,8 @@ import type {
  */
 export function createSelectMenu<
   O extends string[],
-  T extends TypedSelectMenuOptions | undefined,
->(options: SelectMenuComponentProps<O, T>): SelectMenuComponentProps<O, T> {
+  M extends ComponentMiddleware[] = ComponentMiddleware[],
+>(options: SelectMenuComponentProps<O, M>): SelectMenuComponentProps<O, M> {
   return options;
 }
 
@@ -53,7 +53,10 @@ export function createSelectMenu<
  * });
  * ```
  */
-export function createButton<O extends string[]>(options: Omit<ButtonComponentProps<O>, "type">): ButtonComponentProps<O> {
+export function createButton<
+  O extends string[],
+  M extends ComponentMiddleware[] = ComponentMiddleware[],
+>(options: Omit<ButtonComponentProps<O, M>, "type">): ButtonComponentProps<O, M> {
   return { ...options, type: "button" };
 }
 
@@ -78,6 +81,9 @@ export function createButton<O extends string[]>(options: Omit<ButtonComponentPr
  * ```
  *
  */
-export function createModal<O extends string[]>(options: Omit<ModalComponentProps<O>, "type">): ModalComponentProps<O> {
+export function createModal<
+  O extends string[],
+  M extends ComponentMiddleware[] = ComponentMiddleware[],
+>(options: Omit<ModalComponentProps<O, M>, "type">): ModalComponentProps<O, M> {
   return { ...options, type: "modal" };
 }
