@@ -1,0 +1,914 @@
+{
+	"id": 0,
+	"name": "@arcscord/error",
+	"variant": "project",
+	"kind": 1,
+	"flags": {},
+	"children": [
+		{
+			"id": 18,
+			"name": "Result",
+			"variant": "declaration",
+			"kind": 2097152,
+			"flags": {},
+			"comment": {
+				"summary": [
+					{
+						"kind": "text",
+						"text": "Represents a Result that encapsulates either a success value or an error value."
+					}
+				]
+			},
+			"sources": [
+				{
+					"fileName": "type.ts",
+					"line": 7,
+					"character": 12,
+					"url": "https://github.com/Arcoz0308/arcscord/blob/f1d755e369c6c2167170769aa95a4f2f781d6ec6/packages/error/src/type.ts#L7"
+				}
+			],
+			"typeParameters": [
+				{
+					"id": 19,
+					"name": "T",
+					"variant": "typeParam",
+					"kind": 131072,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "The type of the success value."
+							}
+						]
+					}
+				},
+				{
+					"id": 20,
+					"name": "E",
+					"variant": "typeParam",
+					"kind": 131072,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "The type of the error value."
+							}
+						]
+					}
+				}
+			],
+			"type": {
+				"type": "union",
+				"types": [
+					{
+						"type": "reference",
+						"target": 21,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"target": 19,
+								"name": "T",
+								"package": "@arcscord/error",
+								"refersToTypeParameter": true
+							}
+						],
+						"name": "ResultOk",
+						"package": "@arcscord/error"
+					},
+					{
+						"type": "reference",
+						"target": 23,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"target": 20,
+								"name": "E",
+								"package": "@arcscord/error",
+								"refersToTypeParameter": true
+							}
+						],
+						"name": "ResultErr",
+						"package": "@arcscord/error"
+					}
+				]
+			}
+		},
+		{
+			"id": 23,
+			"name": "ResultErr",
+			"variant": "declaration",
+			"kind": 2097152,
+			"flags": {},
+			"comment": {
+				"summary": [
+					{
+						"kind": "text",
+						"text": "Represents a Result with an error."
+					}
+				]
+			},
+			"sources": [
+				{
+					"fileName": "type.ts",
+					"line": 24,
+					"character": 12,
+					"url": "https://github.com/Arcoz0308/arcscord/blob/f1d755e369c6c2167170769aa95a4f2f781d6ec6/packages/error/src/type.ts#L24"
+				}
+			],
+			"typeParameters": [
+				{
+					"id": 24,
+					"name": "E",
+					"variant": "typeParam",
+					"kind": 131072,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "The type of error"
+							}
+						]
+					}
+				}
+			],
+			"type": {
+				"type": "tuple",
+				"elements": [
+					{
+						"type": "namedTupleMember",
+						"name": "value",
+						"isOptional": false,
+						"element": {
+							"type": "literal",
+							"value": null
+						}
+					},
+					{
+						"type": "namedTupleMember",
+						"name": "error",
+						"isOptional": false,
+						"element": {
+							"type": "reference",
+							"target": 24,
+							"name": "E",
+							"package": "@arcscord/error",
+							"refersToTypeParameter": true
+						}
+					}
+				]
+			}
+		},
+		{
+			"id": 21,
+			"name": "ResultOk",
+			"variant": "declaration",
+			"kind": 2097152,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "type.ts",
+					"line": 14,
+					"character": 12,
+					"url": "https://github.com/Arcoz0308/arcscord/blob/f1d755e369c6c2167170769aa95a4f2f781d6ec6/packages/error/src/type.ts#L14"
+				}
+			],
+			"typeParameters": [
+				{
+					"id": 22,
+					"name": "T",
+					"variant": "typeParam",
+					"kind": 131072,
+					"flags": {}
+				}
+			],
+			"type": {
+				"type": "tuple",
+				"elements": [
+					{
+						"type": "namedTupleMember",
+						"name": "value",
+						"isOptional": false,
+						"element": {
+							"type": "reference",
+							"target": 22,
+							"name": "T",
+							"package": "@arcscord/error",
+							"refersToTypeParameter": true
+						}
+					},
+					{
+						"type": "namedTupleMember",
+						"name": "error",
+						"isOptional": false,
+						"element": {
+							"type": "literal",
+							"value": null
+						}
+					}
+				]
+			}
+		},
+		{
+			"id": 25,
+			"name": "anyToError",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "util.ts",
+					"line": 7,
+					"character": 16,
+					"url": "https://github.com/Arcoz0308/arcscord/blob/f1d755e369c6c2167170769aa95a4f2f781d6ec6/packages/error/src/util.ts#L7"
+				}
+			],
+			"signatures": [
+				{
+					"id": 26,
+					"name": "anyToError",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Converts any value to an Error object."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@returns",
+								"content": [
+									{
+										"kind": "text",
+										"text": "The converted Error object."
+									}
+								]
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "util.ts",
+							"line": 7,
+							"character": 16,
+							"url": "https://github.com/Arcoz0308/arcscord/blob/f1d755e369c6c2167170769aa95a4f2f781d6ec6/packages/error/src/util.ts#L7"
+						}
+					],
+					"parameters": [
+						{
+							"id": 27,
+							"name": "obj",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The value to be converted."
+									}
+								]
+							},
+							"type": {
+								"type": "intrinsic",
+								"name": "unknown"
+							}
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../node_modules/.pnpm/typescript@5.6.2/node_modules/typescript/lib/lib.es5.d.ts",
+							"qualifiedName": "Error"
+						},
+						"name": "Error",
+						"package": "typescript"
+					}
+				}
+			]
+		},
+		{
+			"id": 6,
+			"name": "error",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "func.ts",
+					"line": 27,
+					"character": 16,
+					"url": "https://github.com/Arcoz0308/arcscord/blob/f1d755e369c6c2167170769aa95a4f2f781d6ec6/packages/error/src/func.ts#L27"
+				}
+			],
+			"signatures": [
+				{
+					"id": 7,
+					"name": "error",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Represents an error result."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@returns",
+								"content": [
+									{
+										"kind": "text",
+										"text": "The error result."
+									}
+								]
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "func.ts",
+							"line": 27,
+							"character": 16,
+							"url": "https://github.com/Arcoz0308/arcscord/blob/f1d755e369c6c2167170769aa95a4f2f781d6ec6/packages/error/src/func.ts#L27"
+						}
+					],
+					"typeParameters": [
+						{
+							"id": 8,
+							"name": "T",
+							"variant": "typeParam",
+							"kind": 131072,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The type of the value that should have been returned if there was no error."
+									}
+								]
+							}
+						},
+						{
+							"id": 9,
+							"name": "E",
+							"variant": "typeParam",
+							"kind": 131072,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The type of the error."
+									}
+								]
+							}
+						}
+					],
+					"parameters": [
+						{
+							"id": 10,
+							"name": "err",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The error value."
+									}
+								]
+							},
+							"type": {
+								"type": "reference",
+								"target": 9,
+								"name": "E",
+								"package": "@arcscord/error",
+								"refersToTypeParameter": true
+							}
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 18,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"target": 8,
+								"name": "T",
+								"package": "@arcscord/error",
+								"refersToTypeParameter": true
+							},
+							{
+								"type": "reference",
+								"target": 9,
+								"name": "E",
+								"package": "@arcscord/error",
+								"refersToTypeParameter": true
+							}
+						],
+						"name": "Result",
+						"package": "@arcscord/error"
+					}
+				}
+			]
+		},
+		{
+			"id": 11,
+			"name": "forceSafe",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "func.ts",
+					"line": 41,
+					"character": 22,
+					"url": "https://github.com/Arcoz0308/arcscord/blob/f1d755e369c6c2167170769aa95a4f2f781d6ec6/packages/error/src/func.ts#L41"
+				}
+			],
+			"signatures": [
+				{
+					"id": 12,
+					"name": "forceSafe",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "A function that executes a given function and returns a Result  wrapping the result or an error."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@returns",
+								"content": [
+									{
+										"kind": "text",
+										"text": "A promise that resolves to a Result."
+									}
+								]
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "func.ts",
+							"line": 41,
+							"character": 22,
+							"url": "https://github.com/Arcoz0308/arcscord/blob/f1d755e369c6c2167170769aa95a4f2f781d6ec6/packages/error/src/func.ts#L41"
+						}
+					],
+					"typeParameters": [
+						{
+							"id": 13,
+							"name": "T",
+							"variant": "typeParam",
+							"kind": 131072,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The type of the result value."
+									}
+								]
+							}
+						}
+					],
+					"parameters": [
+						{
+							"id": 14,
+							"name": "fn",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The function to be executed."
+									}
+								]
+							},
+							"type": {
+								"type": "reflection",
+								"declaration": {
+									"id": 15,
+									"name": "__type",
+									"variant": "declaration",
+									"kind": 65536,
+									"flags": {},
+									"sources": [
+										{
+											"fileName": "func.ts",
+											"line": 41,
+											"character": 39,
+											"url": "https://github.com/Arcoz0308/arcscord/blob/f1d755e369c6c2167170769aa95a4f2f781d6ec6/packages/error/src/func.ts#L41"
+										}
+									],
+									"signatures": [
+										{
+											"id": 16,
+											"name": "__type",
+											"variant": "signature",
+											"kind": 4096,
+											"flags": {},
+											"sources": [
+												{
+													"fileName": "func.ts",
+													"line": 41,
+													"character": 39,
+													"url": "https://github.com/Arcoz0308/arcscord/blob/f1d755e369c6c2167170769aa95a4f2f781d6ec6/packages/error/src/func.ts#L41"
+												}
+											],
+											"parameters": [
+												{
+													"id": 17,
+													"name": "args",
+													"variant": "param",
+													"kind": 32768,
+													"flags": {
+														"isRest": true
+													},
+													"type": {
+														"type": "array",
+														"elementType": {
+															"type": "intrinsic",
+															"name": "unknown"
+														}
+													}
+												}
+											],
+											"type": {
+												"type": "union",
+												"types": [
+													{
+														"type": "reference",
+														"target": 13,
+														"name": "T",
+														"package": "@arcscord/error",
+														"refersToTypeParameter": true
+													},
+													{
+														"type": "reference",
+														"target": {
+															"sourceFileName": "../../node_modules/.pnpm/typescript@5.6.2/node_modules/typescript/lib/lib.es5.d.ts",
+															"qualifiedName": "Promise"
+														},
+														"typeArguments": [
+															{
+																"type": "reference",
+																"target": 13,
+																"name": "T",
+																"package": "@arcscord/error",
+																"refersToTypeParameter": true
+															}
+														],
+														"name": "Promise",
+														"package": "typescript"
+													}
+												]
+											}
+										}
+									]
+								}
+							}
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": {
+							"sourceFileName": "../../node_modules/.pnpm/typescript@5.6.2/node_modules/typescript/lib/lib.es5.d.ts",
+							"qualifiedName": "Promise"
+						},
+						"typeArguments": [
+							{
+								"type": "reference",
+								"target": 18,
+								"typeArguments": [
+									{
+										"type": "reference",
+										"target": 13,
+										"name": "T",
+										"package": "@arcscord/error",
+										"refersToTypeParameter": true
+									},
+									{
+										"type": "reference",
+										"target": {
+											"sourceFileName": "../../node_modules/.pnpm/typescript@5.6.2/node_modules/typescript/lib/lib.es5.d.ts",
+											"qualifiedName": "Error"
+										},
+										"name": "Error",
+										"package": "typescript"
+									}
+								],
+								"name": "Result",
+								"package": "@arcscord/error"
+							}
+						],
+						"name": "Promise",
+						"package": "typescript"
+					}
+				}
+			]
+		},
+		{
+			"id": 1,
+			"name": "ok",
+			"variant": "declaration",
+			"kind": 64,
+			"flags": {},
+			"sources": [
+				{
+					"fileName": "func.ts",
+					"line": 12,
+					"character": 16,
+					"url": "https://github.com/Arcoz0308/arcscord/blob/f1d755e369c6c2167170769aa95a4f2f781d6ec6/packages/error/src/func.ts#L12"
+				}
+			],
+			"signatures": [
+				{
+					"id": 2,
+					"name": "ok",
+					"variant": "signature",
+					"kind": 4096,
+					"flags": {},
+					"comment": {
+						"summary": [
+							{
+								"kind": "text",
+								"text": "Represents a function that wraps a value in a Result  with a success status."
+							}
+						],
+						"blockTags": [
+							{
+								"tag": "@returns",
+								"content": [
+									{
+										"kind": "text",
+										"text": "- The Result object with success status and wrapped value."
+									}
+								]
+							}
+						]
+					},
+					"sources": [
+						{
+							"fileName": "func.ts",
+							"line": 12,
+							"character": 16,
+							"url": "https://github.com/Arcoz0308/arcscord/blob/f1d755e369c6c2167170769aa95a4f2f781d6ec6/packages/error/src/func.ts#L12"
+						}
+					],
+					"typeParameters": [
+						{
+							"id": 3,
+							"name": "T",
+							"variant": "typeParam",
+							"kind": 131072,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The type of value to be wrapped."
+									}
+								]
+							}
+						},
+						{
+							"id": 4,
+							"name": "E",
+							"variant": "typeParam",
+							"kind": 131072,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The type of error for the Result."
+									}
+								]
+							}
+						}
+					],
+					"parameters": [
+						{
+							"id": 5,
+							"name": "value",
+							"variant": "param",
+							"kind": 32768,
+							"flags": {},
+							"comment": {
+								"summary": [
+									{
+										"kind": "text",
+										"text": "The value to be wrapped."
+									}
+								]
+							},
+							"type": {
+								"type": "reference",
+								"target": 3,
+								"name": "T",
+								"package": "@arcscord/error",
+								"refersToTypeParameter": true
+							}
+						}
+					],
+					"type": {
+						"type": "reference",
+						"target": 18,
+						"typeArguments": [
+							{
+								"type": "reference",
+								"target": 3,
+								"name": "T",
+								"package": "@arcscord/error",
+								"refersToTypeParameter": true
+							},
+							{
+								"type": "reference",
+								"target": 4,
+								"name": "E",
+								"package": "@arcscord/error",
+								"refersToTypeParameter": true
+							}
+						],
+						"name": "Result",
+						"package": "@arcscord/error"
+					}
+				}
+			]
+		}
+	],
+	"groups": [
+		{
+			"title": "Type Aliases",
+			"children": [
+				18,
+				23,
+				21
+			]
+		},
+		{
+			"title": "Functions",
+			"children": [
+				25,
+				6,
+				11,
+				1
+			]
+		}
+	],
+	"packageName": "@arcscord/error",
+	"packageVersion": "1.0.1",
+	"readme": [
+		{
+			"kind": "text",
+			"text": "# @arcscord/error\n\nA error handling package, inspired of golang error handling.\n\n### Exemple\n\n"
+		},
+		{
+			"kind": "code",
+			"text": "```ts\nimport { error, ok, Result } from \"@arscord/error\";\n\nfunction foo(num: number): Result<boolean, Error> {\n  if (num <= 0) {\n    return error(new Error(\"Get negative number\"));\n  }\n  return ok(num % 2 === 0);\n}\n\nconst [isFoo, err] = foo(3);\nif (err) {\n  console.error(err);\n}\nelse {\n  console.log(isFoo);\n}\n```"
+		},
+		{
+			"kind": "text",
+			"text": "\n\nMade by Arcoz with ❤️"
+		}
+	],
+	"symbolIdMap": {
+		"0": {
+			"sourceFileName": "src/index.ts",
+			"qualifiedName": ""
+		},
+		"1": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "ok"
+		},
+		"2": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "ok"
+		},
+		"3": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "T"
+		},
+		"4": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "E"
+		},
+		"5": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "value"
+		},
+		"6": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "error"
+		},
+		"7": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "error"
+		},
+		"8": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "T"
+		},
+		"9": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "E"
+		},
+		"10": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "err"
+		},
+		"11": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "forceSafe"
+		},
+		"12": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "forceSafe"
+		},
+		"13": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "T"
+		},
+		"14": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "fn"
+		},
+		"15": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "__type"
+		},
+		"16": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "__type"
+		},
+		"17": {
+			"sourceFileName": "src/func.ts",
+			"qualifiedName": "args"
+		},
+		"18": {
+			"sourceFileName": "src/type.ts",
+			"qualifiedName": "Result"
+		},
+		"19": {
+			"sourceFileName": "src/type.ts",
+			"qualifiedName": "T"
+		},
+		"20": {
+			"sourceFileName": "src/type.ts",
+			"qualifiedName": "E"
+		},
+		"21": {
+			"sourceFileName": "src/type.ts",
+			"qualifiedName": "ResultOk"
+		},
+		"22": {
+			"sourceFileName": "src/type.ts",
+			"qualifiedName": "T"
+		},
+		"23": {
+			"sourceFileName": "src/type.ts",
+			"qualifiedName": "ResultErr"
+		},
+		"24": {
+			"sourceFileName": "src/type.ts",
+			"qualifiedName": "E"
+		},
+		"25": {
+			"sourceFileName": "src/util.ts",
+			"qualifiedName": "anyToError"
+		},
+		"26": {
+			"sourceFileName": "src/util.ts",
+			"qualifiedName": "anyToError"
+		},
+		"27": {
+			"sourceFileName": "src/util.ts",
+			"qualifiedName": "obj"
+		}
+	},
+	"files": {
+		"entries": {
+			"1": "src/index.ts"
+		},
+		"reflections": {
+			"1": 0
+		}
+	}
+}
