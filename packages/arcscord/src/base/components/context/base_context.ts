@@ -1,5 +1,6 @@
 import type { ArcClient } from "#/base";
 import type { ComponentRunResult } from "#/base/components";
+import type { ContextDocs } from "#/base/utils";
 import type {
   Guild,
   GuildBasedChannel,
@@ -15,17 +16,31 @@ import type {
 import { ComponentError, type ComponentErrorOptions } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";
 
-export class ComponentContext {
+/**
+ * Base Component context
+ */
+export class ComponentContext implements Omit<ContextDocs, "command" | "resolvedCommandName"> {
+  /**
+   * The custom id of the component
+   */
   customId: string;
 
   interaction: MessageComponentInteraction | ModalSubmitInteraction;
 
   user: User;
 
+  /**
+   * If interaction already deferred
+   */
   defer: boolean = false;
 
   client: ArcClient;
 
+  /**
+   * Constructor for ComponentContext.
+   * @param client The ArcClient instance.
+   * @param interaction The interaction object.
+   */
   constructor(
     client: ArcClient,
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
@@ -38,13 +53,24 @@ export class ComponentContext {
     this.client = client;
   }
 
+  /**
+   * Responds to the interaction by sending a reply message.
+   * @param message The reply message or options.
+   * @param options Optional additional reply options.
+   * @returns The result of the reply operation.
+   */
   async reply(
     message: string,
-    options?: Omit<InteractionReplyOptions, "content">,
+    options?: Omit<InteractionReplyOptions, "content">
   ): Promise<ComponentRunResult>;
 
+  /**
+   * Responds to the interaction by sending a reply message.
+   * @param options Reply options.
+   * @returns The result of the reply operation.
+   */
   async reply(
-    options: MessagePayload | InteractionReplyOptions,
+    options: MessagePayload | InteractionReplyOptions
   ): Promise<ComponentRunResult>;
 
   async reply(
@@ -70,13 +96,24 @@ export class ComponentContext {
     }
   }
 
+  /**
+   * Edits an existing reply message in the interaction.
+   * @param message The new message content or options.
+   * @param options Optional additional edit reply options.
+   * @returns The result of the edit operation.
+   */
   async editReply(
     message: string,
-    options?: Omit<InteractionEditReplyOptions, "content">,
+    options?: Omit<InteractionEditReplyOptions, "content">
   ): Promise<ComponentRunResult>;
 
+  /**
+   * Edits an existing reply message in the interaction.
+   * @param options Edit reply options.
+   * @returns The result of the edit operation.
+   */
   async editReply(
-    options: MessagePayload | InteractionEditReplyOptions,
+    options: MessagePayload | InteractionEditReplyOptions
   ): Promise<ComponentRunResult>;
 
   async editReply(
@@ -102,6 +139,11 @@ export class ComponentContext {
     }
   }
 
+  /**
+   * Defers the reply to the interaction.
+   * @param options The defer reply options.
+   * @returns The result of the defer operation.
+   */
   async deferReply(
     options: InteractionDeferReplyOptions,
   ): Promise<ComponentRunResult> {
@@ -121,10 +163,20 @@ export class ComponentContext {
     }
   }
 
+  /**
+   * Wraps a value with a success status.
+   * @param value The value to be wrapped.
+   * @returns The result object with success status.
+   */
   ok(value: string | true = true): ComponentRunResult {
     return ok(value);
   }
 
+  /**
+   * Creates an error result.
+   * @param options The error options.
+   * @returns The error result.
+   */
   error(
     options: Omit<ComponentErrorOptions, "interaction">,
   ): ComponentRunResult {
@@ -133,6 +185,11 @@ export class ComponentContext {
     );
   }
 
+  /**
+   * Runs multiple functions sequentially and stops on the first error.
+   * @param funcList The list of functions to run.
+   * @returns The result of the multiple operations.
+   */
   async multiple(
     ...funcList: Promise<ComponentRunResult>[]
   ): Promise<ComponentRunResult> {
@@ -148,6 +205,9 @@ export class ComponentContext {
   }
 }
 
+/**
+ * GuildComponentContextOptions type declaration.
+ */
 export type GuildComponentContextOptions = {
   member: GuildMember;
   guild: Guild;

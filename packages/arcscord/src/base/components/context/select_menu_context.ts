@@ -1,9 +1,7 @@
 import type { ArcClient } from "#/base";
-import type {
-  StringSelectMenuValues,
-  TypedSelectMenuOptions,
-} from "#/base/components";
+import type { StringSelectMenuValues, TypedSelectMenuOptions } from "#/base/components";
 import type { GuildComponentContextOptions } from "#/base/components/context/base_context";
+import type { DmContextDocs, GuildContextDocs } from "#/base/utils";
 import type {
   APIChannel,
   APIRole,
@@ -22,9 +20,10 @@ import type {
 } from "discord.js";
 import { MessageComponentContext } from "#/base/components/context/message_component_context";
 
-/* Guild */
-
-export class GuildSelectMenuContext extends MessageComponentContext {
+/**
+ * Guild context for select menu interactions.
+ */
+export class GuildSelectMenuContext extends MessageComponentContext implements GuildContextDocs {
   guildId: string;
 
   guild: Guild;
@@ -39,6 +38,12 @@ export class GuildSelectMenuContext extends MessageComponentContext {
 
   readonly inDM = false;
 
+  /**
+   * Creates an instance of GuildSelectMenuContext.
+   * @param client - The ArcClient instance.
+   * @param interaction - The MessageComponentInteraction instance.
+   * @param options - Options containing guild, channel, and member info.
+   */
   constructor(
     client: ArcClient,
     interaction: MessageComponentInteraction,
@@ -54,9 +59,10 @@ export class GuildSelectMenuContext extends MessageComponentContext {
   }
 }
 
-/* DM */
-
-export class DmSelectMenuContext extends MessageComponentContext {
+/**
+ * DM context for select menu interactions.
+ */
+export class DmSelectMenuContext extends MessageComponentContext implements DmContextDocs {
   guildId = null;
 
   guild = null;
@@ -72,8 +78,9 @@ export class DmSelectMenuContext extends MessageComponentContext {
   readonly inDM = true;
 }
 
-/* String Select */
-
+/**
+ * Options for the StringSelectMenuContext.
+ */
 export type StringSelectMenuContextOptions<
   T extends TypedSelectMenuOptions | undefined = undefined,
 > = {
@@ -82,15 +89,27 @@ export type StringSelectMenuContextOptions<
     : string[];
 };
 
+/**
+ * Guild context for string select menu interactions.
+ */
 export class GuildStringSelectMenuContext<
   T extends TypedSelectMenuOptions | undefined,
 > extends GuildSelectMenuContext {
+  /**
+   * Selected Values (typed soon)
+   */
   values: T extends TypedSelectMenuOptions
     ? StringSelectMenuValues<T>
     : string[];
 
   interaction: StringSelectMenuInteraction;
 
+  /**
+   * Creates an instance of GuildStringSelectMenuContext.
+   * @param client - The ArcClient instance.
+   * @param interaction - The StringSelectMenuInteraction instance.
+   * @param options - Options containing guild context and select menu values.
+   */
   constructor(
     client: ArcClient,
     interaction: StringSelectMenuInteraction,
@@ -103,15 +122,27 @@ export class GuildStringSelectMenuContext<
   }
 }
 
+/**
+ * DM context for string select menu interactions.
+ */
 export class DmStringSelectMenuContext<
   T extends TypedSelectMenuOptions | undefined,
 > extends DmSelectMenuContext {
+  /**
+   * Selected Values (typed soon)
+   */
   values: T extends TypedSelectMenuOptions
     ? StringSelectMenuValues<T>
     : string[];
 
   interaction: StringSelectMenuInteraction;
 
+  /**
+   * Creates an instance of DmStringSelectMenuContext.
+   * @param client - The ArcClient instance.
+   * @param interaction - The StringSelectMenuInteraction instance.
+   * @param options - Options containing select menu values.
+   */
   constructor(
     client: ArcClient,
     interaction: StringSelectMenuInteraction,
@@ -124,21 +155,37 @@ export class DmStringSelectMenuContext<
   }
 }
 
+/**
+ * Type for StringSelectMenuContext.
+ */
 export type StringSelectMenuContext<
   T extends TypedSelectMenuOptions | undefined = undefined,
 > = GuildStringSelectMenuContext<T> | DmStringSelectMenuContext<T>;
 
-/* User Select */
-
+/**
+ * Options for the UserSelectMenuContext.
+ */
 export type UserSelectMenuContextOptions = {
   values: User[];
 };
 
+/**
+ * Guild context for user select menu interactions.
+ */
 export class GuildUserSelectMenuContext extends GuildSelectMenuContext {
+  /**
+   * Selected users
+   */
   values: User[];
 
   interaction: UserSelectMenuInteraction;
 
+  /**
+   * Creates an instance of GuildUserSelectMenuContext.
+   * @param client - The ArcClient instance.
+   * @param interaction - The UserSelectMenuInteraction instance.
+   * @param options - Options containing guild context and select menu values.
+   */
   constructor(
     client: ArcClient,
     interaction: UserSelectMenuInteraction,
@@ -151,11 +198,23 @@ export class GuildUserSelectMenuContext extends GuildSelectMenuContext {
   }
 }
 
+/**
+ * DM context for user select menu interactions.
+ */
 export class DmUserSelectMenuContext extends DmSelectMenuContext {
+  /**
+   * Selected users
+   */
   values: User[];
 
   interaction: UserSelectMenuInteraction;
 
+  /**
+   * Creates an instance of DmUserSelectMenuContext.
+   * @param client - The ArcClient instance.
+   * @param interaction - The UserSelectMenuInteraction instance.
+   * @param options - Options containing select menu values.
+   */
   constructor(
     client: ArcClient,
     interaction: UserSelectMenuInteraction,
@@ -168,21 +227,37 @@ export class DmUserSelectMenuContext extends DmSelectMenuContext {
   }
 }
 
+/**
+ * Type for UserSelectMenuContext.
+ */
 export type UserSelectMenuContext =
   | GuildUserSelectMenuContext
   | DmUserSelectMenuContext;
 
-/* Role Select */
-
+/**
+ * Options for the RoleSelectMenuContext.
+ */
 export type RoleSelectMenuContextOptions = {
   values: (Role | APIRole)[];
 };
 
+/**
+ * Guild context for role select menu interactions.
+ */
 export class GuildRoleSelectMenuContext extends GuildSelectMenuContext {
+  /**
+   * Selected roles
+   */
   values: (Role | APIRole)[];
 
   interaction: RoleSelectMenuInteraction;
 
+  /**
+   * Creates an instance of GuildRoleSelectMenuContext.
+   * @param client - The ArcClient instance.
+   * @param interaction - The RoleSelectMenuInteraction instance.
+   * @param options - Options containing guild context and select menu values.
+   */
   constructor(
     client: ArcClient,
     interaction: RoleSelectMenuInteraction,
@@ -195,11 +270,23 @@ export class GuildRoleSelectMenuContext extends GuildSelectMenuContext {
   }
 }
 
+/**
+ * DM context for role select menu interactions.
+ */
 export class DmRoleSelectMenuContext extends DmSelectMenuContext {
+  /**
+   * Selected roles
+   */
   values: (Role | APIRole)[];
 
   interaction: RoleSelectMenuInteraction;
 
+  /**
+   * Creates an instance of DmRoleSelectMenuContext.
+   * @param client - The ArcClient instance.
+   * @param interaction - The RoleSelectMenuInteraction instance.
+   * @param options - Options containing select menu values.
+   */
   constructor(
     client: ArcClient,
     interaction: RoleSelectMenuInteraction,
@@ -212,26 +299,48 @@ export class DmRoleSelectMenuContext extends DmSelectMenuContext {
   }
 }
 
+/**
+ * Type for RoleSelectMenuContext.
+ */
 export type RoleSelectMenuContext =
   | GuildRoleSelectMenuContext
   | DmRoleSelectMenuContext;
 
-/* Mentionable Select */
-
+/**
+ * Options for the MentionableSelectMenuContext.
+ */
 export type MentionableSelectMenuContextOptions = {
   roles: (Role | APIRole)[];
   users: User[];
 };
 
+/**
+ * Guild context for mentionable select menu interactions.
+ */
 export class GuildMentionableSelectMenuContext extends GuildSelectMenuContext {
+  /**
+   * All selected Users and/or Role
+   */
   values: (Role | User | APIRole)[];
 
+  /**
+   * Selected Roles
+   */
   roles: (Role | APIRole)[];
 
+  /**
+   * Selected users
+   */
   users: User[];
 
   interaction: MentionableSelectMenuInteraction;
 
+  /**
+   * Creates an instance of GuildMentionableSelectMenuContext.
+   * @param client - The ArcClient instance.
+   * @param interaction - The MentionableSelectMenuInteraction instance.
+   * @param options - Options containing guild context, roles, and users.
+   */
   constructor(
     client: ArcClient,
     interaction: MentionableSelectMenuInteraction,
@@ -246,15 +355,33 @@ export class GuildMentionableSelectMenuContext extends GuildSelectMenuContext {
   }
 }
 
+/**
+ * DM context for mentionable select menu interactions.
+ */
 export class DmMentionableSelectMenuContext extends DmSelectMenuContext {
+  /**
+   * All selected Users and/or Role
+   */
   values: (Role | User | APIRole)[];
 
+  /**
+   * Selected Roles
+   */
   roles: (Role | APIRole)[];
 
+  /**
+   * Selected users
+   */
   users: User[];
 
   interaction: MentionableSelectMenuInteraction;
 
+  /**
+   * Creates an instance of DmMentionableSelectMenuContext.
+   * @param client - The ArcClient instance.
+   * @param interaction - The MentionableSelectMenuInteraction instance.
+   * @param options - Options containing roles and users.
+   */
   constructor(
     client: ArcClient,
     interaction: MentionableSelectMenuInteraction,
@@ -269,21 +396,37 @@ export class DmMentionableSelectMenuContext extends DmSelectMenuContext {
   }
 }
 
+/**
+ * Type for MentionableSelectMenuContext.
+ */
 export type MentionableSelectMenuContext =
   | GuildMentionableSelectMenuContext
   | DmMentionableSelectMenuContext;
 
-/* Channel Select */
-
+/**
+ * Options for the ChannelSelectMenuContext.
+ */
 export type ChannelSelectMenuContextOptions = {
   values: (Channel | APIChannel)[];
 };
 
+/**
+ * Guild context for channel select menu interactions.
+ */
 export class GuildChannelSelectMenuContext extends GuildSelectMenuContext {
+  /**
+   * Selected channels
+   */
   values: (Channel | APIChannel)[];
 
   interaction: ChannelSelectMenuInteraction;
 
+  /**
+   * Creates an instance of GuildChannelSelectMenuContext.
+   * @param client - The ArcClient instance.
+   * @param interaction - The ChannelSelectMenuInteraction instance.
+   * @param options - Options containing guild context and channel values.
+   */
   constructor(
     client: ArcClient,
     interaction: ChannelSelectMenuInteraction,
@@ -296,11 +439,23 @@ export class GuildChannelSelectMenuContext extends GuildSelectMenuContext {
   }
 }
 
+/**
+ * DM context for channel select menu interactions.
+ */
 export class DmChannelSelectMenuContext extends DmSelectMenuContext {
+  /**
+   * Selected channels
+   */
   values: (Channel | APIChannel)[];
 
   interaction: ChannelSelectMenuInteraction;
 
+  /**
+   * Creates an instance of DmChannelSelectMenuContext.
+   * @param client - The ArcClient instance.
+   * @param interaction - The ChannelSelectMenuInteraction instance.
+   * @param options - Options containing channel values.
+   */
   constructor(
     client: ArcClient,
     interaction: ChannelSelectMenuInteraction,
@@ -313,6 +468,9 @@ export class DmChannelSelectMenuContext extends DmSelectMenuContext {
   }
 }
 
+/**
+ * Type for ChannelSelectMenuContext.
+ */
 export type ChannelSelectMenuContext =
   | GuildChannelSelectMenuContext
   | DmChannelSelectMenuContext;

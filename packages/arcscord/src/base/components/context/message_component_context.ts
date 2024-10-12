@@ -7,23 +7,34 @@ import type {
   MessageEditOptions,
   ModalComponentData,
 } from "discord.js";
-import type {
-  APIActionRowComponent,
-  APIMessageActionRowComponent,
-} from "discord-api-types/v10";
+import type { APIActionRowComponent, APIMessageActionRowComponent } from "discord-api-types/v10";
 import { ComponentContext } from "#/base/components/context/base_context";
 import { ComponentError } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";
 
+/**
+ * MessageComponentContext class.
+ * Extends ComponentContext and provides context for message component interactions.
+ */
 export class MessageComponentContext extends ComponentContext {
   interaction: MessageComponentInteraction;
 
+  /**
+   * Creates an instance of MessageComponentContext.
+   * @param client - The ArcClient instance.
+   * @param interaction - The MessageComponentInteraction instance.
+   */
   constructor(client: ArcClient, interaction: MessageComponentInteraction) {
     super(client, interaction);
 
     this.interaction = interaction;
   }
 
+  /**
+   * Shows a modal.
+   * @param modal - The ModalComponentData instance.
+   * @returns A Promise that resolves to a ComponentRunResult.
+   */
   async showModal(modal: ModalComponentData): Promise<ComponentRunResult> {
     try {
       await this.interaction.showModal(modal);
@@ -40,6 +51,10 @@ export class MessageComponentContext extends ComponentContext {
     }
   }
 
+  /**
+   * Defers the update message.
+   * @returns A Promise that resolves to a ComponentRunResult.
+   */
   async deferUpdateMessage(): Promise<ComponentRunResult> {
     try {
       await this.interaction.deferUpdate();
@@ -56,6 +71,11 @@ export class MessageComponentContext extends ComponentContext {
     }
   }
 
+  /**
+   * Updates the message.
+   * @param options - The MessageEditOptions instance.
+   * @returns A Promise that resolves to a ComponentRunResult.
+   */
   async updateMessage(
     options: MessageEditOptions,
   ): Promise<ComponentRunResult> {
@@ -74,6 +94,19 @@ export class MessageComponentContext extends ComponentContext {
     }
   }
 
+  /**
+   * Disables a component.
+   * @param selection - The selection criteria ("component" | "actionRow" | "all").
+   * @returns A Promise that resolves to a ComponentRunResult.
+   *
+   * @remarks
+   *  component : disable only used component
+   *
+   *  actionRow : disable all actionRow components
+   *
+   *  all : disable all message components
+   *
+   */
   disableComponent(
     selection: "component" | "actionRow" | "all" = "all",
   ): Promise<ComponentRunResult> {
