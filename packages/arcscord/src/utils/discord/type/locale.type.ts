@@ -1,3 +1,7 @@
+/**
+ * List of locales supported by discord api
+ * @see [Discord Docs](https://discord.com/developers/docs/reference#locales=
+ */
 export type Locale =
   "id" |
   "da" |
@@ -32,4 +36,7 @@ export type Locale =
   "zh-TW" |
   "ko";
 
+/**
+ * Represent a object for discord localization
+ */
 export type LocaleMap = Partial<Record<Locale, string>>;

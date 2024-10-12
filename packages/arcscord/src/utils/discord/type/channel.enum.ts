@@ -1,3 +1,8 @@
+/**
+ * Enum for different types of discord channels.
+ * @see [Discord Docs](https://discord.com/developers/docs/resources/channel#channel-object-channel-types)
+ * @enum {number}
+ */
 export const channelTypeEnum = {
   guildText: 0,
   dm: 1,
