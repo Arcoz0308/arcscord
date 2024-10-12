@@ -8,6 +8,9 @@ export default antfu(
       semi: true,
     },
     typescript: true,
+    ignores: [
+      "docs/*",
+    ],
   },
   {
     rules: {
