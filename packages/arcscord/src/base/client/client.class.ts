@@ -251,7 +251,7 @@ export class ArcClient extends DJSClient {
    * @param locale - The locale for the error message (optional)
    * @returns The error message
    */
-  getErrorMessage(errorId: string, locale?: Locale): BaseMessageOptions {
+  getErrorMessage(errorId?: string, locale?: Locale): BaseMessageOptions {
     if (locale && this.localesMessages[locale]?.error) {
       return this.localesMessages[locale].error(errorId);
     }
