@@ -1,0 +1,13 @@
+.idea/
+.vscode
+.env
+dev.json
+node_modules/
+src
+tsconfig.json
+vitest.config.ts
+test/
+.eslintrc
+tsup.config.ts
+typedoc.json
+tsconfig.typecheck.json

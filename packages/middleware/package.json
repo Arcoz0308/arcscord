@@ -1,0 +1,41 @@
+{
+  "name": "@arcscord/middleware",
+  "version": "1.0.0",
+  "description": "Middleware for arcscord",
+  "author": "Arcoz0308",
+  "license": "MIT",
+  "homepage": "https://github.com/Arcoz0308/arcscord/tree/main/packages/middleware#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arcoz0308/arcscord.git"
+  },
+  "bugs": {
+    "url": "https://github.com/arcoz0308/arcscord/issues"
+  },
+  "keywords": [
+    "arcscord",
+    "discord",
+    "middleware"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --project tsconfig.typecheck.json && tsc-alias -p tsconfig.typecheck.json",
+    "docs": "typedoc"
+  },
+  "dependencies": {
+    "arcscord": "workspace:*",
+    "discord.js": "^14.16.3"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0"
+  },
+  "directories": {
+    "lib": "./src"
+  }
+}
