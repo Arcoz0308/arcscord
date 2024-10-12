@@ -30,22 +30,41 @@ export type ArcClientOptions = ClientOptions & {
    */
   logger?: ArcClientLoggerOptions;
 
+  /**
+   * list of developers discord ids
+   */
   developers?: string[];
 
+  /**
+   * List of base messages, support locale soon
+   */
   baseMessages?:
     | MessageOptions
     | (Partial<Record<Locale, MessageOptions>> & {
       default: MessageOptions;
     });
-
-  applicationId?: string;
 };
 
+/**
+ * List of base options
+ */
 export type MessageOptions = {
+  /**
+   * Message if an internal error happen
+   * @param errId the error id
+   */
   error?: (errId?: string) => BaseMessageOptions;
+  /**
+   * Message if someone use a command that are reserved for dev
+   * @see {CommandOptions.developerCommand}
+   */
   devOnly?: BaseMessageOptions;
+  /**
+   * Message if bot missing some perms for execute a command
+   * @param permissionsMissing the missing permissions for the execute the command
+   * @see {CommandOptions.neededPermissions}
+   */
   missingPermissions?: (
     permissionsMissing: PermissionsString[],
   ) => BaseMessageOptions;
-  authorOnly?: BaseMessageOptions;
 };
