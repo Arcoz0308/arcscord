@@ -30,7 +30,8 @@
   "scripts": {
     "test": "vitest run",
     "build": "tsup",
-    "typecheck": "tsc --project tsconfig.typecheck.json && tsc-alias -p tsconfig.typecheck.json"
+    "typecheck": "tsc --project tsconfig.typecheck.json && tsc-alias -p tsconfig.typecheck.json",
+    "docs": "typedoc"
   },
   "directories": {
     "lib": "./src",
@@ -53,6 +54,7 @@
     "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0",
     "tsup": "^8.3.0",
+    "typedoc": "^0.26.9",
     "vite-tsconfig-paths": "^4.3.2",
     "vitest": "^1.6.0"
   }

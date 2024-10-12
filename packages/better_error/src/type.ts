@@ -20,7 +20,7 @@ export type ErrorOptions = {
   message: string;
   /**
    * for set a custom name of the error
-   * @default baseError
+   * @defaultValue baseError
    */
   name?: string;
 
@@ -34,8 +34,8 @@ export type ErrorOptions = {
   debugs?: Debugs;
 
   /**
-   * if a uuid v4 id need to be generated auto (ignored if customId given)
-   * @default false
+   * if an uuid v4 id need to be generated auto (ignored if customId given)
+   * @defaultValue false
    */
   autoGenerateId?: boolean;
   /**
@@ -44,25 +44,28 @@ export type ErrorOptions = {
   customId?: string;
 };
 
+/**
+ * Options for customise getDebugs output
+ */
 export type GetDebugOptions = {
   /**
    * If add the id in the debug object
    *
-   * @default true
+   * @defaultValue true
    */
   id?: boolean;
 
   /**
    * If add the debugs if exist from originals errors in the debug object
    *
-   * @default true
+   * @defaultValue true
    */
   originalErrorDebugs?: boolean | GetDebugOptions;
 
   /**
    * If add the stack in the debug
    *
-   * @default true
+   * @defaultValue true
    * @see {GetDebugOptions.stackFormat}
    */
   stack?: boolean;
@@ -74,15 +77,21 @@ export type GetDebugOptions = {
    * _default - Without cut into one key "stack"_
    *
    * _split - format the stack, with remove the first line and count lines, with a new key-value for each line_
-   * @default split
+   * @defaultValue split
    */
   stackFormat?: StackFormat;
 
   /**
    * if add stack of original error (work with Error and BaseError extends)
-   * @default true
+   * @defaultValue true
    */
   originalErrorStack?: boolean;
 };
 
+/**
+ * The format of output for stack
+ *
+ * `default` -> a single string
+ * `split` -> an array of string for each line of the stack
+ */
 export type StackFormat = "default" | "split";

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "extends": [
+    "../../typedoc.base.json"
+  ],
+  "entryPoints": [
+    "src/index.ts"
+  ],
+  "json": "../../json_docs/error/error_vX_X_X.json"
+}

@@ -27,7 +27,8 @@
   "scripts": {
     "test": "vitest run",
     "build": "tsup",
-    "typecheck": "tsc --project tsconfig.typecheck.json && tsc-alias -p tsconfig.typecheck.json"
+    "typecheck": "tsc --project tsconfig.typecheck.json && tsc-alias -p tsconfig.typecheck.json",
+    "docs": "typedoc"
   },
   "devDependencies": {
     "tsup": "^8.3.0",

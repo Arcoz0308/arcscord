@@ -15,7 +15,7 @@ export class BaseError extends Error {
   /**
    * Creates a new instance of the error class.
    *
-   * @param {string | ErrorOptions} opt - The options for creating the error.
+   * @param opt - The options for creating the error.
    */
   constructor(opt: string | ErrorOptions) {
     super(typeof opt === "string" ? opt : opt.message);
@@ -48,7 +48,7 @@ export class BaseError extends Error {
   /**
    * Returns the original error associated with this error.
    *
-   * @returns {BaseError | Error | undefined} The original error, if available; otherwise, undefined.
+   * @returns The original error, if available; otherwise, undefined.
    */
   get originalError(): BaseError | Error | undefined {
     return this._originalError;
@@ -59,7 +59,7 @@ export class BaseError extends Error {
   /**
    * Retrieves the error id
    *
-   * @returns {string | undefined} The id of the error, or undefined if it does not have an id.
+   * @returns The id of the error, or undefined if it does not have an id.
    */
   get id(): string | undefined {
     return this._id;
@@ -68,7 +68,7 @@ export class BaseError extends Error {
   /**
    * Sets the error id value.
    *
-   * @param {string} value - The ID value to be set.
+   * @param value - The ID value to be set.
    */
   set id(value: string) {
     this._id = value;
@@ -77,7 +77,7 @@ export class BaseError extends Error {
   /**
    * Generates a unique identifier for an object.
    *
-   * @returns {this} The current object with the generated identifier.
+   * @returns The current object with the generated identifier.
    */
   generateId(): this {
     this._id = crypto.randomUUID();
@@ -88,7 +88,7 @@ export class BaseError extends Error {
    * Retrieves the debug information as an object.
    *
    * @param options - An optional parameter to customize the debug object.
-   * @return The debugs object with the retrieved debug information.
+   * @returns The debugs object with the retrieved debug information.
    */
   getDebugsObject(options: GetDebugOptions = {}): Debugs {
     options = Object.assign(this.defaultGetDebugOptions(), options);
@@ -149,8 +149,8 @@ export class BaseError extends Error {
   /**
    * Returns a string representation of the debug information for the current object.
    *
-   * @param {GetDebugOptions} options - Optional configuration object for fetching specific debug information.
-   * @return {DebugStringObject} - An object containing stringifies debug information.
+   * @param options - Optional configuration object for fetching specific debug information.
+   * @returns An object containing stringifies debug information.
    */
   getDebugString(options: GetDebugOptions = {}): DebugStringObject {
     const debugs = this.getDebugsObject(options);
@@ -169,7 +169,7 @@ export class BaseError extends Error {
    * @param stackFormat The format of the stack information. Defaults to "split".
    * @param stacks The stack information to be retrieved. If not provided, it will use the stack information of the current instance.
    *
-   * @return {DebugStringObject} The stack information in the defined format.
+   * @returns The stack information in the defined format.
    */
   getStack(
     stackFormat: StackFormat = "split",
@@ -201,7 +201,7 @@ export class BaseError extends Error {
   /**
    * Returns the default debug options for a debug session.
    *
-   * @return The default debug options as an object
+   * @returns The default debug options as an object
    */
   defaultGetDebugOptions(): Required<GetDebugOptions> {
     return {
@@ -217,7 +217,7 @@ export class BaseError extends Error {
    * Returns the full message, which includes the name of the object concatenated with the message.
    * The message is returned as a string.
    *
-   * @return {string} The full message, combining the name and the message.
+   * @returns The full message, combining the name and the message.
    */
   fullMessage(): string {
     return `${this.name}: ${this.message}`;

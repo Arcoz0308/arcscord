@@ -5,10 +5,21 @@ import type { Attachment, GuildBasedChannel, Role, User } from "discord.js";
 
 export type CommandOptionType = keyof typeof commandOptionTypesEnum;
 
+/**
+ * Base command options
+ * @see [discord docs](https://discord.com/developers/docs/interactions/application-commands#application-command-object-application-command-option-structure)
+ */
 export type BaseSlashOption = {
   nameLocalizations?: LocaleMap;
+  /**
+   * the description of the option
+   */
   description: string;
   descriptionLocalizations?: LocaleMap;
+  /**
+   * if option is required
+   * @default false
+   */
   required?: boolean;
   type: CommandOptionType;
 };

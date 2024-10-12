@@ -10,7 +10,8 @@ import type {
  *
  * @param  options - the properties to configure the select menu
  * @returns  The complete set of properties for the select menu
- * @example ```ts
+ * @example
+ * ```ts
  * const selectMenu = createSelectMenu({
  *   type: "userSelect",
  *   matcher: "selectMenu",
@@ -37,7 +38,8 @@ export function createSelectMenu<
  *
  * @param options - The properties to configure the modal
  * @returns the complete set of properties for the button
- * @example ```ts
+ * @example
+ * ```ts
  * const button = createButton({
  *   matcher: "button",
  *   build: () => buildClickableButton({
@@ -60,7 +62,8 @@ export function createButton<O extends string[]>(options: Omit<ButtonComponentPr
  *
  * @param  options - The properties to configure the modal
  * @returns The complete set of properties for the modal
- * @example ```ts
+ * @example
+ * ```ts
  * const myFamousModal = createModal({
  *   matcher: "famousModal",
  *   build: (label) => buildModal(label, "famousModal", {

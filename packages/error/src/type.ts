@@ -8,6 +8,7 @@ export type Result<T, E> = ResultOk<T> | ResultErr<E>;
 
 /*
  * Represents a successful result with a value of type T.
+ *
  * @template T - The type of the value.
  */
 export type ResultOk<T> = [

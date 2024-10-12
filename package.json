@@ -23,12 +23,15 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "pnpm -r run typecheck",
     "test": "pnpm -r --filter='./packages/**' run test",
-    "test:test-bot": "pnpm -r --filter '@arcscord/test-bot' run start"
+    "test:test-bot": "pnpm -r --filter '@arcscord/test-bot' run start",
+    "docs:api": "typedoc",
+    "docs:json": "pnpm -r run docs"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.7.3",
     "eslint": "^9.12.0",
     "tsc-alias": "^1.8.10",
+    "typedoc": "^0.26.9",
     "typescript": "^5.3.3"
   }
 }

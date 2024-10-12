@@ -26,11 +26,13 @@
   "scripts": {
     "test": "vitest run",
     "build": "tsup",
-    "typecheck": "tsc --project tsconfig.typecheck.json && tsc-alias -p tsconfig.typecheck.json"
+    "typecheck": "tsc --project tsconfig.typecheck.json && tsc-alias -p tsconfig.typecheck.json",
+    "docs": "typedoc"
   },
   "devDependencies": {
     "@types/node": "^20.16.11",
     "tsup": "^8.3.0",
+    "typedoc": "^0.26.9",
     "typescript": "^5.3.3",
     "vitest": "^2.1.2"
   },

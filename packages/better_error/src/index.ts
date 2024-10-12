@@ -1,3 +1,3 @@
 export { BaseError } from "./base_error";
-export type { Debugs, DebugStringObject, ErrorOptions } from "./type";
+export type * from "./type";
 export { stringifyUnknown } from "./util";

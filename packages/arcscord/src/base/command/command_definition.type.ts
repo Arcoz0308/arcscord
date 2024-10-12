@@ -1,8 +1,5 @@
 import type { CommandProps } from "#/base";
-import type {
-  commandContextsEnum,
-  commandIntegrationTypesEnum,
-} from "#/base/command/command.enum";
+import type { commandContextsEnum, commandIntegrationTypesEnum } from "#/base/command/command.enum";
 import type { OptionsList } from "#/base/command/option.type";
 import type { LocaleMap } from "#/utils/discord/type/locale.type";
 import type { PermissionsString } from "discord.js";
@@ -48,23 +45,17 @@ export type SlashWithSubsCommandDefinition = BaseCommandDefinition & {
   subCommandsGroups?: Record<string, SubCommandGroupDefinition>;
 };
 
-export type PartialCommandDefinitionForSlash = {
-  slash: SlashCommandDefinition;
+export type FullCommandDefinition = {
+  slash?: SlashCommandDefinition;
+  message?: BaseCommandDefinition;
+  user?: BaseCommandDefinition;
 };
 
-export type PartialCommandDefinitionForMessage = {
-  message: BaseCommandDefinition;
-};
+export type PartialCommandDefinitionForSlash = Required<Pick<FullCommandDefinition, "slash">>;
 
-export type PartialCommandDefinitionForUser = {
-  user: BaseCommandDefinition;
-};
+export type PartialCommandDefinitionForMessage = Required<Pick<FullCommandDefinition, "message">>;
 
-export type FullCommandDefinition = Partial<
-  PartialCommandDefinitionForSlash &
-  PartialCommandDefinitionForMessage &
-  PartialCommandDefinitionForUser
->;
+export type PartialCommandDefinitionForUser = Required<Pick<FullCommandDefinition, "user">>;
 
 export type CommandDefinition =
   | CommandProps<FullCommandDefinition>
