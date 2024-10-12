@@ -10,6 +10,7 @@ export default antfu(
     typescript: true,
     ignores: [
       "docs/*",
+      "json_docs/*",
     ],
   },
   {
