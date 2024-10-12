@@ -11,6 +11,7 @@ export default antfu(
     ignores: [
       "docs/*",
       "json_docs/*",
+      ".vscode/settings.json",
     ],
   },
   {
