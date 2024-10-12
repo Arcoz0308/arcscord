@@ -1,4 +1,4 @@
-name: ESLint
+name: Vitest
 on:
   push:
     branches: [main]
