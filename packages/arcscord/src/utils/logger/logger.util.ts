@@ -1,10 +1,5 @@
 import type { DebugValueString } from "#/utils/error/error.type";
-import type {
-  LogFunc,
-  LoggerConstructor,
-  LoggerInterface,
-  LogLevel,
-} from "#/utils/logger/logger.type";
+import type { LogFunc, LoggerConstructor, LoggerInterface, LogLevel } from "#/utils/logger/logger.type";
 import { DayJS } from "#/utils/dayjs/dayjs";
 import {
   DATE_COLOR,
@@ -67,6 +62,14 @@ export function formatShortDebug(message: string | DebugValueString): string {
   return prefix + middle + separator + text;
 }
 
+/**
+ * Creates a new logger instance using the provided constructor function.
+ *
+ * @param constructorFunc - The constructor function to create the logger instance.
+ * @param name - The name to be assigned to the logger.
+ * @param logFunc - Optional custom logging function. If not provided, defaults to `console.log`.
+ * @return - The created logger instance.
+ */
 export function createLogger(
   constructorFunc: LoggerConstructor,
   name: string,
