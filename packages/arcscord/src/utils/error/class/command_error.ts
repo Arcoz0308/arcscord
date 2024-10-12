@@ -6,19 +6,45 @@ import type { AutocompleteInteraction, CommandInteraction } from "discord.js";
 import { commandInteractionToString } from "#/base/command";
 import { InteractionError } from "#/utils/error/class/interaction_error";
 
+/**
+ * Options for creating a CommandError.
+ */
 export type CommandErrorOptions = ErrorOptions & {
+  /**
+   * The context of the command.
+   */
   ctx: BaseCommandContext | BaseAutocompleteContext;
 };
 
+/**
+ * Represents an error that occurred during the execution of a command.
+ */
 export class CommandError extends InteractionError {
+  /**
+   * The name of the error.
+   */
   name = "CommandError";
 
+  /**
+   * The interaction associated with the error.
+   */
   interaction: CommandInteraction | AutocompleteInteraction;
 
+  /**
+   * The context associated with the command error.
+   */
   context: BaseCommandContext | BaseAutocompleteContext;
 
+  /**
+   * The command properties associated with the error.
+   */
   command: CommandProps;
 
+  /**
+   * Creates a new instance of `CommandError`.
+   *
+   * @param options - The options for creating the command error.
+   */
   constructor(options: CommandErrorOptions) {
     super({ ...options, interaction: options.ctx.interaction });
 

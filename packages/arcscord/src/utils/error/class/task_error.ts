@@ -2,13 +2,29 @@ import type { Task } from "#/base/task/task.type";
 import type { ErrorOptions } from "@arcscord/better-error";
 import { BaseError } from "@arcscord/better-error";
 
+/**
+ * Options for creating a TaskError.
+ */
 export type TaskErrorOptions = ErrorOptions & {
+  /**
+   * The task associated with the error.
+   */
   task: Task;
 };
 
+/**
+ * A custom error class for handling task-related errors.
+ */
 export class TaskError extends BaseError {
+  /**
+   * The task associated with the error.
+   */
   task: Task;
 
+  /**
+   * Creates a new instance of TaskError.
+   * @param options - The options for creating the TaskError.
+   */
   constructor(options: TaskErrorOptions) {
     super(options);
 
