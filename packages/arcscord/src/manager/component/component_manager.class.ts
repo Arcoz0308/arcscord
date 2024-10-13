@@ -1,7 +1,8 @@
-import type { ArcClient } from "#/base";
+import type { ArcClient, ComponentContext } from "#/base";
 import type { ComponentProps } from "#/base/components/component_props.type";
 import type { GuildComponentContextOptions } from "#/base/components/context/base_context";
 import type { ComponentList } from "#/manager/component/component_manager.type";
+import type { Result } from "@arcscord/error";
 import type {
   BaseMessageOptions,
   ButtonInteraction,
@@ -17,10 +18,7 @@ import type {
   UserSelectMenuInteraction,
 } from "discord.js";
 import { DmButtonContext, GuildButtonContext } from "#/base/components";
-import {
-  DmModalContext,
-  GuildModalContext,
-} from "#/base/components/context/modal_context";
+import { DmModalContext, GuildModalContext } from "#/base/components/context/modal_context";
 import {
   DmChannelSelectMenuContext,
   DmMentionableSelectMenuContext,
@@ -36,7 +34,7 @@ import {
 import { BaseManager } from "#/base/manager/manager.class";
 import { ComponentError, internalErrorEmbed } from "#/utils";
 import { BaseError } from "@arcscord/better-error";
-import { anyToError } from "@arcscord/error";
+import { anyToError, error, ok } from "@arcscord/error";
 
 export class ComponentManager extends BaseManager {
   name = "components";
@@ -299,7 +297,7 @@ export class ComponentManager extends BaseManager {
 
     const context = guildInfos
       ? new GuildModalContext(this.client, interaction, guildInfos)
-      : new DmModalContext(this.client, interaction);
+      : new DmModalContext(this.client, interaction, {});
 
     if (modal.preReply) {
       const [, err] = await context.deferReply({
@@ -385,7 +383,7 @@ export class ComponentManager extends BaseManager {
 
     const context = guildInfos
       ? new GuildButtonContext(this.client, interaction, guildInfos)
-      : new DmButtonContext(this.client, interaction);
+      : new DmButtonContext(this.client, interaction, {});
 
     if (button.preReply) {
       const [, err] = await context.deferReply({
@@ -887,6 +885,34 @@ export class ComponentManager extends BaseManager {
       );
     }
   }
+
+  async runMiddleware(props: ComponentProps, context: ComponentContext): Promise<Result<object | false, ComponentError>> {
+    const additional: Record<string, Record<string, unknown>> = {};
+    if (!props.use || props.use.length === 0) {
+      return ok({});
+    }
+    for (const middleware of props.use) {
+      try {
+        const result = await middleware.run(context);
+        if (result.cancel) {
+          const [, err] = await result.cancel;
+          if (err) {
+            return error(err);
+          }
+          return ok(false);
+        }
+        additional[middleware.name] = result.next;
+      }
+      catch (e) {
+        return error(new ComponentError({
+          message: `Failed to run middleware : ${anyToError(e).message}`,
+          interaction: context.interaction,
+          originalError: anyToError(e),
+        }));
+      }
+    }
+    return ok(additional);
+  };
 
   async sendInternalError(
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
