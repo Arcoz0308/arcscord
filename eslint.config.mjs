@@ -17,6 +17,7 @@ export default antfu(
   {
     rules: {
       "ts/consistent-type-definitions": ["error", "type"],
+      "jsonc/sort-keys": "off",
     },
   },
   {

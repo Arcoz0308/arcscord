@@ -1,22 +1,6 @@
 {
   "name": "@arcscord/arcscord",
-  "packageManager": "pnpm@9.12.1",
-  "description": "A discord.js framework, slash command first and full typescript !",
-  "author": "Arcoz0308",
-  "license": "MIT",
-  "homepage": "https://github.com/arcoz0308/arcscord#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/arcoz0308/arcscord.git"
-  },
-  "bugs": {
-    "url": "https://github.com/arcoz0308/arcscord/issues"
-  },
-  "keywords": [
-    "discord",
-    "framework",
-    "discord.js"
-  ],
+  "private": true,
   "scripts": {
     "build": "pnpm -r --filter='./packages/**' run build",
     "lint": "eslint .",
@@ -31,6 +15,9 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.7.3",
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9.12.0",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
@@ -38,5 +25,27 @@
     "tsc-alias": "^1.8.10",
     "typedoc": "^0.26.9",
     "typescript": "^5.3.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sapphiredev/utilities.git"
+  },
+  "engines": {
+    "node": ">=v20.0.0",
+    "npm": ">=9.0.0"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "lint-staged": {
+    "*": "prettier --ignore-unknown --write",
+    "*.{mjs,js,ts}": "eslint --fix --ext mjs,js,ts"
+  },
+  "resolutions": {
+    "ansi-regex": "^5.0.1",
+    "minimist": "^1.2.8"
+  },
+  "packageManager": "pnpm@9.12.1"
 }
