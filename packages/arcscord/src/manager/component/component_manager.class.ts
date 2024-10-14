@@ -312,6 +312,22 @@ export class ComponentManager extends BaseManager {
       }
     }
 
+    const [result, err] = await this.runMiddleware(modal, context);
+    if (err) {
+      this.logger.logError(err.generateId());
+      return this.sendInternalError(
+        interaction,
+        internalErrorEmbed(this.client, err.id),
+        context.defer,
+      );
+    }
+
+    if (!result) {
+      return;
+    }
+
+    context.additional = result as typeof context.additional;
+
     try {
       const [result, err] = await modal.run(context);
       if (err) {
@@ -397,6 +413,22 @@ export class ComponentManager extends BaseManager {
         );
       }
     }
+
+    const [result, err] = await this.runMiddleware(button, context);
+    if (err) {
+      this.logger.logError(err.generateId());
+      return this.sendInternalError(
+        interaction,
+        internalErrorEmbed(this.client, err.id),
+        context.defer,
+      );
+    }
+
+    if (!result) {
+      return;
+    }
+
+    context.additional = result as typeof context.additional;
 
     try {
       const [result, err] = await button.run(context);
@@ -489,6 +521,22 @@ export class ComponentManager extends BaseManager {
       }
     }
 
+    const [result, err] = await this.runMiddleware(stringSelectMenu, context);
+    if (err) {
+      this.logger.logError(err.generateId());
+      return this.sendInternalError(
+        interaction,
+        internalErrorEmbed(this.client, err.id),
+        context.defer,
+      );
+    }
+
+    if (!result) {
+      return;
+    }
+
+    context.additional = result as typeof context.additional;
+
     try {
       const [result, err] = await stringSelectMenu.run(context);
       if (err) {
@@ -580,6 +628,22 @@ export class ComponentManager extends BaseManager {
       }
     }
 
+    const [result, err] = await this.runMiddleware(userSelectMenu, context);
+    if (err) {
+      this.logger.logError(err.generateId());
+      return this.sendInternalError(
+        interaction,
+        internalErrorEmbed(this.client, err.id),
+        context.defer,
+      );
+    }
+
+    if (!result) {
+      return;
+    }
+
+    context.additional = result as typeof context.additional;
+
     try {
       const [result, err] = await userSelectMenu.run(context);
       if (err) {
@@ -670,6 +734,22 @@ export class ComponentManager extends BaseManager {
         );
       }
     }
+
+    const [result, err] = await this.runMiddleware(roleSelectMenu, context);
+    if (err) {
+      this.logger.logError(err.generateId());
+      return this.sendInternalError(
+        interaction,
+        internalErrorEmbed(this.client, err.id),
+        context.defer,
+      );
+    }
+
+    if (!result) {
+      return;
+    }
+
+    context.additional = result as typeof context.additional;
 
     try {
       const [result, err] = await roleSelectMenu.run(context);
@@ -764,6 +844,22 @@ export class ComponentManager extends BaseManager {
       }
     }
 
+    const [result, err] = await this.runMiddleware(mentionableSelectMenu, context);
+    if (err) {
+      this.logger.logError(err.generateId());
+      return this.sendInternalError(
+        interaction,
+        internalErrorEmbed(this.client, err.id),
+        context.defer,
+      );
+    }
+
+    if (!result) {
+      return;
+    }
+
+    context.additional = result as typeof context.additional;
+
     try {
       const [result, err] = await mentionableSelectMenu.run(context);
       if (err) {
@@ -856,6 +952,22 @@ export class ComponentManager extends BaseManager {
       }
     }
 
+    const [result, err] = await this.runMiddleware(channelSelectMenu, context);
+    if (err) {
+      this.logger.logError(err.generateId());
+      return this.sendInternalError(
+        interaction,
+        internalErrorEmbed(this.client, err.id),
+        context.defer,
+      );
+    }
+
+    if (!result) {
+      return;
+    }
+
+    context.additional = result as typeof context.additional;
+
     try {
       const [result, err] = await channelSelectMenu.run(context);
       if (err) {
@@ -886,7 +998,7 @@ export class ComponentManager extends BaseManager {
     }
   }
 
-  async runMiddleware(props: ComponentProps, context: ComponentContext): Promise<Result<object | false, ComponentError>> {
+  private async runMiddleware(props: ComponentProps, context: ComponentContext): Promise<Result<object | false, ComponentError>> {
     const additional: Record<string, Record<string, unknown>> = {};
     if (!props.use || props.use.length === 0) {
       return ok({});
