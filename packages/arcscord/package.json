@@ -21,12 +21,19 @@
     "slash-commands",
     "typed-commands"
   ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "main": "dist/cjs/index.cjs",
+  "module": "dist/esm/index.mjs",
+  "types": "dist/cjs/index.d.ts",
+  "exports": {
+    "import": {
+      "types": "./dist/esm/index.d.mts",
+      "default": "./dist/esm/index.mjs"
+    },
+    "require": {
+      "types": "./dist/cjs/index.d.ts",
+      "default": "./dist/cjs/index.cjs"
+    }
+  },
   "scripts": {
     "test": "vitest run",
     "build": "tsup",
@@ -38,8 +45,8 @@
     "test": "../../test"
   },
   "dependencies": {
-    "@arcscord/better-error": "workspace:*",
-    "@arcscord/error": "workspace:*",
+    "@arcscord/better-error": "workspace:^",
+    "@arcscord/error": "workspace:^",
     "cron": "^3.1.7",
     "dayjs": "^1.11.13",
     "discord-api-types": "^0.37.97",
