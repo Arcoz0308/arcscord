@@ -15,7 +15,7 @@
 - `arcscord` - [source](https://github.com/Arcoz0308/arcscord/tree/main/packages/arcscord) - The core package
 - `@arcscord/error` - [source](https://github.com/Arcoz0308/arcscord/tree/main/packages/error) - A package for Golang-like error handling, providing structured error management.
 - `@arcscord/better-error` - [source](https://github.com/Arcoz0308/arcscord/tree/main/packages/better_error) - A package that extends the Error class with additional debugging functions and enhanced error reporting.
-- `@arcscord/middleware` - [source](https://github.com/Arcoz0308/arcscord/tree/main/packages/middleware) - A package that provides a middleware system for Discord.js.
+- `@arcscord/middleware` - [source](https://github.com/Arcoz0308/arcscord/tree/main/packages/middleware) - A package that provides a middleware system for Arcscord, not compatible with Discord.js.
 
 ## Contributors ✨
 
