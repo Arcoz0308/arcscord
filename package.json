@@ -36,7 +36,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sapphiredev/utilities.git"
+    "url": "git+https://github.com/arcoz0308/arcscord.git"
   },
   "engines": {
     "node": ">=v20.0.0",
