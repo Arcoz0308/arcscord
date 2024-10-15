@@ -58,6 +58,10 @@ export class GuildSelectMenuContext<M extends ComponentMiddleware[] = ComponentM
     this.channel = options.channel;
     this.member = options.member;
   }
+
+  isSelectMenuContext(): this is DmSelectMenuContext | GuildSelectMenuContext {
+    return true;
+  }
 }
 
 /**
@@ -77,6 +81,10 @@ export class DmSelectMenuContext<M extends ComponentMiddleware[] = ComponentMidd
   readonly inGuild = false;
 
   readonly inDM = true;
+
+  isSelectMenuContext(): this is DmSelectMenuContext | GuildSelectMenuContext {
+    return true;
+  }
 }
 
 /**
@@ -122,6 +130,10 @@ export class GuildStringSelectMenuContext<
     this.values = options.values;
     this.interaction = interaction;
   }
+
+  isStringSelectMenuContext(): this is StringSelectMenuContext {
+    return true;
+  }
 }
 
 /**
@@ -155,6 +167,10 @@ export class DmStringSelectMenuContext<
 
     this.values = options.values;
     this.interaction = interaction;
+  }
+
+  isStringSelectMenuContext(): this is StringSelectMenuContext {
+    return true;
   }
 }
 
@@ -200,6 +216,10 @@ export class GuildUserSelectMenuContext<M extends ComponentMiddleware[] = Compon
     this.values = options.values;
     this.interaction = interaction;
   }
+
+  isUserSelectMenuContext(): this is UserSelectMenuContext {
+    return true;
+  }
 }
 
 /**
@@ -228,6 +248,10 @@ export class DmUserSelectMenuContext<M extends ComponentMiddleware[] = Component
 
     this.values = options.values;
     this.interaction = interaction;
+  }
+
+  isUserSelectMenuContext(): this is UserSelectMenuContext {
+    return true;
   }
 }
 
@@ -272,6 +296,10 @@ export class GuildRoleSelectMenuContext<M extends ComponentMiddleware[] = Compon
     this.values = options.values;
     this.interaction = interaction;
   }
+
+  isRoleSelectMenuContext(): this is RoleSelectMenuContext {
+    return true;
+  }
 }
 
 /**
@@ -300,6 +328,10 @@ export class DmRoleSelectMenuContext<M extends ComponentMiddleware[] = Component
 
     this.values = options.values;
     this.interaction = interaction;
+  }
+
+  isRoleSelectMenuContext(): this is RoleSelectMenuContext {
+    return true;
   }
 }
 
@@ -357,6 +389,10 @@ export class GuildMentionableSelectMenuContext<M extends ComponentMiddleware[] =
     this.users = options.users;
     this.values = [...options.roles, ...options.users];
   }
+
+  isMentionableSelectMenuContext(): this is MentionableSelectMenuContext {
+    return true;
+  }
 }
 
 /**
@@ -397,6 +433,10 @@ export class DmMentionableSelectMenuContext<M extends ComponentMiddleware[] = Co
     this.roles = options.roles;
     this.users = options.users;
     this.values = [...options.roles, ...options.users];
+  }
+
+  isMentionableSelectMenuContext(): this is MentionableSelectMenuContext {
+    return true;
   }
 }
 
@@ -441,6 +481,10 @@ export class GuildChannelSelectMenuContext<M extends ComponentMiddleware[] = Com
     this.values = options.values;
     this.interaction = interaction;
   }
+
+  isChannelSelectMenuContext(): this is ChannelSelectMenuContext {
+    return true;
+  }
 }
 
 /**
@@ -469,6 +513,10 @@ export class DmChannelSelectMenuContext<M extends ComponentMiddleware[] = Compon
 
     this.values = options.values;
     this.interaction = interaction;
+  }
+
+  isChannelSelectMenuContext(): this is ChannelSelectMenuContext {
+    return true;
   }
 }
 

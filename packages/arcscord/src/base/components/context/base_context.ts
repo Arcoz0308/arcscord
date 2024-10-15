@@ -1,4 +1,16 @@
-import type { ArcClient } from "#/base";
+import type {
+  ArcClient,
+  ButtonContext,
+  ChannelSelectMenuContext,
+  DmSelectMenuContext,
+  GuildSelectMenuContext,
+  MentionableSelectMenuContext,
+  MessageComponentContext,
+  ModalContext,
+  RoleSelectMenuContext,
+  StringSelectMenuContext,
+  UserSelectMenuContext,
+} from "#/base";
 import type { ComponentRunResult } from "#/base/components";
 import type { ComponentMiddleware } from "#/base/components/component_middleware";
 import type { ContextDocs } from "#/base/utils";
@@ -221,6 +233,70 @@ export class BaseComponentContext<M extends ComponentMiddleware[] = ComponentMid
     }
 
     return ok(true);
+  }
+
+  /**
+   * Checks if the current context is a button context.
+   * @returns True if it is a button context, false otherwise.
+   */
+  isButtonContext(): this is ButtonContext {
+    return false;
+  }
+
+  /**
+   * Checks if the current context is a modal context.
+   * @returns True if it is a modal context, false otherwise.
+   */
+  isModalContext(): this is ModalContext {
+    return false;
+  }
+
+  /**
+   * Checks if the current context is a string select menu context.
+   * @returns True if it is a string select menu context, false otherwise.
+   */
+  isStringSelectMenuContext(): this is StringSelectMenuContext {
+    return false;
+  }
+
+  /**
+   * Checks if the current context is a user select menu context.
+   * @returns True if it is a user select menu context, false otherwise.
+   */
+  isUserSelectMenuContext(): this is UserSelectMenuContext {
+    return false;
+  }
+
+  /**
+   * Checks if the current context is a role select menu context.
+   * @returns True if it is a role select menu context, false otherwise.
+   */
+  isRoleSelectMenuContext(): this is RoleSelectMenuContext {
+    return false;
+  }
+
+  /**
+   * Checks if the current context is a mentionable select menu context.
+   * @returns True if it is a mentionable select menu context, false otherwise.
+   */
+  isMentionableSelectMenuContext(): this is MentionableSelectMenuContext {
+    return false;
+  }
+
+  /**
+   * Checks if the current context is a channel select menu context.
+   * @returns True if it is a channel select menu context, false otherwise.
+   */
+  isChannelSelectMenuContext(): this is ChannelSelectMenuContext {
+    return false;
+  }
+
+  isSelectMenuContext(): this is DmSelectMenuContext | GuildSelectMenuContext {
+    return false;
+  }
+
+  isMessageComponentContext(): this is MessageComponentContext {
+    return false;
   }
 }
 

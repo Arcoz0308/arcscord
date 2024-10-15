@@ -23,6 +23,10 @@ export class BaseButtonContext<M extends ComponentMiddleware[] = ComponentMiddle
 
     this.interaction = interaction;
   }
+
+  isButtonContext(): this is ButtonContext {
+    return true;
+  }
 }
 
 /**

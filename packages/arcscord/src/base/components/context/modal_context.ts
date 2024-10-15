@@ -44,6 +44,10 @@ export class DmModalContext<M extends ComponentMiddleware[] = ComponentMiddlewar
       interaction.fields.fields.map(field => [field.customId, field.value]),
     );
   }
+
+  isModalContext(): this is ModalContext {
+    return true;
+  }
 }
 
 /**
@@ -95,6 +99,10 @@ export class GuildModalContext<M extends ComponentMiddleware[] = ComponentMiddle
     this.values = new Map<string, string>(
       interaction.fields.fields.map(field => [field.customId, field.value]),
     );
+  }
+
+  isModalContext(): this is ModalContext {
+    return true;
   }
 }
 

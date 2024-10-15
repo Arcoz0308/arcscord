@@ -3,6 +3,7 @@ import type { ComponentRunResult } from "#/base/components";
 import type { ComponentMiddleware } from "#/base/components/component_middleware";
 import type {
   ActionRow,
+  Message,
   MessageActionRowComponent,
   MessageComponentInteraction,
   MessageEditOptions,
@@ -20,6 +21,8 @@ import { anyToError, error, ok } from "@arcscord/error";
 export class MessageComponentContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends BaseComponentContext<M> {
   interaction: MessageComponentInteraction;
 
+  message: Message;
+
   /**
    * Creates an instance of MessageComponentContext.
    * @param client - The ArcClient instance.
@@ -30,6 +33,8 @@ export class MessageComponentContext<M extends ComponentMiddleware[] = Component
     super(client, interaction, options);
 
     this.interaction = interaction;
+
+    this.message = interaction.message;
   }
 
   /**
@@ -185,5 +190,9 @@ export class MessageComponentContext<M extends ComponentMiddleware[] = Component
       component.customId === this.interaction.customId
       && component.type === this.interaction.componentType
     );
+  }
+
+  isMessageComponentContext(): this is MessageComponentContext {
+    return true;
   }
 }
