@@ -1,6 +1,7 @@
 import { buildButtonActionRow, createCommand } from "arcscord";
 import { channelSelectMenu } from "../components/channel_select_menu";
 import { mentionableSelectMenu } from "../components/mentionable_select_menu";
+import { middleWareButton } from "../components/middleware";
 import { modal } from "../components/modal";
 import { roleSelectMenu } from "../components/role_select_menu";
 import { simpleButton } from "../components/simple_button";
@@ -46,6 +47,7 @@ export const componentTestCommand = createCommand({
               name: "modal",
               value: "modal",
             },
+            "middleware",
           ],
         } as const,
       },
@@ -85,6 +87,11 @@ export const componentTestCommand = createCommand({
         });
       case "modal":
         return ctx.showModal(modal.build("funny"));
+      case "middleware":
+        return ctx.reply({
+          components: [buildButtonActionRow(middleWareButton.build())],
+          content: ctx.options.component,
+        });
       default:
         return ctx.reply("No component found");
     }

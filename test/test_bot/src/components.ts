@@ -6,6 +6,7 @@ import { disableComponentButton } from "./components/function_test/disableCompon
 import { disableRowButton } from "./components/function_test/disableRow";
 import { editButton } from "./components/function_test/edit";
 import { mentionableSelectMenu } from "./components/mentionable_select_menu";
+import { middleWareButton } from "./components/middleware";
 import { modal } from "./components/modal";
 import { roleSelectMenu } from "./components/role_select_menu";
 import { simpleButton } from "./components/simple_button";
@@ -25,4 +26,5 @@ export const components: ComponentProps[] = [
   disableComponentButton,
   editButton,
   deferEditButton,
+  middleWareButton,
 ];
