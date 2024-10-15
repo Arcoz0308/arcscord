@@ -1,5 +1,5 @@
-import { stringifyDebugValue } from "#/utils";
 import { describe, expect, it } from "vitest";
+import { stringifyDebugValue } from "../error.util";
 
 describe("stringifyDebugValue", () => {
   it("works with string value", () => {
