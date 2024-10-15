@@ -1,9 +1,10 @@
 {
   "extends": "./tsconfig.base.json",
-  "include": [
-    "vitest.config.ts",
-    "vitest.workspace.ts",
-    "packages/",
-    "scripts/"
-  ]
+  "compilerOptions": {
+    "lib": ["esnext", "dom"],
+    "noEmit": true,
+    "incremental": false,
+    "types": ["vitest/globals"]
+  },
+  "include": ["packages/", "scripts/", "./vitest.config.ts", "./vitest.workspace.ts"]
 }
