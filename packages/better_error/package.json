@@ -33,7 +33,7 @@
   "scripts": {
     "test": "vitest run",
     "build": "tsup",
-    "typecheck": "tsc --project tsconfig.typecheck.json && tsc-alias -p tsconfig.typecheck.json",
+    "typecheck": "tsc -p tsconfig.eslint.json",
     "docs": "typedoc"
   },
   "devDependencies": {

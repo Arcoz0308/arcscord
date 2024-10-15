@@ -40,7 +40,7 @@
   "scripts": {
     "test": "vitest run",
     "build": "tsup",
-    "typecheck": "tsc --project tsconfig.typecheck.json && tsc-alias -p tsconfig.typecheck.json",
+    "typecheck": "tsc -b src",
     "docs": "typedoc"
   },
   "directories": {

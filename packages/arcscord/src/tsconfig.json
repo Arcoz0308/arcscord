@@ -5,8 +5,9 @@
     "baseUrl": ".",
     "outDir": "../dist",
     "incremental": false,
+    "skipLibCheck": true,
     "paths": {
-      "#/*": ["*"]
+      "#/*": ["./*"]
     }
   }
 }
