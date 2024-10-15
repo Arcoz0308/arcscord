@@ -83,7 +83,7 @@ export function createButton<
  */
 export function createModal<
   O extends string[],
-  M extends ComponentMiddleware[] = ComponentMiddleware[],
+  M extends ComponentMiddleware[] = [],
 >(options: Omit<ModalComponentProps<O, M>, "type">): ModalComponentProps<O, M> {
   return { ...options, type: "modal" };
 }

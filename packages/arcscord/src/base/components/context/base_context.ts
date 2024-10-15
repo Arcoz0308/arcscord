@@ -32,7 +32,7 @@ export type BaseComponentContextOptions<M extends ComponentMiddleware[] = Compon
 /**
  * Base Component context
  */
-export class ComponentContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> implements Omit<ContextDocs, "command" | "resolvedCommandName"> {
+export class BaseComponentContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> implements Omit<ContextDocs, "command" | "resolvedCommandName"> {
   /**
    * The custom id of the component
    */

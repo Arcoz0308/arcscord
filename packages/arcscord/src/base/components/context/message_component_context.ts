@@ -9,7 +9,7 @@ import type {
   ModalComponentData,
 } from "discord.js";
 import type { APIActionRowComponent, APIMessageActionRowComponent } from "discord-api-types/v10";
-import { ComponentContext } from "#/base/components/context/base_context";
+import { BaseComponentContext } from "#/base/components/context/base_context";
 import { ComponentError } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";
 
@@ -17,7 +17,7 @@ import { anyToError, error, ok } from "@arcscord/error";
  * MessageComponentContext class.
  * Extends ComponentContext and provides context for message component interactions.
  */
-export class MessageComponentContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends ComponentContext<M> {
+export class MessageComponentContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends BaseComponentContext<M> {
   interaction: MessageComponentInteraction;
 
   /**
