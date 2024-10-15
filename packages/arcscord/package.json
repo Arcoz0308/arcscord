@@ -34,6 +34,9 @@
       "default": "./dist/cjs/index.cjs"
     }
   },
+  "imports": {
+    "#/*": "./dist/*.js"
+  },
   "scripts": {
     "test": "vitest run",
     "build": "tsup",
