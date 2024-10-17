@@ -21,7 +21,7 @@
 
 Please make sure to read the [Contributing Guide][contributing] before making a pull request.
 
-Thank you to all the people who already contributed to Sapphire!
+Thank you to all the people who already contributed to Arcscord!
 
 <a href="https://github.com/Arcoz0308/arcscord/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=arcoz0308/arcscord" />
