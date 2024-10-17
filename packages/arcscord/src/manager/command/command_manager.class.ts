@@ -380,7 +380,7 @@ export class CommandManager
       });
     }
 
-    if (!interaction.isChatInputCommand()) {
+    if (!interaction.isChatInputCommand() && !interaction.isAutocomplete()) {
       return error(
         new BaseError({
           message: "invalid type get for interaction for handle subCommand",
