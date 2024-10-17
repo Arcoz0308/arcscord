@@ -1,0 +1,21 @@
+name: Automatic Label Sync
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/labels.yml
+
+jobs:
+  label_sync:
+    name: Synchronize Labels Automatically
+    runs-on: ubuntu-latest
+    steps:
+      - name: Retrieve Project Code
+        uses: actions/checkout@v4
+      - name: Execute Label Synchronization
+        uses: crazy-max/ghaction-github-labeler@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          yaml-file: .github/labels.yml

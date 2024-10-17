@@ -1,14 +1,11 @@
 import tsconfigPaths from "vite-tsconfig-paths";
-import { configDefaults, defineConfig } from "vitest/config";
+import { createVitestConfig } from "../../scripts/vitest.config.mjs";
 
-export default defineConfig({
+export default createVitestConfig({
   plugins: [tsconfigPaths()],
   resolve: {
     alias: {
-      "#/": new URL("./src/", import.meta.url).pathname,
+      "#/": new URL("../../src", import.meta.url).pathname,
     },
-  },
-  test: {
-    exclude: [...configDefaults.exclude, "**.no.test.ts"],
   },
 });

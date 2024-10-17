@@ -1,28 +1,16 @@
 {
   "name": "@arcscord/arcscord",
-  "packageManager": "pnpm@9.12.1",
-  "description": "A discord.js framework, slash command first and full typescript !",
-  "author": "Arcoz0308",
-  "license": "MIT",
-  "homepage": "https://github.com/arcoz0308/arcscord#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/arcoz0308/arcscord.git"
-  },
-  "bugs": {
-    "url": "https://github.com/arcoz0308/arcscord/issues"
-  },
-  "keywords": [
-    "discord",
-    "framework",
-    "discord.js"
-  ],
+  "private": true,
   "scripts": {
-    "build": "pnpm -r --filter='./packages/**' run build",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "clean": "node scripts/clean.mjs",
+    "clean:full": "node scripts/clean-full.mjs",
+    "build": "pnpm build:all && pnpm build:arcscord && pnpm build:middleware",
+    "build:all": "pnpm -r --filter='!./packages/{arcscord,middleware}' run build",
+    "build:arcscord": "pnpm -r --filter='./packages/arcscord' run build",
+    "build:middleware": "pnpm -r --filter='./packages/middleware' run build",
+    "lint": "eslint --fix",
     "typecheck": "pnpm -r run typecheck",
-    "test": "pnpm -r --filter='./packages/**' run test",
+    "test": "vitest run",
     "test:test-bot": "pnpm -r --filter '@arcscord/test-bot' run start",
     "docs:api": "typedoc",
     "docs:json": "pnpm -r run docs",
@@ -31,12 +19,41 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^3.7.3",
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "@types/node": "^22.7.5",
+    "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9.12.0",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
     "only-allow": "^1.2.1",
     "tsc-alias": "^1.8.10",
+    "tsup": "^8.3.0",
     "typedoc": "^0.26.9",
-    "typescript": "^5.3.3"
-  }
+    "typescript": "^5.3.3",
+    "vite": "^5.4.9",
+    "vitest": "^2.1.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arcoz0308/arcscord.git"
+  },
+  "engines": {
+    "node": ">=v20.0.0",
+    "npm": ">=9.0.0"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "lint-staged": {
+    "*": "prettier --ignore-unknown --write",
+    "*.{mjs,js,ts}": "eslint --fix --ext mjs,js,ts"
+  },
+  "resolutions": {
+    "ansi-regex": "^5.0.1",
+    "minimist": "^1.2.8"
+  },
+  "packageManager": "pnpm@9.12.1"
 }
