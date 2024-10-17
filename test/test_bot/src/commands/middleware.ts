@@ -1,7 +1,7 @@
 import type { CommandContext, CommandMiddlewareRun } from "arcscord";
 import { CommandMiddleware, createCommand } from "arcscord";
 
-class TestMiddleware extends CommandMiddleware {
+export class TestMiddleware extends CommandMiddleware {
   name = "test" as const;
 
   async run(ctx: CommandContext): Promise<

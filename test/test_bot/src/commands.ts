@@ -5,6 +5,7 @@ import { componentTestCommand } from "./commands/component_test";
 import { disableComponentCommand } from "./commands/disable_component";
 import { messageInfosCommand } from "./commands/message_infos";
 import { testMiddlewareCommand } from "./commands/middleware";
+import { subCommand } from "./commands/sub/def";
 
 export const commands: CommandDefinition[] = [
   avatarCommand,
@@ -13,4 +14,5 @@ export const commands: CommandDefinition[] = [
   autocompleteCommand,
   disableComponentCommand,
   testMiddlewareCommand,
+  subCommand,
 ];
