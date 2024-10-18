@@ -43,6 +43,13 @@ export type ArcClientOptions = ClientOptions & {
     | (Partial<Record<Locale, MessageOptions>> & {
       default: MessageOptions;
     });
+
+  /**
+   * Indicates whether the intents for event should be detected by default.
+   * @default false
+   * @experimental
+   */
+  autoIntents?: boolean;
 };
 
 /**

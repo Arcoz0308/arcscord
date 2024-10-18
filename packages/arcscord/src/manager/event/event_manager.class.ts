@@ -1,6 +1,7 @@
 import type { EventHandler } from "#/base/event/event.type";
 import { EventContext } from "#/base/event/event_context";
 import { BaseManager } from "#/base/manager/manager.class";
+import { intentsMap } from "#/manager/event/intents_map";
 import { anyToError } from "@arcscord/error";
 
 /**
@@ -25,7 +26,18 @@ export class EventManager extends BaseManager {
    */
   async loadEvent(event: EventHandler): Promise<void> {
     this.logger.trace(`bind event ${event.event} for ${event.name} handler !`);
-    if (event.waitReady) {
+    if (this.client.arcOptions.autoIntents) {
+      if (event.options?.disableAutoIntents !== true) {
+        if (event.options?.intentsOverwrite) {
+          this.client.addIntents(event.options.intentsOverwrite);
+        }
+        else {
+          const eventName = event.event;
+          this.client.addIntents(intentsMap[eventName]);
+        }
+      }
+    }
+    if (event.options?.waitReady) {
       await this.client.waitReady();
     }
 

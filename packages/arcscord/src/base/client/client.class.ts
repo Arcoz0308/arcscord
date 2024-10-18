@@ -5,7 +5,7 @@ import type { ComponentProps } from "#/base/components/component_props.type";
 import type { EventHandler } from "#/base/event/event.type";
 import type { Locale } from "#/utils";
 import type { LoggerConstructor, LoggerInterface } from "#/utils/logger/logger.type";
-import type { BaseMessageOptions, PermissionsString } from "discord.js";
+import type { BaseMessageOptions, BitFieldResolvable, GatewayIntentsString, PermissionsString } from "discord.js";
 import { ComponentManager } from "#/manager";
 import { CommandManager } from "#/manager/command/command_manager.class";
 import { EventManager } from "#/manager/event/event_manager.class";
@@ -131,7 +131,7 @@ export class ArcClient extends DJSClient {
       this.localesMessages = {};
     }
 
-    this.arcOptions = options;
+    this.arcOptions = { autoIntents: false, ...options };
     this.commandManager = new CommandManager(this);
     this.taskManager = new TaskManager(this);
 
@@ -283,5 +283,9 @@ export class ArcClient extends DJSClient {
       return this.localesMessages[locale].devOnly;
     }
     return this.defaultMessages.devOnly;
+  }
+
+  addIntents(intents: BitFieldResolvable<GatewayIntentsString, number>): void {
+    this.options.intents = this.options.intents.add(intents);
   }
 }
