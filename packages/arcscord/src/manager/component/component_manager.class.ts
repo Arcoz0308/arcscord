@@ -36,6 +36,9 @@ import { ComponentError, internalErrorEmbed } from "#/utils";
 import { BaseError } from "@arcscord/better-error";
 import { anyToError, error, ok } from "@arcscord/error";
 
+/**
+ * Manages and handles interactive components
+ */
 export class ComponentManager extends BaseManager {
   name = "components";
 
@@ -59,12 +62,21 @@ export class ComponentManager extends BaseManager {
     });
   }
 
+  /**
+   * Loads an array of component properties and initializes the components.
+   *
+   * @param components - components to loads
+   */
   loadComponents(components: ComponentProps[]): void {
     for (const component of components) {
       this.loadComponent(component);
     }
   }
 
+  /**
+   * Load a single component
+   * @param component - component to load
+   */
   loadComponent(component: ComponentProps): void {
     switch (component.type) {
       case "button":
@@ -111,7 +123,10 @@ export class ComponentManager extends BaseManager {
     }
   }
 
-  getComponents<K extends string, V extends ComponentProps>(
+  /**
+   * @internal
+   */
+  private getComponents<K extends string, V extends ComponentProps>(
     id: string,
     components: Map<K, V>,
   ): V[] {
@@ -127,7 +142,10 @@ export class ComponentManager extends BaseManager {
     return result;
   }
 
-  async handleInteraction(
+  /**
+   * @internal
+   */
+  private async handleInteraction(
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
   ): Promise<void> {
     /* Guild Infos */
@@ -1026,6 +1044,9 @@ export class ComponentManager extends BaseManager {
     return ok(additional);
   };
 
+  /**
+   * Send a internal error
+   */
   async sendInternalError(
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
     message: BaseMessageOptions,
