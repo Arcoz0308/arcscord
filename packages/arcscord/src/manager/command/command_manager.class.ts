@@ -45,6 +45,9 @@ import { BaseError } from "@arcscord/better-error";
 import { anyToError, error, ok } from "@arcscord/error";
 import { ApplicationCommandType } from "discord-api-types/v10";
 
+/**
+ * The `CommandManager` class is responsible for managing commands;
+ */
 export class CommandManager
   extends BaseManager
   implements CommandResultHandlerImplementer {
@@ -71,6 +74,13 @@ export class CommandManager
     });
   }
 
+  /**
+   * Loads commands into the application and categorizes them into slash, message, and user commands.
+   *
+   * @param commands - The array of command definitions to load.
+   * @param group - The group name for logging purposes.
+   * @return The array of API application commands.
+   */
   loadCommands(
     commands: CommandDefinition[],
     group = "globalCommands",
@@ -138,6 +148,12 @@ export class CommandManager
     return commandsBody;
   }
 
+  /**
+   * Pushes a set of global commands to the application.
+   *
+   * @param commands - An array of command data resolvable objects to be registered globally.
+   * @return A promise that resolves to an array of globally registered application commands.
+   */
   async pushGlobalCommands(
     commands: ApplicationCommandDataResolvable[],
   ): Promise<ApplicationCommand[]> {
@@ -159,6 +175,13 @@ export class CommandManager
     }
   }
 
+  /**
+   * Pushes commands to a specific guild.
+   *
+   * @param guildId - The ID of the guild where commands are being pushed.
+   * @param commands - An array of commands data resolvable to be set in the guild.
+   * @return A promise that resolves with an array of ApplicationCommands on success.
+   */
   async pushGuildCommands(
     guildId: string,
     commands: RESTPostAPIApplicationCommandsJSONBody[],
@@ -182,6 +205,12 @@ export class CommandManager
     }
   }
 
+  /**
+   * Deletes unloaded commands from the application for a specified guild.
+   *
+   * @param guildId - The ID of the guild from which to remove the commands. If not provided, global commands are considered.
+   * @return A promise that resolves to a result object containing the number of deleted commands or an error.
+   */
   async deleteUnloadedCommands(
     guildId?: string,
   ): Promise<Result<number, BaseError>> {
@@ -232,6 +261,12 @@ export class CommandManager
     return ok(i);
   }
 
+  /**
+   * Resolves and registers the provided command definitions against the available API commands.
+   *
+   * @param command - The command definition to be resolved.
+   * @param apiCommands - The list of current application commands from the API.
+   */
   resolveCommand(
     command: CommandDefinition,
     apiCommands: ApplicationCommand[],
@@ -317,6 +352,12 @@ export class CommandManager
     }
   }
 
+  /**
+   * Resolves a list of command definitions with the provided application commands.
+   *
+   * @param commands - The list of command definitions to be resolved.
+   * @param apiCommands - The list of existing application commands to resolve against.
+   */
   resolveCommands(
     commands: CommandDefinition[],
     apiCommands: ApplicationCommand[],
@@ -341,7 +382,7 @@ export class CommandManager
     return `${apiCommand.id}_${apiCommand.name}`;
   }
 
-  getCommand(interaction: CommandInteraction | AutocompleteInteraction): Result<
+  private getCommand(interaction: CommandInteraction | AutocompleteInteraction): Result<
     {
       cmd: CommandProps;
       resolvedName: string;
@@ -422,7 +463,7 @@ export class CommandManager
     });
   }
 
-  async handleInteraction(interaction: CommandInteraction): Promise<void> {
+  private async handleInteraction(interaction: CommandInteraction): Promise<void> {
     /* INITIALISATION */
     const [infos, err] = this.getCommand(interaction);
 
@@ -830,7 +871,7 @@ export class CommandManager
     }
   }
 
-  async handleAutocomplete(
+  private async handleAutocomplete(
     interaction: AutocompleteInteraction,
   ): Promise<void> {
     /* INITIALISATION */
