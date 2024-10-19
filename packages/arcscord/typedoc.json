@@ -6,5 +6,6 @@
   "entryPoints": [
     "src/index.ts"
   ],
-  "json": "../../json_docs/arcscord/arcscord_vX_X_X.json"
+  "json": "../../json_docs/arcscord/arcscord_vX_X_X.json",
+  "tsconfig": "src/tsconfig.json"
 }
