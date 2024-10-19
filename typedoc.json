@@ -5,5 +5,6 @@
   ],
   "name": "Arcscord",
   "entryPointStrategy": "merge",
-  "includeVersion": true
+  "includeVersion": true,
+  "out": "static_docs"
 }
