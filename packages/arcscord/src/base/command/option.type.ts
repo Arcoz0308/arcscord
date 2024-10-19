@@ -56,7 +56,8 @@ export type ChoiceOptionString = {
   /**
    * List of choices
    *
-   * @example ```ts
+   * @example
+   * ```ts
    * choices: {
    *   name: "value"
    * };
@@ -102,7 +103,8 @@ export type ChoiceOptionNumber = {
   /**
    * List of choices
    *
-   * @example ```ts
+   * @example
+   * ```ts
    * choices: {
    *   name: 1
    * };

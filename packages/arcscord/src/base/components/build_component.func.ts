@@ -28,7 +28,8 @@ import { ComponentType } from "discord.js";
 /**
  * Build a link button
  * @param options options of link button
- * @example ```ts
+ * @example
+ * ```ts
  * buildLinkButton({
  *   url: "https://discord.com",
  *   label: "Discord",
@@ -41,7 +42,8 @@ export function buildLinkButton(
 /**
  * Build a link button
  * @param options options of link button
- * @example ```ts
+ * @example
+ * ```ts
  * buildLinkButton({
  *   url: "https://discord.com",
  *   label: "Discord",
@@ -65,7 +67,8 @@ export function buildLinkButton(
 /**
  * Build a clickable button
  * @param options options of the clickable button
- * @example ```ts
+ * @example
+ * ```ts
  * buildClickableButton({
  *   style: "primary",
  *   label: "Click here",
@@ -80,7 +83,8 @@ export function buildClickableButton(
 /**
  * Build a clickable button
  * @param options options of the clickable button
- * @example ```ts
+ * @example
+ * ```ts
  * buildClickableButton({
  *   style: "primary",
  *   label: "Click here",
@@ -125,7 +129,8 @@ export function buildButtonActionRow(
 /**
  * Build a string select menu
  * @param options options of the string select menu
- * @example ```ts
+ * @example
+ * ```ts
  * buildStringSelectMenu({
  *   customId: "select-1",
  *   options: [
@@ -155,7 +160,8 @@ export function buildStringSelectMenu(
 /**
  * Build a user select menu
  * @param option options of the user select menu
- * @example ```ts
+ * @example
+ * ```ts
  * buildUserSelectMenu({
  *   customId: "user-select-1",
  * });
@@ -178,7 +184,8 @@ export function buildUserSelectMenu(
 /**
  * Build a role select menu
  * @param option options of the role select menu
- * @example ```ts
+ * @example
+ * ```ts
  * buildRoleSelectMenu({
  *   customId: "role-select-1",
  *   placeholder: "Select a role",
@@ -203,7 +210,8 @@ export function buildRoleSelectMenu(
 /**
  * Build a mentionable select menu
  * @param option options of the mentionable select menu
- * @example ```ts
+ * @example
+ * ```ts
  * buildMentionableSelectMenu({
  *   customId: "mention-select-1",
  *   defaultValues: [
@@ -232,7 +240,8 @@ export function buildMentionableSelectMenu(
 /**
  * Build a channel select menu
  * @param option options of the channel select menu
- * @example ```ts
+ * @example
+ * ```ts
  * buildChannelSelectMenu({
  *   customId: "channel-select-1",
  *   placeholder: "Select a channel",

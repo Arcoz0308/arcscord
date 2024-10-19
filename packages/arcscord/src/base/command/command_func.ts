@@ -5,7 +5,8 @@ import type { CommandMiddleware } from "#/base/command/command_middleware";
  * Create a Command or a SubCommand
  * @param options command properties options
  *
- * @example ```ts
+ * @example
+ * ```ts
  * createCommand({
  *   build: {
  *     slash: {

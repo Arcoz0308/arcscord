@@ -5,7 +5,8 @@ import type { Task } from "#/base/task/task.type";
  * @param options - The options for the task, including interval, name, and run function.
  * @returns The created task.
  *
- * @example ```ts
+ * @example
+ * ```ts
  * // Create a task that runs every minute (type: cron expression)
  * const minuteTask = createTask({
  *   interval: '* * * * *',
@@ -17,7 +18,8 @@ import type { Task } from "#/base/task/task.type";
  * });
  * ```
  *
- * @example ```ts
+ * @example
+ * ```ts
  * // Create a task that runs at multiple specified times (type: array of cron expressions)
  * const multipleTimesTask = createTask({
  *   interval: ['0 0 * * *', '30 14 * * *'],
@@ -29,7 +31,8 @@ import type { Task } from "#/base/task/task.type";
  * });
  * ```
  *
- * @example ```ts
+ * @example
+ * ```ts
  * // Create a task that runs every 5000 milliseconds (type: duration in milliseconds)
  * const milliTask = createTask({
  *   interval: 5000,

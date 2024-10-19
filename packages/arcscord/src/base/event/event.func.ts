@@ -8,7 +8,8 @@ import type { ClientEvents } from "discord.js";
  * @param  options - The options for the event handler.
  * @return The created event handler.
  *
- * @example ```ts
+ * @example
+ * ```ts
  * const eventHandler = createEvent({
  *   event: "messageCreate",
  *   run: (ctx, message) => {
