@@ -1,0 +1,41 @@
+{
+  "name": "@arcscord/cli",
+  "version": "1.0.0",
+  "description": "Arcscord cli",
+  "author": "Arcoz0308",
+  "license": "MIT",
+  "homepage": "https://github.com/Arcoz0308/arcscord/tree/main/packages/cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arcoz0308/arcscord.git"
+  },
+  "bugs": {
+    "url": "https://github.com/arcoz0308/arcscord/issues"
+  },
+  "keywords": [
+    "arcscord",
+    "cli",
+    "discord",
+    "command"
+  ],
+  "main": "dist/index.js",
+  "bin": {
+    "arcscord": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc -p tsconfig.eslint.json"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0",
+    "vite": "5.4.9",
+    "vitest": "^2.1.3"
+  },
+  "directories": {
+    "lib": "./src"
+  },
+  "dependencies": {
+    "commander": "^12.1.0"
+  },
+  "type": "module"
+}
