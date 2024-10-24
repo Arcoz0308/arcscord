@@ -1,4 +1,6 @@
 {
+  // Force the use of LF
+  "files.eol": "\n",
   // Disable the default formatter, use eslint instead
   "prettier.enable": false,
   "editor.formatOnSave": false,
