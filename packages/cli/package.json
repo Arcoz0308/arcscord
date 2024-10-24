@@ -23,7 +23,7 @@
     "arcscord": "dist/index.js"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "tsc -p src/tsconfig.json",
     "typecheck": "tsc -p tsconfig.eslint.json"
   },
   "devDependencies": {
@@ -32,7 +32,9 @@
     "vitest": "^2.1.3"
   },
   "dependencies": {
-    "commander": "^12.1.0"
+    "@arcscord/error": "workspace:^",
+    "commander": "^12.1.0",
+    "zod": "^3.23.8"
   },
   "type": "module",
   "files": [
