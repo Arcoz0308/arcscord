@@ -1,4 +1,4 @@
-import type { CommandProps } from "#/base/command";
+import type { CommandHandler } from "#/base/command";
 import type { BaseAutocompleteContext } from "#/base/command/autocomplete_context";
 import type { BaseCommandContext } from "#/base/command/command_context";
 import type { ErrorOptions } from "@arcscord/better-error";
@@ -38,7 +38,7 @@ export class CommandError extends InteractionError {
   /**
    * The command properties associated with the error.
    */
-  command: CommandProps;
+  command: CommandHandler;
 
   /**
    * Creates a new instance of `CommandError`.

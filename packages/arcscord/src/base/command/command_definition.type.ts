@@ -1,4 +1,4 @@
-import type { CommandProps } from "#/base";
+import type { CommandHandler } from "#/base";
 import type { commandContextsEnum, commandIntegrationTypesEnum } from "#/base/command/command.enum";
 import type { OptionsList } from "#/base/command/option.type";
 import type { LocaleMap } from "#/utils/discord/type/locale.type";
@@ -113,7 +113,7 @@ export type SubCommandGroupDefinition = Omit<
   /**
    * List of subcommands in the group.
    */
-  subCommands: CommandProps<SubCommandDefinition>[];
+  subCommands: CommandHandler<SubCommandDefinition>[];
 };
 
 /**
@@ -133,7 +133,7 @@ export type SlashWithSubsCommandDefinition = BaseCommandDefinition & {
   /**
    * List of subcommands.
    */
-  subCommands?: CommandProps<SubCommandDefinition>[];
+  subCommands?: CommandHandler<SubCommandDefinition>[];
 
   /**
    * Groups of subcommands.
@@ -180,5 +180,5 @@ export type PartialCommandDefinitionForUser = Required<Pick<FullCommandDefinitio
  * Union type for different command definitions.
  */
 export type CommandDefinition =
-  | CommandProps<FullCommandDefinition>
+  | CommandHandler<FullCommandDefinition>
   | SlashWithSubsCommandDefinition;

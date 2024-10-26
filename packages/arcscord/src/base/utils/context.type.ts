@@ -1,4 +1,4 @@
-import type { ArcClient, CommandProps } from "#/base";
+import type { ArcClient, CommandHandler } from "#/base";
 import type { BaseInteraction, Guild, GuildBasedChannel, GuildMember, Message, User } from "discord.js";
 
 /**
@@ -24,7 +24,7 @@ export type ContextDocs = {
   /**
    * The command props for the command
    */
-  command: CommandProps;
+  command: CommandHandler;
 
   /**
    * The discord.js Interaction object

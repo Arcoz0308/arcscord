@@ -1,5 +1,5 @@
 import type { ArcClient } from "#/base";
-import type { CommandProps } from "#/base/command";
+import type { CommandHandler } from "#/base/command";
 import type { CommandDefinition } from "#/base/command/command_definition.type";
 import type {
   CommandResultHandler,
@@ -384,7 +384,7 @@ export class CommandManager
 
   private getCommand(interaction: CommandInteraction | AutocompleteInteraction): Result<
     {
-      cmd: CommandProps;
+      cmd: CommandHandler;
       resolvedName: string;
     },
     BaseError

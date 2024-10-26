@@ -68,7 +68,7 @@ export type AutocompleteCommand = {
  * @template Build - The command build
  * @template Middlewares - The list of middleware used in command
  */
-export type CommandProps<
+export type CommandHandler<
   Build extends SubCommandDefinition | FullCommandDefinition = | SubCommandDefinition
   | FullCommandDefinition,
   Middlewares extends CommandMiddleware[] = CommandMiddleware[],

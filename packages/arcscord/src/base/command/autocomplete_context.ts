@@ -1,6 +1,6 @@
 import type {
   ArcClient,
-  CommandProps,
+  CommandHandler,
   CommandRunResult,
   GuildCommandContextBuilderOptions,
   NumberChoices,
@@ -30,7 +30,7 @@ type BaseAutocompleteOptions = {
 export class BaseAutocompleteContext implements ContextDocs {
   client: ArcClient;
 
-  command: CommandProps;
+  command: CommandHandler;
 
   interaction: AutocompleteInteraction;
 
@@ -46,7 +46,7 @@ export class BaseAutocompleteContext implements ContextDocs {
    * @param options - The base autocomplete options.
    */
   constructor(
-    command: CommandProps,
+    command: CommandHandler,
     interaction: AutocompleteInteraction,
     options: BaseAutocompleteOptions,
   ) {
@@ -203,7 +203,7 @@ export class GuildAutocompleteContext extends BaseAutocompleteContext implements
    * @param options - The guild command context builder options and base autocomplete options.
    */
   constructor(
-    command: CommandProps,
+    command: CommandHandler,
     interaction: AutocompleteInteraction,
     options: GuildCommandContextBuilderOptions & BaseAutocompleteOptions,
   ) {

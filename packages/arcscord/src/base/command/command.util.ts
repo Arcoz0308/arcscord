@@ -1,4 +1,4 @@
-import type { AutocompleteCommand, CommandProps } from "#/base";
+import type { AutocompleteCommand, CommandHandler } from "#/base";
 import type {
   FullCommandDefinition,
   PartialCommandDefinitionForMessage,
@@ -23,7 +23,7 @@ import { ApplicationCommandOptionType } from "discord-api-types/v10";
  * @internal
  */
 export function isSubCommand(
-  props: CommandProps | SlashWithSubsCommandDefinition,
+  props: CommandHandler | SlashWithSubsCommandDefinition,
 ): props is SlashWithSubsCommandDefinition {
   return "name" in props;
 }

@@ -1,4 +1,4 @@
-import type { CommandProps } from "#/base";
+import type { CommandHandler } from "#/base";
 import type { CommandError } from "#/utils";
 import type { Result } from "@arcscord/error";
 import type { CommandInteraction } from "discord.js";
@@ -20,7 +20,7 @@ export type CommandResultHandlerInfos = {
   /**
    * The command properties associated with the command.
    */
-  command: CommandProps;
+  command: CommandHandler;
 
   /**
    * Whether the response is deferred.

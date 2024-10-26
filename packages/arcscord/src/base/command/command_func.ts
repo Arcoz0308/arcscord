@@ -1,4 +1,4 @@
-import type { CommandProps, FullCommandDefinition, SubCommandDefinition } from "#/base";
+import type { CommandHandler, FullCommandDefinition, SubCommandDefinition } from "#/base";
 import type { CommandMiddleware } from "#/base/command/command_middleware";
 
 /**
@@ -24,7 +24,7 @@ export function createCommand<
   Definer extends FullCommandDefinition | SubCommandDefinition,
   Middlewares extends CommandMiddleware[] = [],
 >(
-  options: CommandProps<Definer, Middlewares>,
-): CommandProps<Definer, Middlewares> {
+  options: CommandHandler<Definer, Middlewares>,
+): CommandHandler<Definer, Middlewares> {
   return options;
 }

@@ -1,4 +1,4 @@
-import type { ArcClient, CommandProps, CommandRunResult } from "#/base";
+import type { ArcClient, CommandHandler, CommandRunResult } from "#/base";
 import type {
   CommandContexts,
   CommandIntegrationType,
@@ -69,7 +69,7 @@ export class BaseCommandContext<
   /**
    * The command properties
    */
-  command: CommandProps;
+  command: CommandHandler;
 
   /**
    * The original Discord.js interaction
@@ -113,7 +113,7 @@ export class BaseCommandContext<
    * Construct a new BaseCommandContext
    */
   constructor(
-    command: CommandProps,
+    command: CommandHandler,
     interaction: CommandInteraction,
     options: BaseCommandContextBuilderOptions<M>,
   ) {
@@ -336,7 +336,7 @@ export class GuildCommandContext<
   readonly inDM = false;
 
   constructor(
-    command: CommandProps,
+    command: CommandHandler,
     interaction: CommandInteraction,
     options: GuildCommandContextBuilderOptions<M>,
   ) {
@@ -418,7 +418,7 @@ export class GuildSlashCommandContext<
   interaction: ChatInputCommandInteraction;
 
   constructor(
-    command: CommandProps,
+    command: CommandHandler,
     interaction: ChatInputCommandInteraction,
     options: GuildSlashCommandContextBuilderOptions<T, M>,
   ) {
@@ -458,7 +458,7 @@ export class GuildMessageCommandContext<
   interaction: MessageContextMenuCommandInteraction;
 
   constructor(
-    command: CommandProps,
+    command: CommandHandler,
     interaction: MessageContextMenuCommandInteraction,
     options: GuildMessageCommandContextBuilderOptions<M>,
   ) {
@@ -501,7 +501,7 @@ export class GuildUserCommandContext<
   interaction: UserContextMenuCommandInteraction;
 
   constructor(
-    command: CommandProps,
+    command: CommandHandler,
     interaction: UserContextMenuCommandInteraction,
     options: GuildUserCommandContextBuilderOptions<M>,
   ) {
@@ -548,7 +548,7 @@ export class DmSlashCommandContext<
   interaction: ChatInputCommandInteraction;
 
   constructor(
-    command: CommandProps,
+    command: CommandHandler,
     interaction: ChatInputCommandInteraction,
     options: DmSlashCommandContextBuilderOptions<T, M>,
   ) {
@@ -588,7 +588,7 @@ export class DmMessageCommandContext<
   interaction: MessageContextMenuCommandInteraction;
 
   constructor(
-    command: CommandProps,
+    command: CommandHandler,
     interaction: MessageContextMenuCommandInteraction,
     options: DmMessageCommandContextBuilderOptions<M>,
   ) {
@@ -630,7 +630,7 @@ export class DmUserCommandContext<
   interaction: UserContextMenuCommandInteraction;
 
   constructor(
-    command: CommandProps,
+    command: CommandHandler,
     interaction: UserContextMenuCommandInteraction,
     options: DmUserCommandContextBuilderOptions<M>,
   ) {
