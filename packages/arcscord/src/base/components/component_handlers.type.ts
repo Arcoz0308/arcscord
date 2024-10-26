@@ -28,7 +28,7 @@ export type MatcherType = "begin" | "full";
 /**
  * Base properties for all component types.
  */
-export type BaseComponentProps<Middlewares extends ComponentMiddleware[] = ComponentMiddleware[]> = {
+export type BaseComponentHandler<Middlewares extends ComponentMiddleware[] = ComponentMiddleware[]> = {
   /**
    * The type of the component.
    */
@@ -61,11 +61,11 @@ export type BaseComponentProps<Middlewares extends ComponentMiddleware[] = Compo
 /**
  * Properties for a button component.
  */
-export type ButtonComponentProps<
+export type ButtonComponentHandler<
   O extends string[] = string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
-> = BaseComponentProps<M> & {
-  type: Extract<BaseComponentProps["type"], "button">;
+> = BaseComponentHandler<M> & {
+  type: Extract<BaseComponentHandler["type"], "button">;
 
   /**
    * Function to build the button.
@@ -81,12 +81,12 @@ export type ButtonComponentProps<
 /**
  * Properties for a string select menu component.
  */
-export type StringSelectMenuComponentProps<
+export type StringSelectMenuComponentHandler<
   O extends string[] = string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
   Typed extends TypedSelectMenuOptions | undefined = undefined,
-> = BaseComponentProps<M> & {
-  type: Extract<BaseComponentProps["type"], "stringSelect">;
+> = BaseComponentHandler<M> & {
+  type: Extract<BaseComponentHandler["type"], "stringSelect">;
 
   /**
    * Function to build the string select menu.
@@ -102,11 +102,11 @@ export type StringSelectMenuComponentProps<
 /**
  * Properties for a user select menu component.
  */
-export type UserSelectMenuComponentProps<
+export type UserSelectMenuComponentHandler<
   O extends string[] = string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
-> = BaseComponentProps & {
-  type: Extract<BaseComponentProps["type"], "userSelect">;
+> = BaseComponentHandler & {
+  type: Extract<BaseComponentHandler["type"], "userSelect">;
 
   /**
    * Function to build the user select menu.
@@ -122,11 +122,11 @@ export type UserSelectMenuComponentProps<
 /**
  * Properties for a role select menu component.
  */
-export type RoleSelectMenuComponentProps<
+export type RoleSelectMenuComponentHandler<
   O extends string[] = string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
-> = BaseComponentProps & {
-  type: Extract<BaseComponentProps["type"], "roleSelect">;
+> = BaseComponentHandler & {
+  type: Extract<BaseComponentHandler["type"], "roleSelect">;
 
   /**
    * Function to build the role select menu.
@@ -142,11 +142,11 @@ export type RoleSelectMenuComponentProps<
 /**
  * Properties for a mentionable select menu component.
  */
-export type MentionableSelectMenuComponentProps<
+export type MentionableSelectMenuComponentHandler<
   O extends string[] = string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
-> = BaseComponentProps & {
-  type: Extract<BaseComponentProps["type"], "mentionableSelect">;
+> = BaseComponentHandler & {
+  type: Extract<BaseComponentHandler["type"], "mentionableSelect">;
 
   /**
    * Function to build the mentionable select menu.
@@ -162,11 +162,11 @@ export type MentionableSelectMenuComponentProps<
 /**
  * Properties for a channel select menu component.
  */
-export type ChannelSelectMenuComponentProps<
+export type ChannelSelectMenuComponentHandler<
   O extends string[] = string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
-> = BaseComponentProps & {
-  type: Extract<BaseComponentProps["type"], "channelSelect">;
+> = BaseComponentHandler & {
+  type: Extract<BaseComponentHandler["type"], "channelSelect">;
 
   /**
    * Function to build the channel select menu.
@@ -182,11 +182,11 @@ export type ChannelSelectMenuComponentProps<
 /**
  * Properties for a modal component.
  */
-export type ModalComponentProps<
+export type ModalComponentHandler<
   O extends string[] = string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
-> = BaseComponentProps & {
-  type: Extract<BaseComponentProps["type"], "modal">;
+> = BaseComponentHandler & {
+  type: Extract<BaseComponentHandler["type"], "modal">;
 
   /**
    * Function to build the modal.
@@ -202,19 +202,19 @@ export type ModalComponentProps<
 /**
  * Properties for a select menu component.
  */
-export type SelectMenuComponentProps<
+export type SelectMenuComponentHandler<
   O extends string[] = string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
-> = StringSelectMenuComponentProps<O, M>
-| UserSelectMenuComponentProps<O, M>
-| RoleSelectMenuComponentProps<O, M>
-| MentionableSelectMenuComponentProps<O, M>
-| ChannelSelectMenuComponentProps<O, M>;
+> = StringSelectMenuComponentHandler<O, M>
+| UserSelectMenuComponentHandler<O, M>
+| RoleSelectMenuComponentHandler<O, M>
+| MentionableSelectMenuComponentHandler<O, M>
+| ChannelSelectMenuComponentHandler<O, M>;
 
 /**
  * Union type for all component properties.
  */
-export type ComponentProps =
-  | ButtonComponentProps
-  | SelectMenuComponentProps
-  | ModalComponentProps;
+export type ComponentHandler =
+  | ButtonComponentHandler
+  | SelectMenuComponentHandler
+  | ModalComponentHandler;

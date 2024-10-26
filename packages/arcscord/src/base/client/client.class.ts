@@ -1,7 +1,7 @@
 import type { TaskHandler } from "#/base";
 import type { ArcClientOptions, MessageOptions } from "#/base/client/client.type";
 import type { CommandDefinition } from "#/base/command/command_definition.type";
-import type { ComponentProps } from "#/base/components/component_props.type";
+import type { ComponentHandler } from "#/base/components/component_handlers.type";
 import type { EventHandler } from "#/base/event/event.type";
 import type { Locale } from "#/utils";
 import type { LoggerConstructor, LoggerInterface } from "#/utils/logger/logger.type";
@@ -240,7 +240,7 @@ export class ArcClient extends DJSClient {
    *
    * @param components - The components to load
    */
-  loadComponents(components: ComponentProps[]): void {
+  loadComponents(components: ComponentHandler[]): void {
     return this.componentManager.loadComponents(components);
   }
 

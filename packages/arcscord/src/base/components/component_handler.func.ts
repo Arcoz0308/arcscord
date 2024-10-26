@@ -1,9 +1,9 @@
-import type { ComponentMiddleware } from "#/base/components/component_middleware";
 import type {
-  ButtonComponentProps,
-  ModalComponentProps,
-  SelectMenuComponentProps,
-} from "#/base/components/component_props.type";
+  ButtonComponentHandler,
+  ModalComponentHandler,
+  SelectMenuComponentHandler,
+} from "#/base/components/component_handlers.type";
+import type { ComponentMiddleware } from "#/base/components/component_middleware";
 
 /**
  * Create a select menu
@@ -29,7 +29,7 @@ import type {
 export function createSelectMenu<
   O extends string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
->(options: SelectMenuComponentProps<O, M>): SelectMenuComponentProps<O, M> {
+>(options: SelectMenuComponentHandler<O, M>): SelectMenuComponentHandler<O, M> {
   return options;
 }
 
@@ -56,7 +56,7 @@ export function createSelectMenu<
 export function createButton<
   O extends string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
->(options: Omit<ButtonComponentProps<O, M>, "type">): ButtonComponentProps<O, M> {
+>(options: Omit<ButtonComponentHandler<O, M>, "type">): ButtonComponentHandler<O, M> {
   return { ...options, type: "button" };
 }
 
@@ -84,6 +84,6 @@ export function createButton<
 export function createModal<
   O extends string[],
   M extends ComponentMiddleware[] = [],
->(options: Omit<ModalComponentProps<O, M>, "type">): ModalComponentProps<O, M> {
+>(options: Omit<ModalComponentHandler<O, M>, "type">): ModalComponentHandler<O, M> {
   return { ...options, type: "modal" };
 }

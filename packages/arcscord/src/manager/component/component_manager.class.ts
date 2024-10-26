@@ -1,5 +1,5 @@
 import type { ArcClient, ComponentContext } from "#/base";
-import type { ComponentProps } from "#/base/components/component_props.type";
+import type { ComponentHandler } from "#/base/components/component_handlers.type";
 import type { GuildComponentContextOptions } from "#/base/components/context/base_context";
 import type { ComponentList } from "#/manager/component/component_manager.type";
 import type { Result } from "@arcscord/error";
@@ -67,7 +67,7 @@ export class ComponentManager extends BaseManager {
    *
    * @param components - components to loads
    */
-  loadComponents(components: ComponentProps[]): void {
+  loadComponents(components: ComponentHandler[]): void {
     for (const component of components) {
       this.loadComponent(component);
     }
@@ -77,7 +77,7 @@ export class ComponentManager extends BaseManager {
    * Load a single component
    * @param component - component to load
    */
-  loadComponent(component: ComponentProps): void {
+  loadComponent(component: ComponentHandler): void {
     switch (component.type) {
       case "button":
         this.components.button.set(component.matcher, component);
@@ -126,7 +126,7 @@ export class ComponentManager extends BaseManager {
   /**
    * @internal
    */
-  private getComponents<K extends string, V extends ComponentProps>(
+  private getComponents<K extends string, V extends ComponentHandler>(
     id: string,
     components: Map<K, V>,
   ): V[] {
@@ -1016,7 +1016,7 @@ export class ComponentManager extends BaseManager {
     }
   }
 
-  private async runMiddleware(props: ComponentProps, context: ComponentContext): Promise<Result<object | false, ComponentError>> {
+  private async runMiddleware(props: ComponentHandler, context: ComponentContext): Promise<Result<object | false, ComponentError>> {
     const additional: Record<string, Record<string, unknown>> = {};
     if (!props.use || props.use.length === 0) {
       return ok({});
