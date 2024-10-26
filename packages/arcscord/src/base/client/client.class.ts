@@ -1,4 +1,4 @@
-import type { Task } from "#/base";
+import type { TaskHandler } from "#/base";
 import type { ArcClientOptions, MessageOptions } from "#/base/client/client.type";
 import type { CommandDefinition } from "#/base/command/command_definition.type";
 import type { ComponentProps } from "#/base/components/component_props.type";
@@ -231,7 +231,7 @@ export class ArcClient extends DJSClient {
    *
    * @param tasks - The tasks to load
    */
-  loadTasks(tasks: Task[]): void {
+  loadTasks(tasks: TaskHandler[]): void {
     return this.taskManager.loadTasks(tasks);
   }
 

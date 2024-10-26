@@ -1,4 +1,4 @@
-import type { Task } from "#/base/task/task.type";
+import type { TaskHandler } from "#/base/task/task.type";
 
 /**
  * Create a task with the specified options.
@@ -44,6 +44,6 @@ import type { Task } from "#/base/task/task.type";
  * });
  * ```
  */
-export function createTask(options: Task): Task {
+export function createTask(options: TaskHandler): TaskHandler {
   return options;
 }

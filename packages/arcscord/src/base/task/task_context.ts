@@ -1,5 +1,5 @@
 import type { ArcClient, TaskResult } from "#/base";
-import type { Task } from "#/base/task/task.type";
+import type { TaskHandler } from "#/base/task/task.type";
 import type { TaskErrorOptions } from "#/utils";
 import { TaskError } from "#/utils";
 import { error, ok } from "@arcscord/error";
@@ -20,7 +20,7 @@ export class TaskContext {
   /**
    * The task to be run.
    */
-  task: Task;
+  task: TaskHandler;
 
   /**
    * The next scheduled run date of the task.
@@ -33,7 +33,7 @@ export class TaskContext {
    * @param task - The task to be run.
    * @param options - Additional context options, including the next run date.
    */
-  constructor(client: ArcClient, task: Task, options: TaskContextOptions) {
+  constructor(client: ArcClient, task: TaskHandler, options: TaskContextOptions) {
     this.client = client;
     this.task = task;
     this.nextRun = options.nextRun;

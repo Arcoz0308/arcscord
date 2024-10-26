@@ -1,4 +1,4 @@
-import type { Task } from "#/base/task/task.type";
+import type { TaskHandler } from "#/base/task/task.type";
 import type { ErrorOptions } from "@arcscord/better-error";
 import { BaseError } from "@arcscord/better-error";
 
@@ -9,7 +9,7 @@ export type TaskErrorOptions = ErrorOptions & {
   /**
    * The task associated with the error.
    */
-  task: Task;
+  task: TaskHandler;
 };
 
 /**
@@ -19,7 +19,7 @@ export class TaskError extends BaseError {
   /**
    * The task associated with the error.
    */
-  task: Task;
+  task: TaskHandler;
 
   /**
    * Creates a new instance of TaskError.

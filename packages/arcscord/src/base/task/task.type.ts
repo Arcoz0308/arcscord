@@ -11,7 +11,7 @@ export type TaskResult = Result<string | true, TaskError>;
 /**
  * Represents a task with a specified interval, name, and a run function.
  */
-export type Task = {
+export type TaskHandler = {
   /**
    * The interval at which the task should be run.
    * It can be a cron expression string, an array of cron expression strings, or a number representing milliseconds.

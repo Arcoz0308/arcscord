@@ -1,4 +1,4 @@
-import type { Task } from "#/base";
+import type { TaskHandler } from "#/base";
 import { BaseManager, TaskContext } from "#/base";
 import { anyToError } from "@arcscord/error";
 import { CronJob } from "cron";
@@ -19,7 +19,7 @@ export class TaskManager extends BaseManager {
    *
    * @param tasks - An array of tasks to load.
    */
-  loadTasks(tasks: Task[]): void {
+  loadTasks(tasks: TaskHandler[]): void {
     tasks.forEach(task => this.loadTask(task));
   }
 
@@ -28,7 +28,7 @@ export class TaskManager extends BaseManager {
    *
    * @param task - The task to load.
    */
-  loadTask(task: Task): void {
+  loadTask(task: TaskHandler): void {
     if (this.crons.has(task.name)) {
       return this.logger.fatal(`a task with name ${task.name} already exist !`);
     }
@@ -84,7 +84,7 @@ export class TaskManager extends BaseManager {
     );
   }
 
-  private async runTask(task: Task): Promise<void> {
+  private async runTask(task: TaskHandler): Promise<void> {
     try {
       const cron = this.crons.get(task.name);
       if (!cron) {
