@@ -1,6 +1,6 @@
 import type { TaskHandler } from "#/base";
 import type { ArcClientOptions, MessageOptions } from "#/base/client/client.type";
-import type { CommandDefinition } from "#/base/command/command_definition.type";
+import type { Command } from "#/base/command/command_definition.type";
 import type { ComponentHandler } from "#/base/components/component_handlers.type";
 import type { EventHandler } from "#/base/event/event.type";
 import type { Locale } from "#/utils";
@@ -202,7 +202,7 @@ export class ArcClient extends DJSClient {
    * @param guild - The guild to register the commands in (optional)
    */
   async loadCommands(
-    commands: CommandDefinition[],
+    commands: Command[],
     group = "default",
     guild?: string,
   ): Promise<void> {

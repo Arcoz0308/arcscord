@@ -179,6 +179,6 @@ export type PartialCommandDefinitionForUser = Required<Pick<FullCommandDefinitio
 /**
  * Union type for different command definitions.
  */
-export type CommandDefinition =
+export type Command =
   | CommandHandler<FullCommandDefinition>
   | SlashWithSubsCommandDefinition;

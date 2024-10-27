@@ -1,6 +1,6 @@
 import type { ArcClient } from "#/base";
 import type { CommandHandler } from "#/base/command";
-import type { CommandDefinition } from "#/base/command/command_definition.type";
+import type { Command } from "#/base/command/command_definition.type";
 import type {
   CommandResultHandler,
   CommandResultHandlerImplementer,
@@ -51,7 +51,7 @@ import { ApplicationCommandType } from "discord-api-types/v10";
 export class CommandManager
   extends BaseManager
   implements CommandResultHandlerImplementer {
-  commands: Map<string, CommandDefinition> = new Map();
+  commands: Map<string, Command> = new Map();
 
   name = "command";
 
@@ -82,7 +82,7 @@ export class CommandManager
    * @return The array of API application commands.
    */
   loadCommands(
-    commands: CommandDefinition[],
+    commands: Command[],
     group = "globalCommands",
   ): RESTPostAPIApplicationCommandsJSONBody[] {
     const commandsBody: RESTPostAPIApplicationCommandsJSONBody[] = [];
@@ -268,7 +268,7 @@ export class CommandManager
    * @param apiCommands - The list of current application commands from the API.
    */
   resolveCommand(
-    command: CommandDefinition,
+    command: Command,
     apiCommands: ApplicationCommand[],
   ): void {
     if (!isSubCommand(command)) {
@@ -359,7 +359,7 @@ export class CommandManager
    * @param apiCommands - The list of existing application commands to resolve against.
    */
   resolveCommands(
-    commands: CommandDefinition[],
+    commands: Command[],
     apiCommands: ApplicationCommand[],
   ): void {
     for (const command of commands) {
