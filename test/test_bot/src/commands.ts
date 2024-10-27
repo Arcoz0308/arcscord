@@ -1,4 +1,4 @@
-import type { CommandDefinition } from "arcscord";
+import type { Command } from "arcscord";
 import { autocompleteCommand } from "./commands/autocomplete";
 import { avatarCommand } from "./commands/avatar";
 import { componentTestCommand } from "./commands/component_test";
@@ -7,7 +7,7 @@ import { messageInfosCommand } from "./commands/message_infos";
 import { testMiddlewareCommand } from "./commands/middleware";
 import { subCommand } from "./commands/sub/def";
 
-export const commands: CommandDefinition[] = [
+export const commands: Command[] = [
   avatarCommand,
   messageInfosCommand,
   componentTestCommand,

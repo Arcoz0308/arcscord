@@ -1,4 +1,4 @@
-import type { ComponentProps } from "arcscord";
+import type { ComponentHandler } from "arcscord";
 import { channelSelectMenu } from "./components/channel_select_menu";
 import { deferEditButton } from "./components/function_test/defer_edit";
 import { disableAllButton } from "./components/function_test/disable_all";
@@ -13,7 +13,7 @@ import { simpleButton } from "./components/simple_button";
 import { stringSelectMenu } from "./components/string_select_menu";
 import { userSelectMenu } from "./components/user_select_menu";
 
-export const components: ComponentProps[] = [
+export const components: ComponentHandler[] = [
   simpleButton,
   stringSelectMenu,
   userSelectMenu,
