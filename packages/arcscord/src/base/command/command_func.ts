@@ -1,4 +1,9 @@
-import type { CommandHandler, FullCommandDefinition, SubCommandDefinition } from "#/base";
+import type {
+  CommandHandler,
+  FullCommandDefinition,
+  SlashWithSubsCommandDefinition,
+  SubCommandDefinition,
+} from "#/base";
 import type { CommandMiddleware } from "#/base/command/command_middleware";
 
 /**
@@ -26,5 +31,12 @@ export function createCommand<
 >(
   options: CommandHandler<Definer, Middlewares>,
 ): CommandHandler<Definer, Middlewares> {
+  return options;
+}
+
+/**
+ * Builds a command with subcommands using the provided options.
+ */
+export function buildCommandWithSubs(options: SlashWithSubsCommandDefinition): SlashWithSubsCommandDefinition {
   return options;
 }
