@@ -3,6 +3,7 @@ import type { LangDetector, LocaleManagerOptions } from "#/manager/locale/locale
 import type { Locale } from "#/utils";
 import type { i18n, InitOptions } from "i18next";
 import { BaseManager } from "#/base";
+import { anyToError } from "@arcscord/error";
 import i18next from "i18next";
 import arcscordEn from "../../locales/en.json";
 import arcscordFr from "../../locales/fr.json";
@@ -48,6 +49,14 @@ export class LocaleManager extends BaseManager {
     zh: ["zh-CN", "zh-TW"],
     ja: "ja",
     ko: "ko",
+  };
+
+  /**
+   * Get arcscord translation resources
+   */
+  static arcscordResources = {
+    en: arcscordEn,
+    fr: arcscordFr,
   };
 
   /**
@@ -148,5 +157,15 @@ export class LocaleManager extends BaseManager {
       return this.i18n.options.fallbackLng;
     }
     return undefined;
+  }
+
+  async detectLanguage(options: Parameters<LangDetector>[0]): Promise<string> {
+    try {
+      return (await this.detect(options)) || this.defaultLanguage() || "en";
+    }
+    catch (e) {
+      this.logger.warning(`Failed to detect language, a throw happens, error : ${anyToError(e).message}`);
+      return this.defaultLanguage() || "en";
+    }
   }
 }

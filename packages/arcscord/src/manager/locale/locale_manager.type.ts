@@ -1,16 +1,16 @@
-import type { Locale } from "#/utils";
-import type { BaseChannel, Guild, Interaction, User } from "discord.js";
+import type { Locale, MaybePromise } from "#/utils";
+import type { BaseInteraction, Guild, TextBasedChannel, User } from "discord.js";
 import type { i18n, InitOptions } from "i18next";
 
 /**
  * LangDetector is a type representing a function that detects the language for a given set of options.
  */
 export type LangDetector = (options: {
-  interaction: Interaction | null;
+  interaction: BaseInteraction | null;
   guild: Guild | null;
   user: User | null;
-  channel: BaseChannel | null;
-}) => string | undefined;
+  channel: TextBasedChannel | null;
+}) => MaybePromise<string | undefined>;
 
 /**
  * Options to configure the LocaleManager.
