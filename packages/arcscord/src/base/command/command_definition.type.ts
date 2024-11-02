@@ -1,6 +1,7 @@
 import type { CommandHandler } from "#/base";
 import type { commandContextsEnum, commandIntegrationTypesEnum } from "#/base/command/command.enum";
 import type { OptionsList } from "#/base/command/option.type";
+import type { LocaleCallback } from "#/manager";
 import type { LocaleMap } from "#/utils/discord/type/locale.type";
 import type { PermissionsString } from "discord.js";
 
@@ -28,7 +29,7 @@ export type BaseCommandDefinition = {
   /**
    * Localization map for the command name.
    */
-  nameLocalizations?: LocaleMap;
+  nameLocalizations?: LocaleMap | LocaleCallback;
 
   /**
    * Default member permissions required to execute the command.
@@ -65,7 +66,7 @@ export type SlashCommandDefinition = BaseCommandDefinition & {
   /**
    * Localization map for the command description.
    */
-  descriptionLocalizations?: LocaleMap;
+  descriptionLocalizations?: LocaleMap | LocaleCallback;
 
   /**
    * Options for the slash command.
@@ -85,7 +86,7 @@ export type SubCommandDefinition = {
   /**
    * Localization map for the subcommand name.
    */
-  nameLocalizations?: LocaleMap;
+  nameLocalizations?: LocaleMap | LocaleCallback;
 
   /**
    * Description of the subcommand.
@@ -95,7 +96,7 @@ export type SubCommandDefinition = {
   /**
    * Localization map for the subcommand description.
    */
-  descriptionLocalizations?: LocaleMap;
+  descriptionLocalizations?: LocaleMap | LocaleCallback;
 
   /**
    * Options for the subcommand.
@@ -128,7 +129,7 @@ export type SlashWithSubsCommandDefinition = BaseCommandDefinition & {
   /**
    * Localization map for the command description.
    */
-  descriptionLocalizations?: LocaleMap;
+  descriptionLocalizations?: LocaleMap | LocaleCallback;
 
   /**
    * List of subcommands.

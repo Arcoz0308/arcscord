@@ -1,4 +1,5 @@
 import type { commandOptionTypesEnum } from "#/base/command/command.enum";
+import type { LocaleCallback } from "#/manager";
 import type { ChannelType } from "#/utils/discord/type/channel.type";
 import type { LocaleMap } from "#/utils/discord/type/locale.type";
 import type { Attachment, GuildBasedChannel, Role, User } from "discord.js";
@@ -15,11 +16,11 @@ export type CommandOptionType = keyof typeof commandOptionTypesEnum;
  */
 export type BaseSlashOption = {
   /** Localization for the name of the option */
-  nameLocalizations?: LocaleMap;
+  nameLocalizations?: LocaleMap | LocaleCallback;
   /** Description of the option */
   description: string;
   /** Localization for the description of the option */
-  descriptionLocalizations?: LocaleMap;
+  descriptionLocalizations?: LocaleMap | LocaleCallback;
   /**
    * If the option is required.
    * @default false
@@ -39,7 +40,7 @@ export type ChoiceString = {
   /** Name of the choice */
   name: string;
   /** Localization for the name of the choice */
-  nameLocalizations?: LocaleMap;
+  nameLocalizations?: LocaleMap | LocaleCallback;
   /** Value of the choice */
   value: string;
 };
@@ -86,7 +87,7 @@ export type ChoiceNumber = {
   /** Name of the choice */
   name: string;
   /** Localization for the name of the choice */
-  nameLocalizations?: LocaleMap;
+  nameLocalizations?: LocaleMap | LocaleCallback;
   /** Value of the choice */
   value: number;
 };

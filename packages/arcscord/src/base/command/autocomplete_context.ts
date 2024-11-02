@@ -7,6 +7,7 @@ import type {
   StringChoices,
 } from "#/base";
 import type { ContextDocs, DmContextDocs, GuildContextDocs } from "#/base/utils/context.type";
+import type { CommandErrorOptions } from "#/utils";
 import type {
   ApplicationCommandOptionChoiceData,
   AutocompleteFocusedOption,
@@ -16,7 +17,8 @@ import type {
   GuildMember,
   User,
 } from "discord.js";
-import { CommandError, type CommandErrorOptions } from "#/utils";
+import type i18next from "i18next";
+import { CommandError } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";
 
 type BaseAutocompleteOptions = {
@@ -39,6 +41,11 @@ export class BaseAutocompleteContext implements ContextDocs {
   user: User;
 
   /**
+   * get a locale text, with language detected self
+   */
+  t: typeof i18next.t;
+
+  /**
    * Constructs a new BaseAutocompleteContext.
    *
    * @param command - The command props.
@@ -55,6 +62,23 @@ export class BaseAutocompleteContext implements ContextDocs {
     this.resolvedCommandName = options.resolvedName;
     this.client = options.client;
     this.user = interaction.user;
+    this.t = this.client.localeManager.i18n.getFixedT("en");
+    void this.loadTranslate();
+  }
+
+  /**
+   * @internal
+   * @private
+   */
+  private async loadTranslate(): Promise<void> {
+    this.t = this.client.localeManager.i18n.getFixedT(
+      await this.client.localeManager.detectLanguage({
+        interaction: this.interaction,
+        user: this.user,
+        guild: this.interaction.guild,
+        channel: this.interaction.channel,
+      }),
+    );
   }
 
   /**
@@ -86,7 +110,15 @@ export class BaseAutocompleteContext implements ContextDocs {
       if (Array.isArray(choices)) {
         for (const choice of choices) {
           if (typeof choice === "object") {
-            apiChoices.push(choice);
+            if (typeof choice.nameLocalizations === "function") {
+              const nameLocalization = choice.nameLocalizations(this.t);
+              apiChoices.push({ ...choice, nameLocalizations: {
+                [this.interaction.locale]: nameLocalization,
+              } });
+            }
+            else {
+              apiChoices.push(choice as ApplicationCommandOptionChoiceData);
+            }
           }
           else {
             apiChoices.push({

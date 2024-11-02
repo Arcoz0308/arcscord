@@ -94,7 +94,7 @@ export class CommandManager
     for (const command of commands) {
       if (!isSubCommand(command)) {
         let hasPush = false;
-        const data = commandToAPI(command.build);
+        const data = commandToAPI(command.build, this.client);
 
         if (data.slash) {
           commandsBody.push(data.slash);
@@ -133,7 +133,7 @@ export class CommandManager
         totalCommands++;
       }
       else {
-        commandsBody.push(subCommandListToAPI(command));
+        commandsBody.push(subCommandListToAPI(command, this.client));
         slashCommands++;
         this.logger.trace(
           `loaded slash builder of command "${command.name}" in group "${group}"`,

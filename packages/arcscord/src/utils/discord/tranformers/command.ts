@@ -1,25 +1,28 @@
-import type {
-  CommandContexts,
-  CommandIntegrationType,
-} from "#/base/command/command_definition.type";
-import type {
-  ChoiceNumber,
-  ChoiceString,
-  CommandOptionType,
-  Option,
-  OptionsList,
-} from "#/base/command/option.type";
+import type { ArcClient } from "#/base";
+import type { CommandContexts, CommandIntegrationType } from "#/base/command/command_definition.type";
+import type { ChoiceNumber, ChoiceString, CommandOptionType, Option, OptionsList } from "#/base/command/option.type";
+import type { LocaleCallback } from "#/manager";
+import type { LocaleMap } from "#/utils";
 import type { ChannelType } from "#/utils/discord/type/channel.type";
-import type {
-  APIApplicationCommandBasicOption,
-  APIApplicationCommandOptionChoice,
-} from "discord-api-types/v10";
-import {
-  commandContextsEnum,
-  commandIntegrationTypesEnum,
-  commandOptionTypesEnum,
-} from "#/base/command/command.enum";
+import type { APIApplicationCommandBasicOption, APIApplicationCommandOptionChoice } from "discord-api-types/v10";
+import { commandContextsEnum, commandIntegrationTypesEnum, commandOptionTypesEnum } from "#/base/command/command.enum";
 import { channelTypeEnum } from "#/utils/discord/type/channel.enum";
+
+export function localizationToAPI(locales: LocaleMap | LocaleCallback | undefined, client: ArcClient): LocaleMap | undefined {
+  if (typeof locales === "undefined") {
+    return undefined;
+  }
+  if (typeof locales !== "function") {
+    return locales;
+  }
+  const newMap: LocaleMap = {};
+  for (const locale of client.localeManager.availableLanguages) {
+    const lang = client.localeManager.mapLanguage(locale);
+    const t = client.localeManager.i18n.getFixedT(lang);
+    newMap[locale] = locales(t);
+  }
+  return newMap;
+}
 
 export function contextsToAPI(contexts: CommandContexts[]): number[] {
   return contexts.map(context => commandContextsEnum[context]);
@@ -100,12 +103,13 @@ export function numberChoiceToAPI(
 export function optionToAPI(
   name: string,
   option: Option,
+  client: ArcClient,
 ): APIApplicationCommandBasicOption {
   const baseOption: Omit<APIApplicationCommandBasicOption, "type"> = {
     name,
     description: option.description,
-    name_localizations: option.nameLocalizations,
-    description_localizations: option.descriptionLocalizations,
+    name_localizations: localizationToAPI(option.nameLocalizations, client),
+    description_localizations: localizationToAPI(option.descriptionLocalizations, client),
     required: option.required,
   };
 
@@ -181,10 +185,11 @@ export function optionToAPI(
 
 export function optionListToAPI(
   list: OptionsList,
+  client: ArcClient,
 ): APIApplicationCommandBasicOption[] {
   const options: APIApplicationCommandBasicOption[] = [];
   for (const [name, option] of Object.entries(list)) {
-    options.push(optionToAPI(name, option));
+    options.push(optionToAPI(name, option, client));
   }
 
   return options;
