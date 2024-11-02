@@ -1,3 +1,4 @@
+import type { LocaleManagerOptions } from "#/manager/locale/locale_manager.type";
 import type { Locale } from "#/utils/discord/type/locale.type";
 import type { LoggerConstructor } from "#/utils/logger/logger.type";
 import type { BaseMessageOptions, ClientOptions, PermissionsString } from "discord.js";
@@ -50,6 +51,22 @@ export type ArcClientOptions = ClientOptions & {
    * @experimental
    */
   autoIntents?: boolean;
+
+  /**
+   * Optional configuration object for specifying manager options.
+   * This can be used to customize behavior or settings related to managers.
+   */
+  managers?: ManagersOptions;
+};
+
+/**
+ * configurations for arcscord managers
+ */
+export type ManagersOptions = {
+  /**
+   * Configuration of {@link LocaleManager} for customise localization of arcscord
+   */
+  locale?: LocaleManagerOptions;
 };
 
 /**
