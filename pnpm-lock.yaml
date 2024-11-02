@@ -198,6 +198,9 @@ importers:
       discord.js:
         specifier: ^14.16.3
         version: 14.16.3
+      i18next:
+        specifier: ^23.16.4
+        version: 23.16.4
     devDependencies:
       '@swc-node/core':
         specifier: ^1.13.3
