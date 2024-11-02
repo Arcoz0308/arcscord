@@ -8,7 +8,7 @@ import type { APIApplicationCommandBasicOption, APIApplicationCommandOptionChoic
 import { commandContextsEnum, commandIntegrationTypesEnum, commandOptionTypesEnum } from "#/base/command/command.enum";
 import { channelTypeEnum } from "#/utils/discord/type/channel.enum";
 
-export function localizationToAPI(locales: LocaleMap | LocaleCallback | undefined, client: ArcClient): LocaleMap | undefined {
+export function localizationToAPI(locales: LocaleMap | LocaleCallback | undefined, client: ArcClient, name = false): LocaleMap | undefined {
   if (typeof locales === "undefined") {
     return undefined;
   }
@@ -19,7 +19,11 @@ export function localizationToAPI(locales: LocaleMap | LocaleCallback | undefine
   for (const locale of client.localeManager.availableLanguages) {
     const lang = client.localeManager.mapLanguage(locale);
     const t = client.localeManager.i18n.getFixedT(lang);
-    newMap[locale] = locales(t);
+    let trad = locales(t);
+    if (name) {
+      trad = trad.replaceAll(".", "-").replaceAll(":", "_").slice(-32);
+    }
+    newMap[locale] = trad;
   }
   return newMap;
 }
@@ -108,7 +112,7 @@ export function optionToAPI(
   const baseOption: Omit<APIApplicationCommandBasicOption, "type"> = {
     name,
     description: option.description,
-    name_localizations: localizationToAPI(option.nameLocalizations, client),
+    name_localizations: localizationToAPI(option.nameLocalizations, client, true),
     description_localizations: localizationToAPI(option.descriptionLocalizations, client),
     required: option.required,
   };

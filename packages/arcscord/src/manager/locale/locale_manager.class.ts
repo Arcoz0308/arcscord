@@ -132,7 +132,7 @@ export class LocaleManager extends BaseManager {
     languageMap: LocaleManager.defaultLanguageMap,
     i18nOptions: LocaleManager.defaultI18Options,
     langDetector: LocaleManager.defaultLangDetector,
-    availableLanguages: LocaleManager.localeSet.values().toArray(),
+    availableLanguages: LocaleManager.localeSet,
   };
 
   /**
@@ -183,7 +183,7 @@ export class LocaleManager extends BaseManager {
       this.i18n = this.options.customI18n;
     }
     else {
-      void i18next.init(this.options.i18nOptions);
+      void i18next.init({ ...LocaleManager.defaultI18Options, ...this.options.i18nOptions });
       this.i18n = i18next;
     }
     this.t = this.i18n.t;
@@ -193,9 +193,11 @@ export class LocaleManager extends BaseManager {
       this.i18n.addResourceBundle(this.defaultLanguage(), "arcscord", arcscordEn, true);
     }
 
-    this.detect = options.langDetector || LocaleManager.defaultLangDetector;
+    this.detect = this.options.langDetector || LocaleManager.defaultLangDetector;
 
-    this.availableLanguages = new Set(options.availableLanguages);
+    this.availableLanguages = this.options.availableLanguages instanceof Set
+      ? this.options.availableLanguages
+      : new Set(this.options.availableLanguages);
   }
 
   /**
@@ -243,8 +245,8 @@ export class LocaleManager extends BaseManager {
    */
   async detectLanguage(options: Parameters<LangDetector>[0]): Promise<string> {
     try {
-      const lang = (await this.detect(options)) || this.defaultLanguage();
-      return this.mapLanguage(lang);
+      const lang = await this.detect(options);
+      return this.mapLanguage(lang || this.defaultLanguage());
     }
     catch (e) {
       this.logger.warning(`Failed to detect language, a throw happens, error : ${anyToError(e).message}`);

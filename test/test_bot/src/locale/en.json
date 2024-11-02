@@ -1,0 +1,9 @@
+{
+  "i18n": {
+    "command": {
+      "name": "i18n-en",
+      "description": "test of i18n",
+      "run": "Reply in english !"
+    }
+  }
+}

@@ -4,6 +4,8 @@ import { Partials } from "discord.js";
 import { commands } from "./commands";
 import { components } from "./components";
 import { messageEvent } from "./event/message";
+import en from "./locale/en.json";
+import fr from "./locale/fr.json";
 import { tasks } from "./task";
 import "dotenv/config";
 
@@ -17,6 +19,17 @@ const client = new ArcClient(process.env.TOKEN as string, {
   ],
   partials: [Partials.Reaction, Partials.Message, Partials.User],
   autoIntents: true,
+  managers: {
+    locale: {
+      i18nOptions: {
+        resources: {
+          en: { test: en },
+          fr: { test: fr },
+        },
+        defaultNS: "test",
+      },
+    },
+  },
 });
 
 client.loadEvents([messageEvent]);

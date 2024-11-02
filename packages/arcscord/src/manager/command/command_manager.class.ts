@@ -590,6 +590,14 @@ export class CommandManager
       guildInfos = null;
     }
 
+    /* Locale */
+    const locale = await this.client.localeManager.detectLanguage({
+      interaction,
+      user: interaction.user,
+      guild: guildInfos?.guild || null,
+      channel: interaction.channel,
+    });
+
     let context;
 
     /* Slash Commands */
@@ -620,6 +628,7 @@ export class CommandManager
               // @ts-expect-error fix generic bug
               options,
               client: this.client,
+              locale,
             },
           )
           : new DmSlashCommandContext(command, interaction, {
@@ -627,6 +636,7 @@ export class CommandManager
             // @ts-expect-error fix generic bug
             options,
             client: this.client,
+            locale,
           });
       }
       else if (command.build.slash) {
@@ -652,12 +662,14 @@ export class CommandManager
             // @ts-expect-error fix generic bug
             options,
             client: this.client,
+            locale,
           })
           : new DmSlashCommandContext(command, interaction, {
             resolvedName: infos.resolvedName,
             // @ts-expect-error fix generic bug
             options,
             client: this.client,
+            locale,
           });
       }
       else {
@@ -702,11 +714,13 @@ export class CommandManager
             targetUser: interaction.targetUser,
             targetMember,
             client: this.client,
+            locale,
           })
           : new DmUserCommandContext(command, interaction, {
             resolvedName: infos.resolvedName,
             targetUser: interaction.targetUser,
             client: this.client,
+            locale,
           });
       }
       else {
@@ -730,11 +744,13 @@ export class CommandManager
             ...guildInfos,
             message: interaction.targetMessage,
             client: this.client,
+            locale,
           })
           : new DmMessageCommandContext(command, interaction, {
             resolvedName: infos.resolvedName,
             message: interaction.targetMessage,
             client: this.client,
+            locale,
           });
       }
       else {
@@ -952,15 +968,25 @@ export class CommandManager
       guildInfos = null;
     }
 
+    /* Locale */
+    const locale = await this.client.localeManager.detectLanguage({
+      interaction,
+      user: interaction.user,
+      guild: guildInfos?.guild || null,
+      channel: interaction.channel,
+    });
+
     const context = guildInfos
       ? new GuildAutocompleteContext(command, interaction, {
         ...guildInfos,
         resolvedName: infos.resolvedName,
         client: this.client,
+        locale,
       })
       : new DmAutoCompleteContext(command, interaction, {
         resolvedName: infos.resolvedName,
         client: this.client,
+        locale,
       });
 
     try {

@@ -29,7 +29,7 @@ export function commandToAPI(definer: FullCommandDefinition, client: ArcClient):
       type: ApplicationCommandType.ChatInput,
       name: def.name,
       description: def.description,
-      name_localizations: localizationToAPI(def.nameLocalizations, client),
+      name_localizations: localizationToAPI(def.nameLocalizations, client, true),
       description_localizations: localizationToAPI(def.descriptionLocalizations, client),
       default_member_permissions: def.defaultMemberPermissions
         ? permissionToAPI(def.defaultMemberPermissions)
@@ -49,7 +49,7 @@ export function commandToAPI(definer: FullCommandDefinition, client: ArcClient):
     obj.user = {
       type: ApplicationCommandType.User,
       name: def.name,
-      name_localizations: localizationToAPI(def.nameLocalizations, client),
+      name_localizations: localizationToAPI(def.nameLocalizations, client, true),
       default_member_permissions: def.defaultMemberPermissions
         ? permissionToAPI(def.defaultMemberPermissions)
         : undefined,
@@ -67,7 +67,7 @@ export function commandToAPI(definer: FullCommandDefinition, client: ArcClient):
     obj.message = {
       type: ApplicationCommandType.Message,
       name: def.name,
-      name_localizations: localizationToAPI(def.nameLocalizations, client),
+      name_localizations: localizationToAPI(def.nameLocalizations, client, true),
       default_member_permissions: def.defaultMemberPermissions
         ? permissionToAPI(def.defaultMemberPermissions)
         : undefined,
@@ -90,7 +90,7 @@ export function subCommandToAPI(
     type: ApplicationCommandOptionType.Subcommand,
     name: definer.name,
     description: definer.description,
-    name_localizations: localizationToAPI(definer.nameLocalizations, client),
+    name_localizations: localizationToAPI(definer.nameLocalizations, client, true),
     description_localizations: localizationToAPI(definer.descriptionLocalizations, client),
     options: definer.options ? optionListToAPI(definer.options, client) : undefined,
   };
@@ -117,7 +117,7 @@ export function subCommandListToAPI(
         type: ApplicationCommandOptionType.SubcommandGroup,
         name,
         description: option.description,
-        name_localizations: localizationToAPI(option.nameLocalizations, client),
+        name_localizations: localizationToAPI(option.nameLocalizations, client, true),
         description_localizations: localizationToAPI(option.descriptionLocalizations, client),
         options: option.subCommands.map(cmd => subCommandToAPI(cmd.build, client)),
       });
@@ -127,7 +127,7 @@ export function subCommandListToAPI(
   return {
     name: def.name,
     description: def.description,
-    name_localizations: localizationToAPI(def.nameLocalizations, client),
+    name_localizations: localizationToAPI(def.nameLocalizations, client, true),
     description_localizations: localizationToAPI(def.descriptionLocalizations, client),
     default_member_permissions: def.defaultMemberPermissions
       ? permissionToAPI(def.defaultMemberPermissions)

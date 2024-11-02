@@ -153,6 +153,7 @@ export class ComponentManager extends BaseManager {
       guild: Guild;
       member: GuildMember;
       channel: GuildBasedChannel;
+      locale: string;
     };
 
     if (
@@ -229,10 +230,19 @@ export class ComponentManager extends BaseManager {
         );
       }
 
+      /* Locale */
+      const locale = await this.client.localeManager.detectLanguage({
+        interaction,
+        user: interaction.user,
+        guild: interaction.guild,
+        channel: interaction.channel,
+      });
+
       guildInfos = {
         guild,
         member,
         channel,
+        locale,
       };
     }
     else {
@@ -311,11 +321,19 @@ export class ComponentManager extends BaseManager {
       );
     }
 
+    /* Locale */
+    const locale = await this.client.localeManager.detectLanguage({
+      interaction,
+      user: interaction.user,
+      guild: interaction.guild,
+      channel: interaction.channel,
+    });
+
     const modal = modals[0];
 
     const context = guildInfos
       ? new GuildModalContext(this.client, interaction, guildInfos)
-      : new DmModalContext(this.client, interaction, {});
+      : new DmModalContext(this.client, interaction, { locale });
 
     if (modal.preReply) {
       const [, err] = await context.deferReply({
@@ -413,11 +431,19 @@ export class ComponentManager extends BaseManager {
       );
     }
 
+    /* Locale */
+    const locale = await this.client.localeManager.detectLanguage({
+      interaction,
+      user: interaction.user,
+      guild: interaction.guild,
+      channel: interaction.channel,
+    });
+
     const button = buttons[0];
 
     const context = guildInfos
       ? new GuildButtonContext(this.client, interaction, guildInfos)
-      : new DmButtonContext(this.client, interaction, {});
+      : new DmButtonContext(this.client, interaction, { locale });
 
     if (button.preReply) {
       const [, err] = await context.deferReply({
@@ -515,6 +541,14 @@ export class ComponentManager extends BaseManager {
       );
     }
 
+    /* Locale */
+    const locale = await this.client.localeManager.detectLanguage({
+      interaction,
+      user: interaction.user,
+      guild: interaction.guild,
+      channel: interaction.channel,
+    });
+
     const stringSelectMenu = stringSelectMenus[0];
 
     const context = guildInfos
@@ -524,6 +558,7 @@ export class ComponentManager extends BaseManager {
       })
       : new DmStringSelectMenuContext(this.client, interaction, {
         values: interaction.values,
+        locale,
       });
 
     if (stringSelectMenu.preReply) {
@@ -622,6 +657,14 @@ export class ComponentManager extends BaseManager {
       );
     }
 
+    /* Locale */
+    const locale = await this.client.localeManager.detectLanguage({
+      interaction,
+      user: interaction.user,
+      guild: interaction.guild,
+      channel: interaction.channel,
+    });
+
     const userSelectMenu = userSelectMenus[0];
 
     const context = guildInfos
@@ -631,6 +674,7 @@ export class ComponentManager extends BaseManager {
       })
       : new DmUserSelectMenuContext(this.client, interaction, {
         values: interaction.users.map(u => u),
+        locale,
       });
 
     if (userSelectMenu.preReply) {
@@ -729,6 +773,14 @@ export class ComponentManager extends BaseManager {
       );
     }
 
+    /* Locale */
+    const locale = await this.client.localeManager.detectLanguage({
+      interaction,
+      user: interaction.user,
+      guild: interaction.guild,
+      channel: interaction.channel,
+    });
+
     const roleSelectMenu = roleSelectMenus[0];
 
     const context = guildInfos
@@ -738,6 +790,7 @@ export class ComponentManager extends BaseManager {
       })
       : new DmRoleSelectMenuContext(this.client, interaction, {
         values: interaction.roles.map(r => r),
+        locale,
       });
 
     if (roleSelectMenu.preReply) {
@@ -836,6 +889,14 @@ export class ComponentManager extends BaseManager {
       );
     }
 
+    /* Locale */
+    const locale = await this.client.localeManager.detectLanguage({
+      interaction,
+      user: interaction.user,
+      guild: interaction.guild,
+      channel: interaction.channel,
+    });
+
     const mentionableSelectMenu = mentionableSelectMenus[0];
 
     const context = guildInfos
@@ -847,6 +908,7 @@ export class ComponentManager extends BaseManager {
       : new DmMentionableSelectMenuContext(this.client, interaction, {
         roles: interaction.roles.map(r => r),
         users: interaction.users.map(u => u),
+        locale,
       });
 
     if (mentionableSelectMenu.preReply) {
@@ -946,6 +1008,14 @@ export class ComponentManager extends BaseManager {
       );
     }
 
+    /* Locale */
+    const locale = await this.client.localeManager.detectLanguage({
+      interaction,
+      user: interaction.user,
+      guild: interaction.guild,
+      channel: interaction.channel,
+    });
+
     const channelSelectMenu = channelSelectMenus[0];
 
     const context = guildInfos
@@ -955,6 +1025,7 @@ export class ComponentManager extends BaseManager {
       })
       : new DmChannelSelectMenuContext(this.client, interaction, {
         values: interaction.channels.map(c => c),
+        locale,
       });
 
     if (channelSelectMenu.preReply) {

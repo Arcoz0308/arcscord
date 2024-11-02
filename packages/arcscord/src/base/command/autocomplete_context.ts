@@ -24,6 +24,7 @@ import { anyToError, error, ok } from "@arcscord/error";
 type BaseAutocompleteOptions = {
   resolvedName: string;
   client: ArcClient;
+  locale: string;
 };
 
 /**
@@ -62,23 +63,7 @@ export class BaseAutocompleteContext implements ContextDocs {
     this.resolvedCommandName = options.resolvedName;
     this.client = options.client;
     this.user = interaction.user;
-    this.t = this.client.localeManager.i18n.getFixedT("en");
-    void this.loadTranslate();
-  }
-
-  /**
-   * @internal
-   * @private
-   */
-  private async loadTranslate(): Promise<void> {
-    this.t = this.client.localeManager.i18n.getFixedT(
-      await this.client.localeManager.detectLanguage({
-        interaction: this.interaction,
-        user: this.user,
-        guild: this.interaction.guild,
-        channel: this.interaction.channel,
-      }),
-    );
+    this.t = this.client.localeManager.i18n.getFixedT(options.locale);
   }
 
   /**

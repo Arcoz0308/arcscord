@@ -64,7 +64,7 @@ export type LocaleManagerOptions = {
    *
    * @default {@link LocaleManager.localeSet}
    */
-  availableLanguages?: Locale[];
+  availableLanguages?: Locale[] | Set<Locale>;
 };
 
 export type LocaleCallback = (t: typeof i18next.t) => string;

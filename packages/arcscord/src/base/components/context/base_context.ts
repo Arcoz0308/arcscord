@@ -41,6 +41,7 @@ type MiddlewaresResults<M extends ComponentMiddleware[]> = {
 
 export type BaseComponentContextOptions<M extends ComponentMiddleware[] = ComponentMiddleware[]> = {
   additional?: MiddlewaresResults<M>;
+  locale: string;
 };
 /**
  * Base Component context
@@ -88,23 +89,7 @@ export class BaseComponentContext<M extends ComponentMiddleware[] = ComponentMid
     this.client = client;
 
     this.additional = options.additional || ({} as MiddlewaresResults<M>);
-    this.t = this.client.localeManager.i18n.getFixedT("en");
-    void this.loadTranslate();
-  }
-
-  /**
-   * @internal
-   * @private
-   */
-  private async loadTranslate(): Promise<void> {
-    this.t = this.client.localeManager.i18n.getFixedT(
-      await this.client.localeManager.detectLanguage({
-        interaction: this.interaction,
-        user: this.user,
-        guild: this.interaction.guild,
-        channel: this.interaction.channel,
-      }),
-    );
+    this.t = this.client.localeManager.i18n.getFixedT(options.locale);
   }
 
   /**
