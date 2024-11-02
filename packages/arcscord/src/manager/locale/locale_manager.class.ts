@@ -214,7 +214,7 @@ export class LocaleManager extends BaseManager {
    * @param lang - The detected language.
    * @returns The mapped language key.
    */
-  private mapLanguage(lang: string): string {
+  mapLanguage(lang: string): string {
     for (const [key, value] of Object.entries(this.options.languageMap)) {
       if (Array.isArray(value)) {
         if (value.includes(lang as Locale)) {
