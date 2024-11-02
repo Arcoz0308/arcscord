@@ -109,6 +109,11 @@ export class LocaleManager extends BaseManager {
   t: typeof i18next.t;
 
   /**
+   * An instance of the LangDetector class responsible for language detection.
+   */
+  detect: LangDetector;
+
+  /**
    * Constructs a new instance of the LocaleManager.
    *
    * @param client - The ArcClient instance.
@@ -131,6 +136,8 @@ export class LocaleManager extends BaseManager {
     if (!this.i18n.hasResourceBundle(this.defaultLanguage() || "en", "arcscord")) {
       this.i18n.addResourceBundle(this.defaultLanguage() || "en", "arcscord", arcscordEn, true);
     }
+
+    this.detect = options.langDetector || LocaleManager.defaultLangDetector;
   }
 
   /**
