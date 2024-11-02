@@ -16,10 +16,48 @@ import arcscordFr from "../../locales/fr.json";
  */
 export class LocaleManager extends BaseManager {
   /**
+   * A set containing Locale keys
+   */
+  static readonly localeSet: Set<Locale> = new Set([
+    "id",
+    "da",
+    "de",
+    "en-GB",
+    "en-US",
+    "es-ES",
+    "es-419",
+    "fr",
+    "hr",
+    "it",
+    "lt",
+    "hu",
+    "nl",
+    "no",
+    "pl",
+    "pt-BR",
+    "ro",
+    "fi",
+    "sv-SE",
+    "vi",
+    "tr",
+    "cs",
+    "el",
+    "bg",
+    "ru",
+    "uk",
+    "hi",
+    "th",
+    "zh-CN",
+    "ja",
+    "zh-TW",
+    "ko",
+  ]);
+
+  /**
    * Default language map defining the supported locales.
    * Maps language codes to either a single locale or an array of locales.
    */
-  static defaultLanguageMap: Record<string, Locale | Locale[]> = {
+  static readonly defaultLanguageMap: Record<string, Locale | Locale[]> = {
     id: "id",
     da: "da",
     de: "de",
@@ -54,7 +92,7 @@ export class LocaleManager extends BaseManager {
   /**
    * Get arcscord translation resources
    */
-  static arcscordResources = {
+  static readonly arcscordResources = {
     en: arcscordEn,
     fr: arcscordFr,
   };
@@ -63,7 +101,7 @@ export class LocaleManager extends BaseManager {
    * Default i18n initialization options.
    * Contains resource bundles for supported languages and other i18next options.
    */
-  static defaultI18Options: InitOptions = {
+  static readonly defaultI18Options: InitOptions = {
     defaultNS: "empty",
     fallbackLng: "en",
     resources: {
@@ -95,6 +133,11 @@ export class LocaleManager extends BaseManager {
     i18nOptions: LocaleManager.defaultI18Options,
     langDetector: LocaleManager.defaultLangDetector,
   };
+
+  /**
+   * represent the latest i18next instance created
+   */
+  static i18n = i18next;
 
   /**
    * The name of the manager.
@@ -141,6 +184,7 @@ export class LocaleManager extends BaseManager {
       this.i18n = i18next;
     }
     this.t = this.i18n.t;
+    LocaleManager.i18n = this.i18n;
 
     if (!this.i18n.hasResourceBundle(this.defaultLanguage(), "arcscord")) {
       this.i18n.addResourceBundle(this.defaultLanguage(), "arcscord", arcscordEn, true);
