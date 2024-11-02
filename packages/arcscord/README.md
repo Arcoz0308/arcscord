@@ -21,6 +21,7 @@ or `npm install arcscord`
 - [Modal](#modal)
 - [Event](#event)
 - [Task](#task)
+- [Localization](#localization)
 
 ## Command
 
@@ -210,6 +211,28 @@ export const cronTask = createTask({
 
 // register
 client.loadTasks([cronTask]);
+```
+
+## Localization
+full guide soon
+```ts
+import { createCommand } from "arcscord";
+
+export const i18nCommand = createCommand({
+  build: {
+    slash: {
+      name: "i18n",
+      nameLocalizations: t => t("test:i18n.command.name"),
+      description: "default description",
+      descriptionLocalizations: t => t("test:i18n.command.description"),
+    },
+  },
+  run: (ctx) => {
+    return ctx.reply(ctx.t("test:i18n.command.run"), {
+      ephemeral: true,
+    });
+  },
+});
 ```
 
 [Go up](#arcscord)
