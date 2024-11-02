@@ -206,22 +206,40 @@ export class LocaleManager extends BaseManager {
     return "en";
   }
 
+  /**
+   * Maps the detected language to a key based on the defined languageMap.
+   *
+   * For example for transform a discord lang key to a locale lang key
+   *
+   * @param lang - The detected language.
+   * @returns The mapped language key.
+   */
+  private mapLanguage(lang: string): string {
+    for (const [key, value] of Object.entries(this.options.languageMap)) {
+      if (Array.isArray(value)) {
+        if (value.includes(lang as Locale)) {
+          return key;
+        }
+      }
+      else {
+        if (value === lang) {
+          return key;
+        }
+      }
+    }
+    return lang;
+  }
+
+  /**
+   * Detects the language based on the provided options.
+   *
+   * @param options - The options for language detection.
+   * @returns The detected language key.
+   */
   async detectLanguage(options: Parameters<LangDetector>[0]): Promise<string> {
     try {
       const lang = (await this.detect(options)) || this.defaultLanguage();
-      for (const [key, value] of Object.entries(this.options.languageMap)) {
-        if (Array.isArray(value)) {
-          if (value.includes(lang as Locale)) {
-            return key;
-          }
-        }
-        else {
-          if (value === lang) {
-            return key;
-          }
-        }
-      }
-      return lang;
+      return this.mapLanguage(lang);
     }
     catch (e) {
       this.logger.warning(`Failed to detect language, a throw happens, error : ${anyToError(e).message}`);
