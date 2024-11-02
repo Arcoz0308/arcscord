@@ -36,6 +36,7 @@ import type {
   User,
   UserContextMenuCommandInteraction,
 } from "discord.js";
+import type i18next from "i18next";
 import { CommandError } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";
 import { InteractionContextType } from "discord.js";
@@ -109,6 +110,8 @@ export class BaseCommandContext<
    */
   additional: MiddlewaresResults<M>;
 
+  t: typeof i18next.t;
+
   /**
    * Construct a new BaseCommandContext
    */
@@ -133,8 +136,25 @@ export class BaseCommandContext<
 
     this.resolvedCommandName = options.resolvedName;
     this.additional = options.additional || ({} as MiddlewaresResults<M>);
+
+    this.t = this.client.localeManager.i18n.getFixedT("en");
+    void this.loadTranslate();
   }
 
+  /**
+   * @internal
+   * @private
+   */
+  private async loadTranslate(): Promise<void> {
+    this.t = this.client.localeManager.i18n.getFixedT(
+      await this.client.localeManager.detectLanguage({
+        interaction: this.interaction,
+        user: this.user,
+        guild: this.interaction.guild,
+        channel: this.interaction.channel,
+      }),
+    );
+  }
   /**
    * Reply to the interaction with a message
    */
