@@ -110,6 +110,9 @@ export class BaseCommandContext<
    */
   additional: MiddlewaresResults<M>;
 
+  /**
+   * get a locale text, with language detected self
+   */
   t: typeof i18next.t;
 
   /**

@@ -26,6 +26,7 @@ import type {
   ModalSubmitInteraction,
   User,
 } from "discord.js";
+import type i18next from "i18next";
 import { ComponentError, type ComponentErrorOptions } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";
 
@@ -64,6 +65,11 @@ export class BaseComponentContext<M extends ComponentMiddleware[] = ComponentMid
   additional: MiddlewaresResults<M>;
 
   /**
+   * get a locale text, with language detected self
+   */
+  t: typeof i18next.t;
+
+  /**
    * Constructor for ComponentContext.
    * @param client The ArcClient instance.
    * @param interaction The interaction object.
@@ -82,6 +88,23 @@ export class BaseComponentContext<M extends ComponentMiddleware[] = ComponentMid
     this.client = client;
 
     this.additional = options.additional || ({} as MiddlewaresResults<M>);
+    this.t = this.client.localeManager.i18n.getFixedT("en");
+    void this.loadTranslate();
+  }
+
+  /**
+   * @internal
+   * @private
+   */
+  private async loadTranslate(): Promise<void> {
+    this.t = this.client.localeManager.i18n.getFixedT(
+      await this.client.localeManager.detectLanguage({
+        interaction: this.interaction,
+        user: this.user,
+        guild: this.interaction.guild,
+        channel: this.interaction.channel,
+      }),
+    );
   }
 
   /**
