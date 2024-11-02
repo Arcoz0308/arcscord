@@ -1,5 +1,6 @@
 import type { Locale, MaybePromise } from "#/utils";
 import type { BaseInteraction, Guild, TextBasedChannel, User } from "discord.js";
+import type i18next from "i18next";
 import type { i18n, InitOptions } from "i18next";
 
 /**
@@ -57,4 +58,13 @@ export type LocaleManagerOptions = {
    * @default {@link LocaleManager.defaultLangDetector}
    */
   langDetector?: LangDetector;
+
+  /**
+   * set a custom set of available language that are send to api if a localization property are set
+   *
+   * @default {@link LocaleManager.localeSet}
+   */
+  availableLanguages?: Locale[];
 };
+
+export type LocaleCallback = (t: typeof i18next.t) => string;

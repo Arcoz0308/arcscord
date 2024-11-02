@@ -132,6 +132,7 @@ export class LocaleManager extends BaseManager {
     languageMap: LocaleManager.defaultLanguageMap,
     i18nOptions: LocaleManager.defaultI18Options,
     langDetector: LocaleManager.defaultLangDetector,
+    availableLanguages: LocaleManager.localeSet.values().toArray(),
   };
 
   /**
@@ -147,7 +148,7 @@ export class LocaleManager extends BaseManager {
   /**
    * The options used by the LocaleManager.
    */
-  options: Required<LocaleManagerOptions>;
+  readonly options: Required<LocaleManagerOptions>;
 
   /**
    * The i18n instance used for localization.
@@ -163,7 +164,9 @@ export class LocaleManager extends BaseManager {
   /**
    * An instance of the LangDetector class responsible for language detection.
    */
-  detect: LangDetector;
+  readonly detect: LangDetector;
+
+  readonly availableLanguages: Set<Locale>;
 
   /**
    * Constructs a new instance of the LocaleManager.
@@ -191,6 +194,8 @@ export class LocaleManager extends BaseManager {
     }
 
     this.detect = options.langDetector || LocaleManager.defaultLangDetector;
+
+    this.availableLanguages = new Set(options.availableLanguages);
   }
 
   /**
