@@ -142,8 +142,8 @@ export class LocaleManager extends BaseManager {
     }
     this.t = this.i18n.t;
 
-    if (!this.i18n.hasResourceBundle(this.defaultLanguage() || "en", "arcscord")) {
-      this.i18n.addResourceBundle(this.defaultLanguage() || "en", "arcscord", arcscordEn, true);
+    if (!this.i18n.hasResourceBundle(this.defaultLanguage(), "arcscord")) {
+      this.i18n.addResourceBundle(this.defaultLanguage(), "arcscord", arcscordEn, true);
     }
 
     this.detect = options.langDetector || LocaleManager.defaultLangDetector;
@@ -152,20 +152,36 @@ export class LocaleManager extends BaseManager {
   /**
    * @internal
    */
-  private defaultLanguage(): string | undefined {
+  private defaultLanguage(): string {
     if (typeof this.i18n.options.fallbackLng === "string") {
       return this.i18n.options.fallbackLng;
     }
-    return undefined;
+    if (Array.isArray(this.i18n.options.fallbackLng)) {
+      return this.i18n.options.fallbackLng[0] || "en";
+    }
+    return "en";
   }
 
   async detectLanguage(options: Parameters<LangDetector>[0]): Promise<string> {
     try {
-      return (await this.detect(options)) || this.defaultLanguage() || "en";
+      const lang = (await this.detect(options)) || this.defaultLanguage();
+      for (const [key, value] of Object.entries(this.options.languageMap)) {
+        if (Array.isArray(value)) {
+          if (value.includes(lang as Locale)) {
+            return key;
+          }
+        }
+        else {
+          if (value === lang) {
+            return key;
+          }
+        }
+      }
+      return lang;
     }
     catch (e) {
       this.logger.warning(`Failed to detect language, a throw happens, error : ${anyToError(e).message}`);
-      return this.defaultLanguage() || "en";
+      return this.defaultLanguage();
     }
   }
 }
