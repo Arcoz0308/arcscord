@@ -9,6 +9,7 @@ import type { BaseMessageOptions, BitFieldResolvable, GatewayIntentsString, Perm
 import { ComponentManager } from "#/manager";
 import { CommandManager } from "#/manager/command/command_manager.class";
 import { EventManager } from "#/manager/event/event_manager.class";
+import { LocaleManager } from "#/manager/locale/locale_manager.class";
 import { TaskManager } from "#/manager/task/task_manager";
 import { ArcLogger } from "#/utils/logger/logger.class";
 import { createLogger } from "#/utils/logger/logger.util";
@@ -34,6 +35,11 @@ export class ArcClient extends DJSClient {
    * The manager for components
    */
   componentManager: ComponentManager;
+
+  /**
+   * The manager for localization
+   */
+  localeManager: LocaleManager;
 
   /**
    * The logger instance
@@ -132,12 +138,12 @@ export class ArcClient extends DJSClient {
     }
 
     this.arcOptions = { autoIntents: false, ...options };
+
     this.commandManager = new CommandManager(this);
     this.taskManager = new TaskManager(this);
-
     this.eventManager = new EventManager(this);
-
     this.componentManager = new ComponentManager(this);
+    this.localeManager = new LocaleManager(this, options.managers?.locale);
 
     this.logger = createLogger(
       this.loggerConstructor,
