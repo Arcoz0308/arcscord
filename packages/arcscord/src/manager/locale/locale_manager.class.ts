@@ -7,7 +7,17 @@ import i18next from "i18next";
 import arcscordEn from "../../locales/en.json";
 import arcscordFr from "../../locales/fr.json";
 
+/**
+ * Manages localization for the application.
+ *
+ * The LocaleManager handles language detection, initialization of the i18next library,
+ * and management of language resources and mappings.
+ */
 export class LocaleManager extends BaseManager {
+  /**
+   * Default language map defining the supported locales.
+   * Maps language codes to either a single locale or an array of locales.
+   */
   static defaultLanguageMap: Record<string, Locale | Locale[]> = {
     id: "id",
     da: "da",
@@ -40,6 +50,10 @@ export class LocaleManager extends BaseManager {
     ko: "ko",
   };
 
+  /**
+   * Default i18n initialization options.
+   * Contains resource bundles for supported languages and other i18next options.
+   */
   static defaultI18Options: InitOptions = {
     defaultNS: "empty",
     fallbackLng: "en",
@@ -53,10 +67,19 @@ export class LocaleManager extends BaseManager {
     },
   };
 
+  /**
+   * Default language detection function.
+   * Determines the language based on interaction or guild context.
+   */
   static defaultLangDetector: LangDetector = (options) => {
     return options.interaction?.locale || options.guild?.preferredLocale;
   };
 
+  /**
+   * Default options for the LocaleManager.
+   * Combines custom i18n instance settings, language map, i18n initialization options,
+   * and language detection function.
+   */
   static defaultOptions: Required<LocaleManagerOptions> = {
     customI18n: false,
     languageMap: LocaleManager.defaultLanguageMap,
@@ -64,14 +87,33 @@ export class LocaleManager extends BaseManager {
     langDetector: LocaleManager.defaultLangDetector,
   };
 
-  name = "locale";
+  /**
+   * The name of the manager.
+   */
+  readonly name = "locale";
 
+  /**
+   * The options used by the LocaleManager.
+   */
   options: Required<LocaleManagerOptions>;
 
+  /**
+   * The i18n instance used for localization.
+   */
   i18n: i18n;
 
+  /**
+   * The translation function provided by i18next.
+   * alias of LocaleManager.i18n.t
+   */
   t: typeof i18next.t;
 
+  /**
+   * Constructs a new instance of the LocaleManager.
+   *
+   * @param client - The ArcClient instance.
+   * @param options - Options to configure the LocaleManager.
+   */
   constructor(client: ArcClient, options: LocaleManagerOptions = LocaleManager.defaultOptions) {
     super(client);
 
@@ -91,6 +133,9 @@ export class LocaleManager extends BaseManager {
     }
   }
 
+  /**
+   * @internal
+   */
   private defaultLanguage(): string | undefined {
     if (typeof this.i18n.options.fallbackLng === "string") {
       return this.i18n.options.fallbackLng;
