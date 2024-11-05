@@ -44,8 +44,8 @@
     "docs": "typedoc"
   },
   "dependencies": {
-    "@arcscord/better-error": "workspace:^",
-    "@arcscord/error": "workspace:^",
+    "@arcscord/better-error": "^1.0.4",
+    "@arcscord/error": "^1.0.1",
     "cron": "^3.1.7",
     "dayjs": "^1.11.13",
     "discord-api-types": "^0.37.103",

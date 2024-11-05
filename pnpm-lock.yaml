@@ -61,11 +61,11 @@ importers:
   packages/arcscord:
     dependencies:
       '@arcscord/better-error':
-        specifier: workspace:^
-        version: link:../better_error
+        specifier: ^1.0.4
+        version: 1.0.4
       '@arcscord/error':
-        specifier: workspace:^
-        version: link:../error
+        specifier: ^1.0.1
+        version: 1.0.1
       cron:
         specifier: ^3.1.7
         version: 3.1.7
@@ -119,32 +119,11 @@ importers:
         specifier: ^2.1.3
         version: 2.1.3(@types/node@22.7.7)
 
-  packages/better_error:
-    devDependencies:
-      '@types/node':
-        specifier: ^20.16.13
-        version: 20.16.13
-      tsup:
-        specifier: ^8.3.0
-        version: 8.3.0(@swc/core@1.7.26)(jiti@1.21.6)(postcss@8.4.47)(typescript@5.6.3)(yaml@2.6.0)
-      typedoc:
-        specifier: ^0.26.10
-        version: 0.26.10(typescript@5.6.3)
-      typescript:
-        specifier: ^5.6.3
-        version: 5.6.3
-      vite:
-        specifier: ^5.4.9
-        version: 5.4.9(@types/node@20.16.13)
-      vitest:
-        specifier: ^2.1.3
-        version: 2.1.3(@types/node@20.16.13)
-
   packages/cli:
     dependencies:
       '@arcscord/error':
-        specifier: workspace:^
-        version: link:../error
+        specifier: ^1.0.1
+        version: 1.0.1
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -158,18 +137,6 @@ importers:
       i18next:
         specifier: ^23.16.4
         version: 23.16.4
-      tsup:
-        specifier: ^8.3.0
-        version: 8.3.0(@swc/core@1.7.26)(jiti@1.21.6)(postcss@8.4.47)(typescript@5.6.3)(yaml@2.6.0)
-      vite:
-        specifier: 5.4.9
-        version: 5.4.9(@types/node@22.7.7)
-      vitest:
-        specifier: ^2.1.3
-        version: 2.1.3(@types/node@22.7.7)
-
-  packages/error:
-    devDependencies:
       tsup:
         specifier: ^8.3.0
         version: 8.3.0(@swc/core@1.7.26)(jiti@1.21.6)(postcss@8.4.47)(typescript@5.6.3)(yaml@2.6.0)
@@ -286,6 +253,12 @@ packages:
 
   '@antfu/utils@0.7.10':
     resolution: {integrity: sha512-+562v9k4aI80m1+VuMHehNJWLOFjBnXn3tdOitzD0il5b7smkSBal4+a3oKiQTbrwMmN/TBUMDvbdoWDehgOww==}
+
+  '@arcscord/better-error@1.0.4':
+    resolution: {integrity: sha512-GCa8pBQrIA7RyecyTiWUybAbP/pcM5F8RtPRW5q3lSWrU8c4u8uJJ9Ic2V0Z2RavulmtaXNHWIPjOkZ1s8qE4g==}
+
+  '@arcscord/error@1.0.1':
+    resolution: {integrity: sha512-yMsuEAPRzsfDiiPM1s9vKTpj10UXV63D3xzBgVREtx76dAkxWhRJ19gr3+CK3FmJEtUZ8yn6BWxGkMmNKrdvBw==}
 
   '@babel/code-frame@7.25.7':
     resolution: {integrity: sha512-0xZJFNE5XMpENsgfHYTw8FbX4kv53mFLn2i3XPoq69LyhYSCBJtitaHx9QnsVTrsogI4Z3+HtEfZ2/GFPOtf5g==}
@@ -3753,6 +3726,10 @@ snapshots:
 
   '@antfu/utils@0.7.10': {}
 
+  '@arcscord/better-error@1.0.4': {}
+
+  '@arcscord/error@1.0.1': {}
+
   '@babel/code-frame@7.25.7':
     dependencies:
       '@babel/highlight': 7.25.7
@@ -4601,14 +4578,6 @@ snapshots:
       '@vitest/utils': 2.1.3
       chai: 5.1.1
       tinyrainbow: 1.2.0
-
-  '@vitest/mocker@2.1.3(@vitest/spy@2.1.3)(vite@5.4.9(@types/node@20.16.13))':
-    dependencies:
-      '@vitest/spy': 2.1.3
-      estree-walker: 3.0.3
-      magic-string: 0.30.11
-    optionalDependencies:
-      vite: 5.4.9(@types/node@20.16.13)
 
   '@vitest/mocker@2.1.3(@vitest/spy@2.1.3)(vite@5.4.9(@types/node@22.7.7))':
     dependencies:
@@ -7160,23 +7129,6 @@ snapshots:
       - supports-color
       - terser
 
-  vite-node@2.1.3(@types/node@20.16.13):
-    dependencies:
-      cac: 6.7.14
-      debug: 4.3.7(supports-color@5.5.0)
-      pathe: 1.1.2
-      vite: 5.4.9(@types/node@20.16.13)
-    transitivePeerDependencies:
-      - '@types/node'
-      - less
-      - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-
   vite-node@2.1.3(@types/node@22.7.7):
     dependencies:
       cac: 6.7.14
@@ -7261,40 +7213,6 @@ snapshots:
     transitivePeerDependencies:
       - less
       - lightningcss
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-
-  vitest@2.1.3(@types/node@20.16.13):
-    dependencies:
-      '@vitest/expect': 2.1.3
-      '@vitest/mocker': 2.1.3(@vitest/spy@2.1.3)(vite@5.4.9(@types/node@20.16.13))
-      '@vitest/pretty-format': 2.1.3
-      '@vitest/runner': 2.1.3
-      '@vitest/snapshot': 2.1.3
-      '@vitest/spy': 2.1.3
-      '@vitest/utils': 2.1.3
-      chai: 5.1.1
-      debug: 4.3.7(supports-color@5.5.0)
-      magic-string: 0.30.11
-      pathe: 1.1.2
-      std-env: 3.7.0
-      tinybench: 2.9.0
-      tinyexec: 0.3.0
-      tinypool: 1.0.1
-      tinyrainbow: 1.2.0
-      vite: 5.4.9(@types/node@20.16.13)
-      vite-node: 2.1.3(@types/node@20.16.13)
-      why-is-node-running: 2.3.0
-    optionalDependencies:
-      '@types/node': 20.16.13
-    transitivePeerDependencies:
-      - less
-      - lightningcss
-      - msw
       - sass
       - sass-embedded
       - stylus
