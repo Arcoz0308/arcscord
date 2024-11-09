@@ -138,7 +138,7 @@ export class ArcClient extends DJSClient {
       this.localesMessages = {};
     }
 
-    this.arcOptions = { autoIntents: false, displayTrace: process.env.NODE_ENV === "development" || process.argv.includes("dev"), ...options };
+    this.arcOptions = { autoIntents: false, enableInternalTrace: process.env.NODE_ENV === "development" || process.argv.includes("dev"), ...options };
 
     this.commandManager = new CommandManager(this);
     this.taskManager = new TaskManager(this);

@@ -46,7 +46,7 @@ export abstract class BaseManager {
    * @param msg - The message to be logged.
    */
   trace(msg: string): void {
-    if (this.client.arcOptions.displayTrace) {
+    if (this.client.arcOptions.enableInternalTrace) {
       this.logger.trace(msg);
     }
   }

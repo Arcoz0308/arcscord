@@ -62,7 +62,7 @@ export type ArcClientOptions = ClientOptions & {
    * if you want the lib trace logs
    * @default process.env.NODE_ENV === "development" || process.argv.includes("dev")
    */
-  displayTrace?: boolean;
+  enableInternalTrace?: boolean;
 };
 
 /**
