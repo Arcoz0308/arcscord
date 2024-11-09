@@ -41,6 +41,7 @@ import { commandToAPI, subCommandListToAPI } from "#/base/command/command_transf
 import { BaseManager } from "#/base/manager/manager.class";
 import { CommandError } from "#/utils";
 import { internalErrorEmbed } from "#/utils/discord/embed/embed.const";
+import { InternalError } from "#/utils/error/class/internal_error";
 import { BaseError } from "@arcscord/better-error";
 import { anyToError, error, ok } from "@arcscord/error";
 import { ApplicationCommandType } from "discord-api-types/v10";
@@ -84,7 +85,7 @@ export class CommandManager
   loadCommands(
     commands: Command[],
     group = "globalCommands",
-  ): RESTPostAPIApplicationCommandsJSONBody[] {
+  ): Result<RESTPostAPIApplicationCommandsJSONBody[], InternalError> {
     const commandsBody: RESTPostAPIApplicationCommandsJSONBody[] = [];
     let totalCommands = 0;
     let slashCommands = 0;
@@ -100,7 +101,7 @@ export class CommandManager
           commandsBody.push(data.slash);
           slashCommands++;
           hasPush = true;
-          this.logger.trace(
+          this.trace(
             `loaded slash builder of command "${data.slash.name}" in group "${group}"`,
           );
         }
@@ -109,7 +110,7 @@ export class CommandManager
           commandsBody.push(data.message);
           messageCommands++;
           hasPush = true;
-          this.logger.trace(
+          this.trace(
             `loaded message builder of command "${data.message.name}" in group "${group}"`,
           );
         }
@@ -118,60 +119,63 @@ export class CommandManager
           commandsBody.push(data.user);
           userCommands++;
           hasPush = true;
-          this.logger.trace(
+          this.trace(
             `loaded user builder of command "${data.user.name}" in group "${group}"`,
           );
         }
         if (!hasPush) {
-          this.logger.fatal(
-            `no builder found for command "${command.constructor.name}" in group "${group}"`,
-            {
+          return error(new InternalError({
+            message: `no builder found for command "${command.constructor.name}" in group "${group}"`,
+            debugs: {
               group,
             },
-          );
+          }));
         }
         totalCommands++;
       }
       else {
         commandsBody.push(subCommandListToAPI(command, this.client));
         slashCommands++;
-        this.logger.trace(
+        this.trace(
           `loaded slash builder of command "${command.name}" in group "${group}"`,
         );
       }
     }
-    this.logger.info(
+    this.trace(
       `loaded ${totalCommands} commands for group ${group} ! (${slashCommands} slash`
       + `, ${messageCommands} message, ${userCommands} user)`,
     );
 
-    return commandsBody;
+    return ok(commandsBody);
   }
 
   /**
    * Pushes a set of global commands to the application.
    *
    * @param commands - An array of command data resolvable objects to be registered globally.
-   * @return A promise that resolves to an array of globally registered application commands.
+   * @return A promise that resolves to a result object containing an array of globally registered application commands or an error.
    */
   async pushGlobalCommands(
     commands: ApplicationCommandDataResolvable[],
-  ): Promise<ApplicationCommand[]> {
+  ): Promise<Result<ApplicationCommand[], InternalError>> {
     if (!this.client.application) {
-      return this.logger.fatal("no application found !");
+      return error(new InternalError("No application found in client"));
     }
 
     try {
       const data = await this.client.application.commands.set(commands);
-      this.logger.info(
-        `loaded ${commands.length} commands builders globally with success !`,
+      this.trace(
+        `Loaded ${commands.length} commands globally with success!`,
       );
-      return data.map(cmd => cmd);
+      return ok(data.map(cmd => cmd));
     }
     catch (e) {
-      return this.logger.fatal("failed to load commands globally", {
-        baseError: anyToError(e).message,
-      });
+      return error(
+        new InternalError({
+          message: "Failed to load commands globally",
+          originalError: anyToError(e),
+        }),
+      );
     }
   }
 
@@ -185,23 +189,24 @@ export class CommandManager
   async pushGuildCommands(
     guildId: string,
     commands: RESTPostAPIApplicationCommandsJSONBody[],
-  ): Promise<ApplicationCommand[]> {
+  ): Promise<Result<ApplicationCommand[], InternalError>> {
     const guild = this.client.guilds.cache.get(guildId);
     if (!guild) {
-      return this.logger.fatal(`guild ${guildId} not found`);
+      return error(new InternalError(`no guild found with id ${guildId}`));
     }
 
     try {
       const data = await guild.commands.set(commands);
-      this.logger.info(
+      this.trace(
         `loaded ${commands.length} commands builders for guild ${guildId} with success !`,
       );
-      return data.map(cmd => cmd);
+      return ok(data.map(cmd => cmd));
     }
     catch (e) {
-      return this.logger.fatal(`failed to load commands for guild ${guildId}`, {
-        baseError: anyToError(e).message,
-      });
+      return error(new InternalError({
+        message: `failed to load commands for guild ${guildId}`,
+        originalError: anyToError(e),
+      }));
     }
   }
 
@@ -213,9 +218,9 @@ export class CommandManager
    */
   async deleteUnloadedCommands(
     guildId?: string,
-  ): Promise<Result<number, BaseError>> {
+  ): Promise<Result<number, InternalError>> {
     if (!this.client.application) {
-      return error(new BaseError("No application found in client"));
+      return error(new InternalError("No application found in client"));
     }
 
     let commands;
@@ -228,7 +233,7 @@ export class CommandManager
     }
     catch (e) {
       return error(
-        new BaseError({
+        new InternalError({
           message: "Failed to fetch applications commands",
           originalError: anyToError(e),
         }),
@@ -249,7 +254,7 @@ export class CommandManager
         }
         catch (e) {
           return error(
-            new BaseError({
+            new InternalError({
               message: "Failed to delete command",
               originalError: anyToError(e),
             }),
@@ -281,12 +286,12 @@ export class CommandManager
         );
 
         if (!apiCommand) {
-          this.logger.warning(
+          this.trace(
             `slash command "${command.build.slash.name}" not found in API`,
           );
         }
         else {
-          this.logger.trace(
+          this.trace(
             `resolve slash command ${command.build.slash.name} (${apiCommand.id}) !`,
           );
           this.commands.set(this.resolveCommandName(apiCommand), command);
@@ -302,12 +307,12 @@ export class CommandManager
         );
 
         if (!apiCommand) {
-          this.logger.warning(
+          this.trace(
             `message command "${command.build.message.name}" not found in API`,
           );
         }
         else {
-          this.logger.trace(
+          this.trace(
             `resolve message command ${command.build.message.name} (${apiCommand.id}) !`,
           );
           this.commands.set(this.resolveCommandName(apiCommand), command);
@@ -323,12 +328,12 @@ export class CommandManager
         );
 
         if (!apiCommand) {
-          this.logger.warning(
+          this.trace(
             `user command "${command.build.user.name}" not found in API`,
           );
         }
         else {
-          this.logger.trace(
+          this.trace(
             `resolve user command ${command.build.user.name} (${apiCommand.id}) !`,
           );
           this.commands.set(this.resolveCommandName(apiCommand), command);
@@ -343,10 +348,10 @@ export class CommandManager
           === ApplicationCommandType.ChatInput && cmd.name === name,
       );
       if (!apiCommand) {
-        this.logger.warning(`slash commands "${name}" not found in API`);
+        this.trace(`slash commands "${name}" not found in API`);
       }
       else {
-        this.logger.trace(`resolve slash command ${name} (${apiCommand.id}) !`);
+        this.trace(`resolve slash command ${name} (${apiCommand.id}) !`);
         this.commands.set(this.resolveCommandName(apiCommand), command);
       }
     }

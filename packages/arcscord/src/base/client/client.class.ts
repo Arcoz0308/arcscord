@@ -4,7 +4,9 @@ import type { Command } from "#/base/command/command_definition.type";
 import type { ComponentHandler } from "#/base/components/component_handlers.type";
 import type { EventHandler } from "#/base/event/event.type";
 import type { Locale } from "#/utils";
+import type { InternalError } from "#/utils/error/class/internal_error";
 import type { LoggerConstructor, LoggerInterface } from "#/utils/logger/logger.type";
+import type { Result } from "@arcscord/error";
 import type { BaseMessageOptions, BitFieldResolvable, GatewayIntentsString, PermissionsString } from "discord.js";
 import * as process from "node:process";
 import { ComponentManager } from "#/manager";
@@ -14,6 +16,7 @@ import { LocaleManager } from "#/manager/locale/locale_manager.class";
 import { TaskManager } from "#/manager/task/task_manager";
 import { ArcLogger } from "#/utils/logger/logger.class";
 import { createLogger } from "#/utils/logger/logger.util";
+import { error, ok } from "@arcscord/error";
 import { Client as DJSClient, EmbedBuilder, REST } from "discord.js";
 
 export class ArcClient extends DJSClient {
@@ -212,16 +215,21 @@ export class ArcClient extends DJSClient {
     commands: Command[],
     group = "default",
     guild?: string,
-  ): Promise<void> {
-    const data = this.commandManager.loadCommands(commands, group);
-    let data2;
-    if (guild) {
-      data2 = await this.commandManager.pushGuildCommands(guild, data);
+  ): Promise<Result<true, InternalError>> {
+    const [data, err] = this.commandManager.loadCommands(commands, group);
+    if (err) {
+      return error(err);
     }
-    else {
-      data2 = await this.commandManager.pushGlobalCommands(data);
+    const [data2, err2] = guild
+      ? await this.commandManager.pushGuildCommands(guild, data)
+      : await this.commandManager.pushGlobalCommands(data);
+
+    if (err2) {
+      return error(err2);
     }
+
     this.commandManager.resolveCommands(commands, data2);
+    return ok(true);
   }
 
   /**
