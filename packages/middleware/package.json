@@ -4,13 +4,13 @@
   "description": "Middleware for arcscord",
   "author": "Arcoz0308",
   "license": "MIT",
-  "homepage": "https://github.com/Arcoz0308/arcscord/tree/main/packages/middleware#readme",
+  "homepage": "https://github.com/arcscord/arcscord/tree/main/packages/middleware#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/arcoz0308/arcscord.git"
+    "url": "git+https://github.com/arcscord/arcscord.git"
   },
   "bugs": {
-    "url": "https://github.com/arcoz0308/arcscord/issues"
+    "url": "https://github.com/arcscord/arcscord/issues"
   },
   "keywords": [
     "arcscord",
