@@ -57,6 +57,12 @@ export type ArcClientOptions = ClientOptions & {
    * This can be used to customize behavior or settings related to managers.
    */
   managers?: ManagersOptions;
+
+  /**
+   * if you want the lib trace logs
+   * @default process.env.NODE_ENV === "development" || process.argv.includes("dev")
+   */
+  displayTrace?: boolean;
 };
 
 /**

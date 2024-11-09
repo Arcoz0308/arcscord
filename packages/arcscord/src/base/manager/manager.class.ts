@@ -39,4 +39,15 @@ export abstract class BaseManager {
     }
     return this._logger;
   }
+
+  /**
+   * Logs a trace message if tracing is enabled in the client options.
+   *
+   * @param msg - The message to be logged.
+   */
+  trace(msg: string): void {
+    if (this.client.arcOptions.displayTrace) {
+      this.logger.trace(msg);
+    }
+  }
 }

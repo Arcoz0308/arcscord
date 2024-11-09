@@ -6,6 +6,7 @@ import type { EventHandler } from "#/base/event/event.type";
 import type { Locale } from "#/utils";
 import type { LoggerConstructor, LoggerInterface } from "#/utils/logger/logger.type";
 import type { BaseMessageOptions, BitFieldResolvable, GatewayIntentsString, PermissionsString } from "discord.js";
+import * as process from "node:process";
 import { ComponentManager } from "#/manager";
 import { CommandManager } from "#/manager/command/command_manager.class";
 import { EventManager } from "#/manager/event/event_manager.class";
@@ -137,7 +138,7 @@ export class ArcClient extends DJSClient {
       this.localesMessages = {};
     }
 
-    this.arcOptions = { autoIntents: false, ...options };
+    this.arcOptions = { autoIntents: false, displayTrace: process.env.NODE_ENV === "development" || process.argv.includes("dev"), ...options };
 
     this.commandManager = new CommandManager(this);
     this.taskManager = new TaskManager(this);
