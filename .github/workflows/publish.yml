@@ -8,8 +8,9 @@ on:
         required: true
         type: choice
         options:
-          - error
-          - better_error
+          - arcscord
+          - middleware
+          - cli
 
 jobs:
   Publish:
