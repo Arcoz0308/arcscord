@@ -1,0 +1,40 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: the package to publish
+        required: true
+        type: choice
+        options:
+          - error
+          - better_error
+
+jobs:
+  Publish:
+    name: Build & Publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+      - name: Use Node.js v20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: "https://registry.npmjs.org"
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Build code
+        run: pnpm build
+      - name: Publish
+        run: npm publish --provenance --access public
+        working-directory: "packages/${{inputs.package}}"
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.NPM_SECRET}}
