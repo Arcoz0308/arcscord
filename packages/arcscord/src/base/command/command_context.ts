@@ -662,12 +662,12 @@ export type CommandContext<
   | (T extends PartialCommandDefinitionForSlash
     ? GuildSlashCommandContext<T, M> | DmSlashCommandContext<T, M>
     : never)
-    | (T extends PartialCommandDefinitionForMessage
-      ? GuildMessageCommandContext<M> | DmMessageCommandContext<M>
-      : never)
-      | (T extends PartialCommandDefinitionForUser
-        ? GuildUserCommandContext<M> | DmUserCommandContext<M>
-        : never)
+  | (T extends PartialCommandDefinitionForMessage
+    ? GuildMessageCommandContext<M> | DmMessageCommandContext<M>
+    : never)
+  | (T extends PartialCommandDefinitionForUser
+    ? GuildUserCommandContext<M> | DmUserCommandContext<M>
+    : never)
   : T extends SubCommandDefinition
     ? GuildSlashCommandContext<T, M> | DmSlashCommandContext<T, M>
     : never;
