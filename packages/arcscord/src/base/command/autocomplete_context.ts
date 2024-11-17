@@ -2,21 +2,22 @@ import type {
   ArcClient,
   CommandHandler,
   CommandRunResult,
-  GuildCommandContextBuilderOptions,
   NumberChoices,
   StringChoices,
 } from "#/base";
-import type { ContextDocs, DmContextDocs, GuildContextDocs } from "#/base/utils/context.type";
+import type { ContextDocs } from "#/base/utils/context.type";
 import type { CommandErrorOptions } from "#/utils";
 import type {
   ApplicationCommandOptionChoiceData,
   AutocompleteFocusedOption,
   AutocompleteInteraction,
   Guild,
-  GuildBasedChannel,
   GuildMember,
+  GuildTextBasedChannel,
+  TextBasedChannel,
   User,
 } from "discord.js";
+import type { APIInteractionGuildMember } from "discord-api-types/v10";
 import type i18next from "i18next";
 import { CommandError } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";
@@ -30,7 +31,7 @@ type BaseAutocompleteOptions = {
 /**
  * Base class for handling autocomplete context.
  */
-export class BaseAutocompleteContext implements ContextDocs {
+export class AutocompleteContext<InGuild extends true | false = true | false> implements ContextDocs {
   client: ArcClient;
 
   command: CommandHandler;
@@ -40,6 +41,16 @@ export class BaseAutocompleteContext implements ContextDocs {
   resolvedCommandName: string;
 
   user: User;
+
+  guild: InGuild extends true ? Guild : null;
+
+  guildId: InGuild extends true ? string : null;
+
+  member: InGuild extends true ? GuildMember | APIInteractionGuildMember : null;
+
+  channel: InGuild extends true ? GuildTextBasedChannel | TextBasedChannel : null;
+
+  channelId: InGuild extends true ? string : null;
 
   /**
    * get a locale text, with language detected self
@@ -64,6 +75,12 @@ export class BaseAutocompleteContext implements ContextDocs {
     this.client = options.client;
     this.user = interaction.user;
     this.t = this.client.localeManager.i18n.getFixedT(options.locale);
+
+    this.guild = interaction.guild as InGuild extends true ? Guild : null;
+    this.member = interaction.member as InGuild extends true ? GuildMember | APIInteractionGuildMember : null;
+    this.guildId = interaction.guildId as InGuild extends true ? string : null;
+    this.channel = interaction.channel as InGuild extends true ? GuildTextBasedChannel | TextBasedChannel : null;
+    this.channelId = interaction.channelId as InGuild extends true ? string : null;
   }
 
   /**
@@ -174,69 +191,3 @@ export class BaseAutocompleteContext implements ContextDocs {
     return ok(true);
   }
 }
-
-/**
- * Context for handling DM-based autocomplete interactions.
- */
-export class DmAutoCompleteContext extends BaseAutocompleteContext implements DmContextDocs {
-  guildId = null;
-
-  guild = null;
-
-  channelId = null;
-
-  channel = null;
-
-  member = null;
-
-  readonly inGuild = false;
-
-  readonly inDM = true;
-}
-
-/**
- * Context for handling guild-based autocomplete interactions.
- */
-export class GuildAutocompleteContext extends BaseAutocompleteContext implements GuildContextDocs {
-  guildId: string;
-
-  guild: Guild;
-
-  channelId: string;
-
-  channel: GuildBasedChannel;
-
-  member: GuildMember;
-
-  readonly inGuild = true;
-
-  readonly inDM = false;
-
-  /**
-   * Constructs a new GuildAutocompleteContext.
-   *
-   * @param command - The command props.
-   * @param interaction - The autocomplete interaction.
-   * @param options - The guild command context builder options and base autocomplete options.
-   */
-  constructor(
-    command: CommandHandler,
-    interaction: AutocompleteInteraction,
-    options: GuildCommandContextBuilderOptions & BaseAutocompleteOptions,
-  ) {
-    super(command, interaction, options);
-
-    this.guildId = options.guild.id;
-    this.guild = options.guild;
-    this.channelId = options.channel.id;
-    this.channel = options.channel;
-    this.member = options.member;
-  }
-}
-
-/**
- * Union type for different types of autocomplete contexts.
- */
-export type AutocompleteContext =
-  | GuildAutocompleteContext
-  | DmAutoCompleteContext;

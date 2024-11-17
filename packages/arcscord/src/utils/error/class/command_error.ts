@@ -1,5 +1,5 @@
 import type { CommandHandler } from "#/base/command";
-import type { BaseAutocompleteContext } from "#/base/command/autocomplete_context";
+import type { AutocompleteContext } from "#/base/command/autocomplete_context";
 import type { BaseCommandContext } from "#/base/command/command_context";
 import type { ErrorOptions } from "@arcscord/better-error";
 import type { AutocompleteInteraction, CommandInteraction } from "discord.js";
@@ -13,7 +13,7 @@ export type CommandErrorOptions = ErrorOptions & {
   /**
    * The context of the command.
    */
-  ctx: BaseCommandContext | BaseAutocompleteContext;
+  ctx: BaseCommandContext | AutocompleteContext;
 };
 
 /**
@@ -33,7 +33,7 @@ export class CommandError extends InteractionError {
   /**
    * The context associated with the command error.
    */
-  context: BaseCommandContext | BaseAutocompleteContext;
+  context: BaseCommandContext | AutocompleteContext;
 
   /**
    * The command properties associated with the error.

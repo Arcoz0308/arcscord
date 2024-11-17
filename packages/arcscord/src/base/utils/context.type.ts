@@ -35,7 +35,7 @@ export type ContextDocs = {
 /**
  * FOR DOCS ONLY
  */
-export type GuildContextDocs = {
+export type ContextInGuild = {
   /**
    * ID of the guild.
    */
@@ -64,18 +64,18 @@ export type GuildContextDocs = {
   /**
    * Indicates the interaction is within a guild.
    */
-  readonly inGuild: true;
+  inGuild: () => true;
 
   /**
    * Indicates the interaction is not within a direct message.
    */
-  readonly inDM: false;
+  inDM: () => false;
 };
 
 /**
  * FOR DOCS ONLY
  */
-export type DmContextDocs = {
+export type ContextInDm = {
   /**
    * ID of the guild (null for direct messages).
    */
@@ -104,13 +104,15 @@ export type DmContextDocs = {
   /**
    * Indicates the interaction is not within a guild.
    */
-  readonly inGuild: false;
+  inGuild: () => false;
 
   /**
    * Indicates the interaction is within a direct message.
    */
-  readonly inDM: true;
+  inDM: () => true;
 };
+
+export type ContextInGuildOrDm = ContextInGuild | ContextInDm;
 
 /**
  * FOR DOCS ONLY
@@ -155,16 +157,4 @@ export type MessageCommandContextDocs = {
    * The message that the command target
    */
   targetMessage: Message;
-};
-
-export type UserCommandContextDocs = {
-  /**
-   * The user that the command target
-   */
-  targetUser: User;
-
-  /**
-   * The member that the command target, if null maybe user left the guild or command run in dm
-   */
-  targetMember: GuildMember | null;
 };

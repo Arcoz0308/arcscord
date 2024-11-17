@@ -1,13 +1,12 @@
 import type { ArcClient, BaseComponentContextOptions } from "#/base";
 import type { ComponentMiddleware } from "#/base/components/component_middleware";
-import type { DmContextDocs, GuildContextDocs } from "#/base/utils";
 import type { Guild, GuildBasedChannel, GuildMember, ModalSubmitInteraction } from "discord.js";
 import { BaseComponentContext, type GuildComponentContextOptions } from "#/base/components/context/base_context";
 
 /**
  * `DmModalContext` is a class representing the context of a modal interaction within a direct message (DM).
  */
-export class DmModalContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends BaseComponentContext<M> implements DmContextDocs {
+export class DmModalContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends BaseComponentContext<M> {
   guildId = null;
 
   guild = null;
@@ -53,7 +52,7 @@ export class DmModalContext<M extends ComponentMiddleware[] = ComponentMiddlewar
 /**
  * Represents the context for a guild modal interaction.
  */
-export class GuildModalContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends BaseComponentContext<M> implements GuildContextDocs {
+export class GuildModalContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends BaseComponentContext<M> {
   guildId: string;
 
   guild: Guild;

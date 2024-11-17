@@ -2,6 +2,9 @@ import type { ArcClient } from "#/base";
 import type { CommandHandler } from "#/base/command";
 import type { Command } from "#/base/command/command_definition.type";
 import type {
+  CommandErrorHandler,
+  CommandErrorHandlerInfos,
+  CommandManagerOptions,
   CommandResultHandler,
   CommandResultHandlerImplementer,
   CommandResultHandlerInfos,
@@ -13,29 +16,21 @@ import type {
   AutocompleteInteraction,
   BaseMessageOptions,
   CommandInteraction,
-  Guild,
-  GuildBasedChannel,
-  GuildMember,
 } from "discord.js";
 import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import {
+  AutocompleteContext,
   commandInteractionToString,
   hasAutocomplete,
   hasMessageCommand,
   hasSlashCommand,
   hasUserCommand,
   isSubCommand,
+  MessageCommandContext,
   parseOptions,
+  SlashCommandContext,
+  UserCommandContext,
 } from "#/base/command";
-import { DmAutoCompleteContext, GuildAutocompleteContext } from "#/base/command/autocomplete_context";
-import {
-  DmMessageCommandContext,
-  DmSlashCommandContext,
-  DmUserCommandContext,
-  GuildMessageCommandContext,
-  GuildSlashCommandContext,
-  GuildUserCommandContext,
-} from "#/base/command/command_context";
 import { preCheck } from "#/base/command/command_precheck";
 import { commandToAPI, subCommandListToAPI } from "#/base/command/command_transformer";
 import { BaseManager } from "#/base/manager/manager.class";
@@ -56,13 +51,15 @@ export class CommandManager
 
   name = "command";
 
-  _resultHandler: CommandResultHandler;
+  options: Required<CommandManagerOptions>;
 
-  constructor(client: ArcClient) {
+  constructor(client: ArcClient, options?: CommandManagerOptions) {
     super(client);
 
-    this._resultHandler = (infos: CommandResultHandlerInfos) => {
-      return this.resultHandler(infos);
+    this.options = {
+      resultHandler: this.resultHandler,
+      errorHandler: this.errorHandler,
+      ...options,
     };
 
     this.client.on("interactionCreate", (interaction) => {
@@ -73,6 +70,14 @@ export class CommandManager
         void this.handleAutocomplete(interaction);
       }
     });
+  }
+
+  get handleResult(): CommandResultHandler {
+    return this.options.resultHandler;
+  }
+
+  get handleError(): CommandErrorHandler {
+    return this.options.errorHandler;
   }
 
   /**
@@ -469,15 +474,15 @@ export class CommandManager
   }
 
   private async handleInteraction(interaction: CommandInteraction): Promise<void> {
-    /* INITIALISATION */
+    /* INITIALIZATION */
     const [infos, err] = this.getCommand(interaction);
 
     if (err) {
-      this.logger.logError(err.generateId());
-      return this.sendInternalError(
+      return this.handleError({
+        error: err,
         interaction,
-        internalErrorEmbed(this.client, err.id),
-      );
+        internal: true,
+      });
     }
 
     const command = infos.cmd;
@@ -489,11 +494,11 @@ export class CommandManager
       interaction,
     );
     if (err2) {
-      this.logger.logError(err2.generateId());
-      return this.sendInternalError(
+      return this.handleError({
+        error: err2,
         interaction,
-        internalErrorEmbed(this.client, err2.id),
-      );
+        internal: true,
+      });
     }
 
     if (!next) {
@@ -503,103 +508,11 @@ export class CommandManager
       return;
     }
 
-    /* GUILD CHECKS */
-
-    let guildInfos: null | {
-      guild: Guild;
-      member: GuildMember;
-      channel: GuildBasedChannel;
-    };
-
-    if (
-      interaction.inGuild()
-      && interaction.authorizingIntegrationOwners["0"]
-    ) {
-      let guild;
-      let member;
-      let channel;
-      try {
-        guild = interaction.inCachedGuild()
-          ? interaction.guild
-          : await this.client.guilds.fetch(interaction.guildId);
-      }
-      catch (e) {
-        const bError = new BaseError({
-          message: `failed to get guild because ${anyToError(e).message}`,
-          originalError: anyToError(e),
-        }).generateId();
-
-        this.logger.logError(bError);
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, bError.id),
-        );
-      }
-
-      try {
-        member = await guild.members.fetch(interaction.user.id);
-      }
-      catch (e) {
-        const bError = new BaseError({
-          message: `failed to get member because ${anyToError(e).message}`,
-          originalError: anyToError(e),
-        }).generateId();
-
-        this.logger.logError(bError);
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, bError.id),
-        );
-      }
-
-      try {
-        channel
-          = interaction.channel
-          ?? (await guild.channels.fetch(interaction.channelId));
-      }
-      catch (e) {
-        const bError = new BaseError({
-          message: `failed to get channel because ${anyToError(e).message}`,
-          originalError: anyToError(e),
-        }).generateId();
-
-        this.logger.logError(bError);
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, bError.id),
-        );
-      }
-
-      if (channel === null) {
-        const bError = new BaseError({
-          message: `get nul channel value for channel ${interaction.channelId}`,
-          debugs: {
-            guildId: interaction.guildId,
-          },
-        }).generateId();
-
-        this.logger.logError(bError);
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, bError.id),
-        );
-      }
-
-      guildInfos = {
-        guild,
-        member,
-        channel,
-      };
-    }
-    else {
-      guildInfos = null;
-    }
-
     /* Locale */
     const locale = await this.client.localeManager.detectLanguage({
       interaction,
       user: interaction.user,
-      guild: guildInfos?.guild || null,
+      guild: interaction.guild,
       channel: interaction.channel,
     });
 
@@ -616,33 +529,20 @@ export class CommandManager
           : [null, null];
 
         if (err) {
-          this.logger.logError(err.generateId());
-          return this.sendInternalError(
+          return this.handleError({
+            error: err,
             interaction,
-            internalErrorEmbed(this.client, err.id),
-          );
+            internal: true,
+          });
         }
 
-        context = guildInfos
-          ? new GuildSlashCommandContext<typeof command.build>(
-            command,
-            interaction,
-            {
-              resolvedName: infos.resolvedName,
-              ...guildInfos,
-              // @ts-expect-error fix generic bug
-              options,
-              client: this.client,
-              locale,
-            },
-          )
-          : new DmSlashCommandContext(command, interaction, {
-            resolvedName: infos.resolvedName,
-            // @ts-expect-error fix generic bug
-            options,
-            client: this.client,
-            locale,
-          });
+        context = new SlashCommandContext(command, interaction, {
+          resolvedName: infos.resolvedName,
+          // @ts-expect-error fix generic bug
+          options,
+          client: this.client,
+          locale,
+        });
       }
       else if (command.build.slash) {
         const [options, err] = command.build.slash.options
@@ -653,131 +553,86 @@ export class CommandManager
           : [null, null];
 
         if (err) {
-          this.logger.logError(err.generateId());
-          return this.sendInternalError(
+          return this.handleError({
+            error: err,
             interaction,
-            internalErrorEmbed(this.client, err.id),
-          );
+            internal: true,
+          });
         }
 
-        context = guildInfos
-          ? new GuildSlashCommandContext(command, interaction, {
-            resolvedName: infos.resolvedName,
-            ...guildInfos,
-            // @ts-expect-error fix generic bug
-            options,
-            client: this.client,
-            locale,
-          })
-          : new DmSlashCommandContext(command, interaction, {
-            resolvedName: infos.resolvedName,
-            // @ts-expect-error fix generic bug
-            options,
-            client: this.client,
-            locale,
-          });
+        context = new SlashCommandContext(command, interaction, {
+          resolvedName: infos.resolvedName,
+          // @ts-expect-error fix generic bug
+          options,
+          client: this.client,
+          locale,
+        });
       }
       else {
         const bError = new BaseError({
           message: `invalid command, get slash command interaction for command ${infos.resolvedName}`,
         });
-        this.logger.logError(bError.generateId());
-        return this.sendInternalError(
+        return this.handleError({
+          error: bError,
           interaction,
-          internalErrorEmbed(this.client, bError.id),
-        );
+          internal: true,
+        });
       }
 
       /* User Context Menu Command */
     }
     else if (interaction.isUserContextMenuCommand()) {
       if ("user" in command.build) {
-        let targetMember: GuildMember | null = null;
-        if (guildInfos && interaction.targetMember) {
-          try {
-            targetMember = await guildInfos.guild.members.fetch(
-              interaction.targetMember.user.id,
-            );
-          }
-          catch (e) {
-            const bError = new BaseError({
-              message: "failed to fetch target member",
-              originalError: anyToError(e),
-            });
-            this.logger.logError(bError.generateId());
-            return this.sendInternalError(
-              interaction,
-              internalErrorEmbed(this.client, bError.id),
-            );
-          }
-        }
-
-        context = guildInfos
-          ? new GuildUserCommandContext(command, interaction, {
-            resolvedName: infos.resolvedName,
-            ...guildInfos,
-            targetUser: interaction.targetUser,
-            targetMember,
-            client: this.client,
-            locale,
-          })
-          : new DmUserCommandContext(command, interaction, {
-            resolvedName: infos.resolvedName,
-            targetUser: interaction.targetUser,
-            client: this.client,
-            locale,
-          });
+        context = new UserCommandContext(command, interaction, {
+          resolvedName: infos.resolvedName,
+          targetUser: interaction.targetUser,
+          targetMember: interaction.targetMember,
+          client: this.client,
+          locale,
+        });
       }
       else {
         const bError = new BaseError({
           message: `invalid command, get user command interaction for command ${infos.resolvedName}`,
         });
-        this.logger.logError(bError.generateId());
-        return this.sendInternalError(
+        return this.handleError({
+          error: bError,
           interaction,
-          internalErrorEmbed(this.client, bError.id),
-        );
+          internal: true,
+        });
       }
 
       /* Message Context Menu Command */
     }
     else if (interaction.isMessageContextMenuCommand()) {
       if ("message" in command.build) {
-        context = guildInfos
-          ? new GuildMessageCommandContext(command, interaction, {
-            resolvedName: infos.resolvedName,
-            ...guildInfos,
-            message: interaction.targetMessage,
-            client: this.client,
-            locale,
-          })
-          : new DmMessageCommandContext(command, interaction, {
-            resolvedName: infos.resolvedName,
-            message: interaction.targetMessage,
-            client: this.client,
-            locale,
-          });
+        context = new MessageCommandContext(command, interaction, {
+          resolvedName: infos.resolvedName,
+          message: interaction.targetMessage,
+          client: this.client,
+          locale,
+        });
       }
       else {
         const bError = new BaseError({
           message: `invalid command, get user command interaction for command ${infos.resolvedName}`,
         });
-        this.logger.logError(bError.generateId());
-        return this.sendInternalError(
+        return this.handleError({
+          error: bError,
           interaction,
-          internalErrorEmbed(this.client, bError.id),
-        );
+          internal: true,
+        });
       }
     }
     else {
       const bError = new BaseError({
         message: `invalid interaction type: ${interaction.type}`,
       });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
+      return this.handleError({
+        error: bError,
         interaction,
-        internalErrorEmbed(this.client, bError.id),
-      );
+        internal: true,
+      });
     }
 
     /* Command Defer */
@@ -791,11 +646,11 @@ export class CommandManager
       });
 
       if (err3) {
-        this.logger.logError(err3.generateId());
-        return this.sendInternalError(
+        return this.handleError({
+          error: err3,
           interaction,
-          internalErrorEmbed(this.client, err3.id),
-        );
+          internal: true,
+        });
       }
     }
 
@@ -810,11 +665,11 @@ export class CommandManager
           if (result.cancel) {
             const [result2, err4] = await result.cancel;
             if (err4) {
-              this.logger.logError(err4.generateId());
-              return this.sendInternalError(
+              return this.handleError({
+                error: err4,
                 interaction,
-                internalErrorEmbed(this.client, err4.id),
-              );
+                internal: true,
+              });
             }
             const infos: CommandResultHandlerInfos = {
               result: ok(
@@ -827,7 +682,7 @@ export class CommandManager
               end: Date.now(),
             };
 
-            return this._resultHandler(infos);
+            return this.handleResult(infos);
           }
 
           context.additional[middleware.name] = result.next;
@@ -851,7 +706,7 @@ export class CommandManager
             end: Date.now(),
           };
 
-          return this._resultHandler(infos);
+          return this.handleResult(infos);
         }
       }
     }
@@ -870,36 +725,37 @@ export class CommandManager
         end: Date.now(),
       };
 
-      return this._resultHandler(infos);
+      return this.handleResult(infos);
     }
     catch (e) {
-      const infos: CommandResultHandlerInfos = {
-        result: error(
-          new CommandError({
-            message: `failed to run command : ${anyToError(e).message}`,
-            ctx: context,
-            originalError: anyToError(e),
-          }),
-        ),
+      return this.handleError({
+        error: new CommandError({
+          message: `failed to run command : ${anyToError(e).message}`,
+          ctx: context,
+          originalError: anyToError(e),
+        }),
         interaction,
         command,
-        defer: context.defer,
-        start,
-        end: Date.now(),
-      };
-
-      return this._resultHandler(infos);
+        // @ts-expect-error fix error with never type
+        context,
+        internal: false,
+      });
     }
   }
 
   private async handleAutocomplete(
     interaction: AutocompleteInteraction,
   ): Promise<void> {
-    /* INITIALISATION */
+    /* INITIALIZATION */
     const [infos, err] = this.getCommand(interaction);
 
     if (err) {
-      return this.logger.logError(err.generateId());
+      return this.handleError({
+        error: err,
+        interaction,
+        internal: true,
+        autocomplete: true,
+      });
     }
 
     const command = infos.cmd;
@@ -910,104 +766,46 @@ export class CommandManager
       );
     }
 
-    /* Guild Check */
-    let guildInfos: null | {
-      guild: Guild;
-      member: GuildMember;
-      channel: GuildBasedChannel;
-    };
-
-    if (interaction.inGuild()) {
-      try {
-        const guild = await this.client.guilds.fetch(interaction.guildId);
-        let member, channel;
-        try {
-          member = await guild.members.fetch(interaction.user.id);
-        }
-        catch (e) {
-          const bError = new BaseError({
-            message: `failed to get member because ${anyToError(e).message}`,
-            originalError: anyToError(e),
-          }).generateId();
-
-          return this.logger.logError(bError);
-        }
-
-        try {
-          channel
-            = interaction.channel
-            ?? (await guild.channels.fetch(interaction.channelId));
-        }
-        catch (e) {
-          const bError = new BaseError({
-            message: `failed to get channel because ${anyToError(e).message}`,
-            originalError: anyToError(e),
-          }).generateId();
-
-          return this.logger.logError(bError);
-        }
-
-        if (channel === null) {
-          const bError = new BaseError({
-            message: `get nul channel value for channel ${interaction.channelId}`,
-            debugs: {
-              guildId: interaction.guildId,
-            },
-          }).generateId();
-
-          return this.logger.logError(bError);
-        }
-        guildInfos = {
-          guild,
-          member,
-          channel,
-        };
-      }
-      catch (e) {
-        // if is user installed app
-
-        guildInfos = e === true ? null : null;
-      }
-    }
-    else {
-      guildInfos = null;
-    }
-
     /* Locale */
     const locale = await this.client.localeManager.detectLanguage({
       interaction,
       user: interaction.user,
-      guild: guildInfos?.guild || null,
+      guild: interaction.guild,
       channel: interaction.channel,
     });
 
-    const context = guildInfos
-      ? new GuildAutocompleteContext(command, interaction, {
-        ...guildInfos,
-        resolvedName: infos.resolvedName,
-        client: this.client,
-        locale,
-      })
-      : new DmAutoCompleteContext(command, interaction, {
-        resolvedName: infos.resolvedName,
-        client: this.client,
-        locale,
-      });
+    const context = new AutocompleteContext(command, interaction, {
+      resolvedName: infos.resolvedName,
+      client: this.client,
+      locale,
+    });
 
     try {
       const [result, err2] = await command.autocomplete(context);
       if (err2) {
-        return this.logger.logError(err2.generateId());
+        return this.handleError({
+          error: err2,
+          interaction,
+          internal: true,
+          autocomplete: true,
+        });
       }
 
-      this.logger.trace(
+      this.trace(
         `Run autocomplete for command ${infos.resolvedName}, result : ${result}`,
       );
     }
     catch (e) {
-      return this.logger.error(
-        `Failed to run autocomplete, error : ${anyToError(e).message}`,
-      );
+      return this.handleError({
+        error: new CommandError({
+          message: anyToError(e).message,
+          ctx: context,
+          originalError: anyToError(e),
+        }),
+        interaction,
+        internal: false,
+        autocomplete: true,
+      });
     }
   }
 
@@ -1051,5 +849,17 @@ export class CommandManager
         typeof result === "string" ? result : "success"
       }`,
     );
+  }
+
+  async errorHandler(infos: CommandErrorHandlerInfos): Promise<void> {
+    this.logger.logError(infos.error.generateId());
+
+    if (!infos.autocomplete) {
+      return this.sendInternalError(
+        infos.interaction,
+        internalErrorEmbed(this.client, infos.error.generateId().id),
+        infos.context?.defer,
+      );
+    }
   }
 }

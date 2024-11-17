@@ -2,7 +2,6 @@ import type { ArcClient, BaseComponentContextOptions } from "#/base";
 import type { StringSelectMenuValues, TypedSelectMenuOptions } from "#/base/components";
 import type { ComponentMiddleware } from "#/base/components/component_middleware";
 import type { GuildComponentContextOptions } from "#/base/components/context/base_context";
-import type { DmContextDocs, GuildContextDocs } from "#/base/utils";
 import type {
   APIChannel,
   APIRole,
@@ -24,7 +23,7 @@ import { MessageComponentContext } from "#/base/components/context/message_compo
 /**
  * Guild context for select menu interactions.
  */
-export class GuildSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends MessageComponentContext<M> implements GuildContextDocs {
+export class GuildSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends MessageComponentContext<M> {
   guildId: string;
 
   guild: Guild;
@@ -67,7 +66,7 @@ export class GuildSelectMenuContext<M extends ComponentMiddleware[] = ComponentM
 /**
  * DM context for select menu interactions.
  */
-export class DmSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends MessageComponentContext<M> implements DmContextDocs {
+export class DmSelectMenuContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends MessageComponentContext<M> {
   guildId = null;
 
   guild = null;

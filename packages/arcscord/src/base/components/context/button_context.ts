@@ -1,7 +1,6 @@
 import type { ArcClient, BaseComponentContextOptions } from "#/base";
 import type { ComponentMiddleware } from "#/base/components/component_middleware";
 import type { GuildComponentContextOptions } from "#/base/components/context/base_context";
-import type { DmContextDocs, GuildContextDocs } from "#/base/utils";
 import type { ButtonInteraction, Guild, GuildBasedChannel, GuildMember } from "discord.js";
 import { MessageComponentContext } from "#/base/components/context/message_component_context";
 
@@ -33,7 +32,7 @@ export class BaseButtonContext<M extends ComponentMiddleware[] = ComponentMiddle
  * GuildButtonContext class.
  * Extends BaseButtonContext and provides context for button interactions within a guild.
  */
-export class GuildButtonContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends BaseButtonContext<M> implements GuildContextDocs {
+export class GuildButtonContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends BaseButtonContext<M> {
   guildId: string;
   guild: Guild;
   channelId: string;
@@ -67,7 +66,7 @@ export class GuildButtonContext<M extends ComponentMiddleware[] = ComponentMiddl
  * DmButtonContext class.
  * Extends BaseButtonContext and provides context for button interactions within a direct message.
  */
-export class DmButtonContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends BaseButtonContext<M> implements DmContextDocs {
+export class DmButtonContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> extends BaseButtonContext<M> {
   guildId = null;
   guild = null;
   channelId = null;

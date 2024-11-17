@@ -3,7 +3,6 @@ import type { ArcClientOptions, MessageOptions } from "#/base/client/client.type
 import type { Command } from "#/base/command/command_definition.type";
 import type { ComponentHandler } from "#/base/components/component_handlers.type";
 import type { EventHandler } from "#/base/event/event.type";
-import type { Locale } from "#/utils";
 import type { InternalError } from "#/utils/error/class/internal_error";
 import type { LoggerConstructor, LoggerInterface } from "#/utils/logger/logger.type";
 import type { Result } from "@arcscord/error";
@@ -71,11 +70,6 @@ export class ArcClient extends DJSClient {
   defaultMessages: Required<MessageOptions>;
 
   /**
-   * Localized messages for various operations
-   */
-  localesMessages: Partial<Record<Locale | "default", MessageOptions>>;
-
-  /**
    * Constructor function for the logger
    */
   loggerConstructor: LoggerConstructor;
@@ -129,21 +123,12 @@ export class ArcClient extends DJSClient {
           ],
         },
       },
-      options.baseMessages && "default" in options.baseMessages
-        ? options.baseMessages.default
-        : options.baseMessages,
+      options.baseMessages,
     );
-
-    if (options.baseMessages && "default" in options.baseMessages) {
-      this.localesMessages = options.baseMessages;
-    }
-    else {
-      this.localesMessages = {};
-    }
 
     this.arcOptions = { autoIntents: false, enableInternalTrace: process.env.NODE_ENV === "development" || process.argv.includes("dev"), ...options };
 
-    this.commandManager = new CommandManager(this);
+    this.commandManager = new CommandManager(this, options.managers?.command);
     this.taskManager = new TaskManager(this);
     this.eventManager = new EventManager(this);
     this.componentManager = new ComponentManager(this);
@@ -263,13 +248,9 @@ export class ArcClient extends DJSClient {
    * Gets an error message with a specified error ID and locale
    *
    * @param errorId - The ID of the error
-   * @param locale - The locale for the error message (optional)
    * @returns The error message
    */
-  getErrorMessage(errorId?: string, locale?: Locale): BaseMessageOptions {
-    if (locale && this.localesMessages[locale]?.error) {
-      return this.localesMessages[locale].error(errorId);
-    }
+  getErrorMessage(errorId?: string): BaseMessageOptions {
     return this.defaultMessages.error(errorId);
   }
 
@@ -277,26 +258,17 @@ export class ArcClient extends DJSClient {
    * Gets a message for missing permissions
    *
    * @param permissionsMissing - The permissions that are missing
-   * @param locale - The locale for the message (optional)
    * @returns The message for missing permissions
    */
-  getMissingPermissionsMessage(permissionsMissing: PermissionsString[], locale?: Locale): BaseMessageOptions {
-    if (locale && this.localesMessages[locale]?.missingPermissions) {
-      return this.localesMessages[locale].missingPermissions(permissionsMissing);
-    }
+  getMissingPermissionsMessage(permissionsMissing: PermissionsString[]): BaseMessageOptions {
     return this.defaultMessages.missingPermissions(permissionsMissing);
   }
 
   /**
    * Gets a message indicating the command is for developers only
-   *
-   * @param locale - The locale for the message (optional)
    * @returns The developer-only message
    */
-  getDevOnlyMessage(locale?: Locale): BaseMessageOptions {
-    if (locale && this.localesMessages[locale]?.devOnly) {
-      return this.localesMessages[locale].devOnly;
-    }
+  getDevOnlyMessage(): BaseMessageOptions {
     return this.defaultMessages.devOnly;
   }
 

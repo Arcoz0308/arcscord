@@ -1,5 +1,5 @@
+import type { CommandManagerOptions } from "#/manager/command/command_manager.type";
 import type { LocaleManagerOptions } from "#/manager/locale/locale_manager.type";
-import type { Locale } from "#/utils/discord/type/locale.type";
 import type { LoggerConstructor } from "#/utils/logger/logger.type";
 import type { BaseMessageOptions, ClientOptions, PermissionsString } from "discord.js";
 
@@ -39,11 +39,7 @@ export type ArcClientOptions = ClientOptions & {
   /**
    * List of base messages, support locale soon
    */
-  baseMessages?:
-    | MessageOptions
-    | (Partial<Record<Locale, MessageOptions>> & {
-      default: MessageOptions;
-    });
+  baseMessages?: MessageOptions;
 
   /**
    * Indicates whether the intents for event should be detected by default.
@@ -70,9 +66,14 @@ export type ArcClientOptions = ClientOptions & {
  */
 export type ManagersOptions = {
   /**
-   * Configuration of {@link LocaleManager} for customise localization of arcscord
+   * Configuration of {@link LocaleManager} for customize localization of arcscord
    */
   locale?: LocaleManagerOptions;
+
+  /**
+   * Configuration of {@link CommandManager} for customize command behavior
+   */
+  command?: CommandManagerOptions;
 };
 
 /**
