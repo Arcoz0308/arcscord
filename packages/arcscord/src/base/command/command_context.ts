@@ -19,9 +19,7 @@ import type { CommandErrorOptions } from "#/utils";
 import type {
   ChatInputCommandInteraction,
   CommandInteraction,
-  Guild,
   GuildMember,
-  GuildTextBasedChannel,
   InteractionDeferReplyOptions,
   InteractionEditReplyOptions,
   InteractionReplyOptions,
@@ -29,7 +27,6 @@ import type {
   MessageContextMenuCommandInteraction,
   MessagePayload,
   ModalComponentData,
-  TextBasedChannel,
   User,
   UserContextMenuCommandInteraction,
 } from "discord.js";
@@ -38,6 +35,7 @@ import type i18next from "i18next";
 import { CommandError } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";
 import { InteractionContextType } from "discord.js";
+import { InteractionContext } from "../utils/interaction_context.class";
 
 /**
  * @internal
@@ -66,7 +64,7 @@ export type BaseCommandContextBuilderOptions<
 export class BaseCommandContext<
   M extends CommandMiddleware[] = CommandMiddleware[],
   InGuild extends true | false = true | false,
-> implements ContextDocs {
+> extends InteractionContext<InGuild> implements ContextDocs {
   /**
    * The command properties
    */
@@ -115,16 +113,6 @@ export class BaseCommandContext<
    */
   t: typeof i18next.t;
 
-  guild: InGuild extends true ? Guild : null;
-
-  guildId: InGuild extends true ? string : null;
-
-  member: InGuild extends true ? GuildMember | APIInteractionGuildMember : null;
-
-  channel: InGuild extends true ? GuildTextBasedChannel | TextBasedChannel : null;
-
-  channelId: InGuild extends true ? string : null;
-
   /**
    * Construct a new BaseCommandContext
    */
@@ -133,6 +121,8 @@ export class BaseCommandContext<
     interaction: CommandInteraction,
     options: BaseCommandContextBuilderOptions<M>,
   ) {
+    super(interaction);
+
     this.command = command;
     this.interaction = interaction;
 
@@ -149,12 +139,6 @@ export class BaseCommandContext<
 
     this.resolvedCommandName = options.resolvedName;
     this.additional = options.additional || ({} as MiddlewaresResults<M>);
-
-    this.guild = interaction.guild as InGuild extends true ? Guild : null;
-    this.member = interaction.member as InGuild extends true ? GuildMember | APIInteractionGuildMember : null;
-    this.guildId = interaction.guildId as InGuild extends true ? string : null;
-    this.channel = interaction.channel as InGuild extends true ? GuildTextBasedChannel | TextBasedChannel : null;
-    this.channelId = interaction.channelId as InGuild extends true ? string : null;
 
     this.t = this.client.localeManager.i18n.getFixedT(options.locale);
   }
