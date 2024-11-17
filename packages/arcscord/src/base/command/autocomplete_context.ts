@@ -11,16 +11,11 @@ import type {
   ApplicationCommandOptionChoiceData,
   AutocompleteFocusedOption,
   AutocompleteInteraction,
-  Guild,
-  GuildMember,
-  GuildTextBasedChannel,
-  TextBasedChannel,
-  User,
 } from "discord.js";
-import type { APIInteractionGuildMember } from "discord-api-types/v10";
 import type i18next from "i18next";
 import { CommandError } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";
+import { InteractionContext } from "../utils/interaction_context.class";
 
 type BaseAutocompleteOptions = {
   resolvedName: string;
@@ -31,7 +26,7 @@ type BaseAutocompleteOptions = {
 /**
  * Base class for handling autocomplete context.
  */
-export class AutocompleteContext<InGuild extends true | false = true | false> implements ContextDocs {
+export class AutocompleteContext<InGuild extends true | false = true | false> extends InteractionContext<InGuild> implements ContextDocs {
   client: ArcClient;
 
   command: CommandHandler;
@@ -39,18 +34,6 @@ export class AutocompleteContext<InGuild extends true | false = true | false> im
   interaction: AutocompleteInteraction;
 
   resolvedCommandName: string;
-
-  user: User;
-
-  guild: InGuild extends true ? Guild : null;
-
-  guildId: InGuild extends true ? string : null;
-
-  member: InGuild extends true ? GuildMember | APIInteractionGuildMember : null;
-
-  channel: InGuild extends true ? GuildTextBasedChannel | TextBasedChannel : null;
-
-  channelId: InGuild extends true ? string : null;
 
   /**
    * get a locale text, with language detected self
@@ -69,18 +52,12 @@ export class AutocompleteContext<InGuild extends true | false = true | false> im
     interaction: AutocompleteInteraction,
     options: BaseAutocompleteOptions,
   ) {
+    super(options.client, interaction);
     this.command = command;
     this.interaction = interaction;
     this.resolvedCommandName = options.resolvedName;
     this.client = options.client;
-    this.user = interaction.user;
     this.t = this.client.localeManager.i18n.getFixedT(options.locale);
-
-    this.guild = interaction.guild as InGuild extends true ? Guild : null;
-    this.member = interaction.member as InGuild extends true ? GuildMember | APIInteractionGuildMember : null;
-    this.guildId = interaction.guildId as InGuild extends true ? string : null;
-    this.channel = interaction.channel as InGuild extends true ? GuildTextBasedChannel | TextBasedChannel : null;
-    this.channelId = interaction.channelId as InGuild extends true ? string : null;
   }
 
   /**

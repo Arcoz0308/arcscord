@@ -1,7 +1,13 @@
-import type { BaseInteraction, Guild, GuildMember, GuildTextBasedChannel, TextBasedChannel } from "discord.js";
+import type { BaseInteraction, Guild, GuildMember, GuildTextBasedChannel, TextBasedChannel, User } from "discord.js";
 import type { APIInteractionGuildMember } from "discord-api-types/v10";
+import type { ArcClient } from "../client";
 
 export class InteractionContext<InGuild extends true | false = true | false> {
+  /**
+   * The user of the context
+   */
+  user: User;
+
   /**
    * The guild of the context
    */
@@ -27,7 +33,15 @@ export class InteractionContext<InGuild extends true | false = true | false> {
    */
   channelId: InGuild extends true ? string : null;
 
-  constructor(interaction: BaseInteraction) {
+  /**
+   * get client instance
+   */
+  client: ArcClient;
+
+  constructor(client: ArcClient, interaction: BaseInteraction) {
+    this.user = interaction.user;
+    this.client = client;
+
     this.guild = interaction.guild as InGuild extends true ? Guild : null;
     this.guildId = interaction.guildId as InGuild extends true ? string : null;
     this.member = interaction.member as InGuild extends true ? GuildMember | APIInteractionGuildMember : null;

@@ -75,8 +75,6 @@ export class BaseCommandContext<
    */
   interaction: CommandInteraction;
 
-  user: User;
-
   /**
    * The context of the interaction
    * @see [Discord Docs](https://discord.com/developers/docs/interactions/receiving-and-responding#interaction-object-interaction-context-types)
@@ -121,12 +119,10 @@ export class BaseCommandContext<
     interaction: CommandInteraction,
     options: BaseCommandContextBuilderOptions<M>,
   ) {
-    super(interaction);
+    super(options.client, interaction);
 
     this.command = command;
     this.interaction = interaction;
-
-    this.user = interaction.user;
 
     this.interactionContext = this.#interactionContextConverter(
       interaction.context,
