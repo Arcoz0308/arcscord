@@ -126,7 +126,11 @@ export class ArcClient extends DJSClient {
       options.baseMessages,
     );
 
-    this.arcOptions = { autoIntents: false, enableInternalTrace: process.env.NODE_ENV === "development" || process.argv.includes("dev"), ...options };
+    this.arcOptions = {
+      autoIntents: false,
+      enableInternalTrace: process.env.NODE_ENV === "development" || process.argv.includes("dev"),
+      ...options,
+    };
 
     this.commandManager = new CommandManager(this, options.managers?.command);
     this.taskManager = new TaskManager(this);
