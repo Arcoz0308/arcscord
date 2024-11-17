@@ -9,7 +9,7 @@ export class TestMiddleware extends CommandMiddleware {
       dev: boolean;
     }>
   > {
-    if (ctx.inDM) {
+    if (!ctx.inGuild()) {
       return this.cancel(ctx.reply("No work in mp"));
     }
 
