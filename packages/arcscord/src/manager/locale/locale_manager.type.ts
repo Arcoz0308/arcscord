@@ -16,28 +16,13 @@ export type LangDetector = (options: {
 /**
  * Options to configure the LocaleManager.
  */
-export type LocaleManagerOptions = {
+export type BaseLocaleManagerOptions = {
   /**
-   * Configuration options for i18next
-   *
-   * `i18nOptions` can be passed to customize the behavior of the
-   * internationalization library. This may include settings such as
-   * supported languages, fallback languages, detection options, and more.
-   *
-   * @see [i18next docs](https://www.i18next.com/overview/configuration-options)
-   * @default {@link LocaleManager.defaultI18Options}
-   */
-  i18nOptions?: InitOptions;
-
-  /**
-   * Custom i18n instance
-   *
-   * `customI18n` allows you to provide your own configured instance of i18n.
-   * If set to false, a new instance will be initialized using `i18nOptions`.
+   * Enable or disable the locale manager
    *
    * @default false
    */
-  customI18n?: i18n | false;
+  enabled: true;
 
   /**
    * Language map
@@ -67,4 +52,36 @@ export type LocaleManagerOptions = {
   availableLanguages?: Locale[] | Set<Locale>;
 };
 
+type WithCustomI18n = BaseLocaleManagerOptions & {
+  /**
+   * Custom i18n instance
+   *
+   * Provide your own configured instance of i18n.
+   */
+  customI18n: i18n;
+  i18nOptions?: never;
+};
+
+type WithI18nOptions = BaseLocaleManagerOptions & {
+  /**
+   * Configuration options for i18next
+   *
+   * Required options to customize the behavior of the
+   * internationalization library. This may include settings such as
+   * supported languages, fallback languages, detection options, and more.
+   *
+   * @see [i18next docs](https://www.i18next.com/overview/configuration-options)
+   */
+  i18nOptions: InitOptions;
+  customI18n?: never;
+};
+
+export type LocaleManagerOptions = WithCustomI18n | WithI18nOptions | {
+  /**
+   * Enable or disable the locale manager
+   *
+   * @default false
+   */
+  enabled?: false;
+};
 export type LocaleCallback = (t: typeof i18next.t) => string;

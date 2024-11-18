@@ -1,12 +1,10 @@
 import type { ArcClient } from "#/base";
-import type { LangDetector, LocaleManagerOptions } from "#/manager/locale/locale_manager.type";
+import type { BaseLocaleManagerOptions, LangDetector, LocaleManagerOptions } from "#/manager/locale/locale_manager.type";
 import type { Locale } from "#/utils";
-import type { i18n, InitOptions } from "i18next";
+import type { i18n } from "i18next";
 import { BaseManager } from "#/base";
 import { anyToError } from "@arcscord/error";
 import i18next from "i18next";
-import arcscordEn from "../../locales/en.json";
-import arcscordFr from "../../locales/fr.json";
 
 /**
  * Manages localization for the application.
@@ -90,31 +88,6 @@ export class LocaleManager extends BaseManager {
   };
 
   /**
-   * Get arcscord translation resources
-   */
-  static readonly arcscordResources = {
-    en: arcscordEn,
-    fr: arcscordFr,
-  };
-
-  /**
-   * Default i18n initialization options.
-   * Contains resource bundles for supported languages and other i18next options.
-   */
-  static readonly defaultI18Options: InitOptions = {
-    defaultNS: "empty",
-    fallbackLng: "en",
-    resources: {
-      en: {
-        arcscord: arcscordEn,
-      },
-      fr: {
-        arcscord: arcscordFr,
-      },
-    },
-  };
-
-  /**
    * Default language detection function.
    * Determines the language based on interaction or guild context.
    */
@@ -127,10 +100,8 @@ export class LocaleManager extends BaseManager {
    * Combines custom i18n instance settings, language map, i18n initialization options,
    * and language detection function.
    */
-  static defaultOptions: Required<LocaleManagerOptions> = {
-    customI18n: false,
+  static defaultOptions: Partial<BaseLocaleManagerOptions> = {
     languageMap: LocaleManager.defaultLanguageMap,
-    i18nOptions: LocaleManager.defaultI18Options,
     langDetector: LocaleManager.defaultLangDetector,
     availableLanguages: LocaleManager.localeSet,
   };
@@ -146,9 +117,14 @@ export class LocaleManager extends BaseManager {
   readonly name = "locale";
 
   /**
+   * Enable or disable the locale manager
+   */
+  readonly enabled: boolean;
+
+  /**
    * The options used by the LocaleManager.
    */
-  readonly options: Required<LocaleManagerOptions>;
+  readonly options: LocaleManagerOptions;
 
   /**
    * The i18n instance used for localization.
@@ -174,30 +150,34 @@ export class LocaleManager extends BaseManager {
    * @param client - The ArcClient instance.
    * @param options - Options to configure the LocaleManager.
    */
-  constructor(client: ArcClient, options: LocaleManagerOptions = LocaleManager.defaultOptions) {
+  constructor(client: ArcClient, options: LocaleManagerOptions = { enabled: false }) {
     super(client);
 
-    this.options = Object.assign(LocaleManager.defaultOptions, options);
+    this.options = options;
+    this.enabled = options.enabled ?? false;
+    this.i18n = i18next;
 
-    if (this.options.customI18n) {
-      this.i18n = this.options.customI18n;
+    if (!options.enabled) {
+      this.i18n = i18next;
+      this.t = this.i18n.t;
+      this.detect = LocaleManager.defaultLangDetector;
+      this.availableLanguages = LocaleManager.localeSet;
+      return;
+    }
+    else if ("customI18n" in options && options.customI18n) {
+      this.i18n = options.customI18n;
     }
     else {
-      void i18next.init({ ...LocaleManager.defaultI18Options, ...this.options.i18nOptions });
+      void i18next.init(options.i18nOptions);
       this.i18n = i18next;
     }
     this.t = this.i18n.t;
     LocaleManager.i18n = this.i18n;
 
-    if (!this.i18n.hasResourceBundle(this.defaultLanguage(), "arcscord")) {
-      this.i18n.addResourceBundle(this.defaultLanguage(), "arcscord", arcscordEn, true);
-    }
-
-    this.detect = this.options.langDetector || LocaleManager.defaultLangDetector;
-
-    this.availableLanguages = this.options.availableLanguages instanceof Set
-      ? this.options.availableLanguages
-      : new Set(this.options.availableLanguages);
+    this.detect = options.langDetector ?? LocaleManager.defaultLangDetector;
+    this.availableLanguages = options.availableLanguages instanceof Set
+      ? options.availableLanguages
+      : new Set(options.availableLanguages ?? LocaleManager.localeSet);
   }
 
   /**
@@ -222,7 +202,11 @@ export class LocaleManager extends BaseManager {
    * @returns The mapped language key.
    */
   mapLanguage(lang: string): string {
-    for (const [key, value] of Object.entries(this.options.languageMap)) {
+    if (!this.options.enabled) {
+      return lang;
+    }
+
+    for (const [key, value] of Object.entries({ ...this.options.languageMap })) {
       if (Array.isArray(value)) {
         if (value.includes(lang as Locale)) {
           return key;

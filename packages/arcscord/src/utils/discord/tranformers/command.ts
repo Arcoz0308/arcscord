@@ -15,6 +15,10 @@ export function localizationToAPI(locales: LocaleMap | LocaleCallback | undefine
   if (typeof locales !== "function") {
     return locales;
   }
+  if (!client.localeManager.enabled) {
+    client.localeManager.trace("locale manager is disabled, skip localization");
+    return undefined;
+  }
   const newMap: LocaleMap = {};
   for (const locale of client.localeManager.availableLanguages) {
     const lang = client.localeManager.mapLanguage(locale);
