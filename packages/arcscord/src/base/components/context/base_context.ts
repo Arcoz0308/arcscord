@@ -2,8 +2,6 @@ import type {
   ArcClient,
   ButtonContext,
   ChannelSelectMenuContext,
-  DmSelectMenuContext,
-  GuildSelectMenuContext,
   MentionableSelectMenuContext,
   MessageComponentContext,
   ModalContext,
@@ -11,22 +9,18 @@ import type {
   StringSelectMenuContext,
   UserSelectMenuContext,
 } from "#/base";
-import type { ComponentRunResult } from "#/base/components";
+import type { ComponentRunResult, SelectMenuContext } from "#/base/components";
 import type { ComponentMiddleware } from "#/base/components/component_middleware";
-import type { ContextDocs } from "#/base/utils";
 import type {
-  Guild,
-  GuildBasedChannel,
-  GuildMember,
   InteractionDeferReplyOptions,
   InteractionEditReplyOptions,
   InteractionReplyOptions,
   MessageComponentInteraction,
   MessagePayload,
   ModalSubmitInteraction,
-  User,
 } from "discord.js";
 import type i18next from "i18next";
+import { type ContextDocs, InteractionContext } from "#/base/utils";
 import { ComponentError, type ComponentErrorOptions } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";
 
@@ -46,7 +40,10 @@ export type BaseComponentContextOptions<M extends ComponentMiddleware[] = Compon
 /**
  * Base Component context
  */
-export class BaseComponentContext<M extends ComponentMiddleware[] = ComponentMiddleware[]> implements Omit<ContextDocs, "command" | "resolvedCommandName"> {
+export class BaseComponentContext<
+  M extends ComponentMiddleware[] = ComponentMiddleware[],
+  InGuild extends true | false = true | false,
+> extends InteractionContext<InGuild> implements Omit<ContextDocs, "command" | "resolvedCommandName"> {
   /**
    * The custom id of the component
    */
@@ -54,15 +51,14 @@ export class BaseComponentContext<M extends ComponentMiddleware[] = ComponentMid
 
   interaction: MessageComponentInteraction | ModalSubmitInteraction;
 
-  user: User;
-
   /**
    * If interaction already deferred
    */
   defer: boolean = false;
 
-  client: ArcClient;
-
+  /**
+   * Additional middleware results
+   */
   additional: MiddlewaresResults<M>;
 
   /**
@@ -81,12 +77,9 @@ export class BaseComponentContext<M extends ComponentMiddleware[] = ComponentMid
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
     options: BaseComponentContextOptions<M>,
   ) {
+    super(client, interaction);
     this.customId = interaction.customId;
-    this.user = interaction.user;
-
     this.interaction = interaction;
-
-    this.client = client;
 
     this.additional = options.additional || ({} as MiddlewaresResults<M>);
     this.t = this.client.localeManager.i18n.getFixedT(options.locale);
@@ -299,20 +292,19 @@ export class BaseComponentContext<M extends ComponentMiddleware[] = ComponentMid
     return false;
   }
 
-  isSelectMenuContext(): this is DmSelectMenuContext | GuildSelectMenuContext {
+  /**
+   * Checks if the current context is a select menu context.
+   * @returns True if it is a select menu context, false otherwise.
+   */
+  isSelectMenuContext(): this is SelectMenuContext {
     return false;
   }
 
+  /**
+   * Checks if the current context is a message component context.
+   * @returns True if it is a message component context, false otherwise.
+   */
   isMessageComponentContext(): this is MessageComponentContext {
     return false;
   }
 }
-
-/**
- * GuildComponentContextOptions type declaration.
- */
-export type GuildComponentContextOptions<M extends ComponentMiddleware[] = ComponentMiddleware[]> = BaseComponentContextOptions<M> & {
-  member: GuildMember;
-  guild: Guild;
-  channel: GuildBasedChannel;
-};

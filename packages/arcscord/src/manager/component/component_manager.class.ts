@@ -1,15 +1,11 @@
 import type { ArcClient, ComponentContext } from "#/base";
 import type { ComponentHandler } from "#/base/components/component_handlers.type";
-import type { GuildComponentContextOptions } from "#/base/components/context/base_context";
 import type { ComponentList } from "#/manager/component/component_manager.type";
 import type { Result } from "@arcscord/error";
 import type {
   BaseMessageOptions,
   ButtonInteraction,
   ChannelSelectMenuInteraction,
-  Guild,
-  GuildBasedChannel,
-  GuildMember,
   MentionableSelectMenuInteraction,
   MessageComponentInteraction,
   ModalSubmitInteraction,
@@ -17,19 +13,14 @@ import type {
   StringSelectMenuInteraction,
   UserSelectMenuInteraction,
 } from "discord.js";
-import { DmButtonContext, GuildButtonContext } from "#/base/components";
-import { DmModalContext, GuildModalContext } from "#/base/components/context/modal_context";
+import { ButtonContext } from "#/base/components";
+import { ModalContext } from "#/base/components/context/modal_context";
 import {
-  DmChannelSelectMenuContext,
-  DmMentionableSelectMenuContext,
-  DmRoleSelectMenuContext,
-  DmStringSelectMenuContext,
-  DmUserSelectMenuContext,
-  GuildChannelSelectMenuContext,
-  GuildMentionableSelectMenuContext,
-  GuildRoleSelectMenuContext,
-  GuildStringSelectMenuContext,
-  GuildUserSelectMenuContext,
+  ChannelSelectMenuContext,
+  MentionableSelectMenuContext,
+  RoleSelectMenuContext,
+  StringSelectMenuContext,
+  UserSelectMenuContext,
 } from "#/base/components/context/select_menu_context";
 import { BaseManager } from "#/base/manager/manager.class";
 import { ComponentError, internalErrorEmbed } from "#/utils";
@@ -148,145 +139,49 @@ export class ComponentManager extends BaseManager {
   private async handleInteraction(
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
   ): Promise<void> {
-    /* Guild Infos */
-    let guildInfos: null | {
-      guild: Guild;
-      member: GuildMember;
-      channel: GuildBasedChannel;
-      locale: string;
-    };
-
-    if (
-      interaction.inGuild()
-      && this.client.guilds.cache.has(interaction.guildId)
-    ) {
-      let guild;
-      let member;
-      let channel;
-      try {
-        guild = interaction.inCachedGuild()
-          ? interaction.guild
-          : await this.client.guilds.fetch(interaction.guildId);
-      }
-      catch (e) {
-        const bError = new BaseError({
-          message: `failed to get guild because ${anyToError(e).message}`,
-          originalError: anyToError(e),
-        }).generateId();
-
-        this.logger.logError(bError.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, bError.id),
-        );
-      }
-
-      try {
-        member = await guild.members.fetch(interaction.user.id);
-      }
-      catch (e) {
-        const bError = new BaseError({
-          message: `failed to get member because ${anyToError(e).message}`,
-          originalError: anyToError(e),
-        }).generateId();
-
-        this.logger.logError(bError.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, bError.id),
-        );
-      }
-
-      try {
-        channel
-          = interaction.channel
-          ?? (await guild.channels.fetch(interaction.channelId || "null"));
-      }
-      catch (e) {
-        const bError = new BaseError({
-          message: `failed to get channel because ${anyToError(e).message}`,
-          originalError: anyToError(e),
-        }).generateId();
-
-        this.logger.logError(bError.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, bError.id),
-        );
-      }
-
-      if (channel === null) {
-        const bError = new BaseError({
-          message: `get nul channel value for channel ${interaction.channelId}`,
-          debugs: {
-            guildId: interaction.guildId,
-          },
-        }).generateId();
-
-        this.logger.logError(bError.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, bError.id),
-        );
-      }
-
-      /* Locale */
-      const locale = await this.client.localeManager.detectLanguage({
-        interaction,
-        user: interaction.user,
-        guild: interaction.guild,
-        channel: interaction.channel,
-      });
-
-      guildInfos = {
-        guild,
-        member,
-        channel,
-        locale,
-      };
-    }
-    else {
-      guildInfos = null;
-    }
+    /* Locale */
+    const locale = await this.client.localeManager.detectLanguage({
+      interaction,
+      user: interaction.user,
+      guild: interaction.guild,
+      channel: interaction.channel,
+    });
 
     /* Modal submit */
     if (interaction.isModalSubmit()) {
-      return this.handleModalInteraction(interaction, guildInfos);
+      return this.handleModalInteraction(interaction, locale);
     }
 
     switch (true) {
       case interaction.isButton(): {
-        return this.handleButtonInteraction(interaction, guildInfos);
+        return this.handleButtonInteraction(interaction, locale);
       }
 
       case interaction.isStringSelectMenu(): {
-        return this.handleStringSelectMenuInteraction(interaction, guildInfos);
+        return this.handleStringSelectMenuInteraction(interaction, locale);
       }
 
       case interaction.isUserSelectMenu(): {
-        return this.handleUserSelectMenuInteraction(interaction, guildInfos);
+        return this.handleUserSelectMenuInteraction(interaction, locale);
       }
 
       case interaction.isRoleSelectMenu(): {
-        return this.handleRoleSelectMenuInteraction(interaction, guildInfos);
+        return this.handleRoleSelectMenuInteraction(interaction, locale);
       }
 
       case interaction.isMentionableSelectMenu(): {
-        return this.handleMentionableSelectMenuInteraction(
-          interaction,
-          guildInfos,
-        );
+        return this.handleMentionableSelectMenuInteraction(interaction, locale);
       }
 
       case interaction.isChannelSelectMenu(): {
-        return this.handleChannelSelectMenuInteraction(interaction, guildInfos);
+        return this.handleChannelSelectMenuInteraction(interaction, locale);
       }
     }
   }
 
   private async handleModalInteraction(
     interaction: ModalSubmitInteraction,
-    guildInfos: null | GuildComponentContextOptions,
+    locale: string,
   ): Promise<void> {
     const modals = this.getComponents(
       interaction.customId,
@@ -321,19 +216,9 @@ export class ComponentManager extends BaseManager {
       );
     }
 
-    /* Locale */
-    const locale = await this.client.localeManager.detectLanguage({
-      interaction,
-      user: interaction.user,
-      guild: interaction.guild,
-      channel: interaction.channel,
-    });
-
     const modal = modals[0];
 
-    const context = guildInfos
-      ? new GuildModalContext(this.client, interaction, guildInfos)
-      : new DmModalContext(this.client, interaction, { locale });
+    const context = new ModalContext(this.client, interaction, { locale });
 
     if (modal.preReply) {
       const [, err] = await context.deferReply({
@@ -396,7 +281,7 @@ export class ComponentManager extends BaseManager {
 
   private async handleButtonInteraction(
     interaction: ButtonInteraction,
-    guildInfos: null | GuildComponentContextOptions,
+    locale: string,
   ): Promise<void> {
     const buttons = this.getComponents(
       interaction.customId,
@@ -431,19 +316,9 @@ export class ComponentManager extends BaseManager {
       );
     }
 
-    /* Locale */
-    const locale = await this.client.localeManager.detectLanguage({
-      interaction,
-      user: interaction.user,
-      guild: interaction.guild,
-      channel: interaction.channel,
-    });
-
     const button = buttons[0];
 
-    const context = guildInfos
-      ? new GuildButtonContext(this.client, interaction, guildInfos)
-      : new DmButtonContext(this.client, interaction, { locale });
+    const context = new ButtonContext(this.client, interaction, { locale });
 
     if (button.preReply) {
       const [, err] = await context.deferReply({
@@ -506,7 +381,7 @@ export class ComponentManager extends BaseManager {
 
   private async handleStringSelectMenuInteraction(
     interaction: StringSelectMenuInteraction,
-    guildInfos: null | GuildComponentContextOptions,
+    locale: string,
   ): Promise<void> {
     const stringSelectMenus = this.getComponents(
       interaction.customId,
@@ -541,25 +416,12 @@ export class ComponentManager extends BaseManager {
       );
     }
 
-    /* Locale */
-    const locale = await this.client.localeManager.detectLanguage({
-      interaction,
-      user: interaction.user,
-      guild: interaction.guild,
-      channel: interaction.channel,
-    });
-
     const stringSelectMenu = stringSelectMenus[0];
 
-    const context = guildInfos
-      ? new GuildStringSelectMenuContext(this.client, interaction, {
-        ...guildInfos,
-        values: interaction.values,
-      })
-      : new DmStringSelectMenuContext(this.client, interaction, {
-        values: interaction.values,
-        locale,
-      });
+    const context = new StringSelectMenuContext(this.client, interaction, {
+      values: interaction.values,
+      locale,
+    });
 
     if (stringSelectMenu.preReply) {
       const [, err] = await context.deferReply({
@@ -622,7 +484,7 @@ export class ComponentManager extends BaseManager {
 
   private async handleUserSelectMenuInteraction(
     interaction: UserSelectMenuInteraction,
-    guildInfos: null | GuildComponentContextOptions,
+    locale: string,
   ): Promise<void> {
     const userSelectMenus = this.getComponents(
       interaction.customId,
@@ -657,25 +519,12 @@ export class ComponentManager extends BaseManager {
       );
     }
 
-    /* Locale */
-    const locale = await this.client.localeManager.detectLanguage({
-      interaction,
-      user: interaction.user,
-      guild: interaction.guild,
-      channel: interaction.channel,
-    });
-
     const userSelectMenu = userSelectMenus[0];
 
-    const context = guildInfos
-      ? new GuildUserSelectMenuContext(this.client, interaction, {
-        ...guildInfos,
-        values: interaction.users.map(u => u),
-      })
-      : new DmUserSelectMenuContext(this.client, interaction, {
-        values: interaction.users.map(u => u),
-        locale,
-      });
+    const context = new UserSelectMenuContext(this.client, interaction, {
+      values: interaction.users.map(u => u),
+      locale,
+    });
 
     if (userSelectMenu.preReply) {
       const [, err] = await context.deferReply({
@@ -738,7 +587,7 @@ export class ComponentManager extends BaseManager {
 
   private async handleRoleSelectMenuInteraction(
     interaction: RoleSelectMenuInteraction,
-    guildInfos: null | GuildComponentContextOptions,
+    locale: string,
   ): Promise<void> {
     const roleSelectMenus = this.getComponents(
       interaction.customId,
@@ -773,25 +622,12 @@ export class ComponentManager extends BaseManager {
       );
     }
 
-    /* Locale */
-    const locale = await this.client.localeManager.detectLanguage({
-      interaction,
-      user: interaction.user,
-      guild: interaction.guild,
-      channel: interaction.channel,
-    });
-
     const roleSelectMenu = roleSelectMenus[0];
 
-    const context = guildInfos
-      ? new GuildRoleSelectMenuContext(this.client, interaction, {
-        ...guildInfos,
-        values: interaction.roles.map(r => r),
-      })
-      : new DmRoleSelectMenuContext(this.client, interaction, {
-        values: interaction.roles.map(r => r),
-        locale,
-      });
+    const context = new RoleSelectMenuContext(this.client, interaction, {
+      values: interaction.roles.map(r => r),
+      locale,
+    });
 
     if (roleSelectMenu.preReply) {
       const [, err] = await context.deferReply({
@@ -854,7 +690,7 @@ export class ComponentManager extends BaseManager {
 
   private async handleMentionableSelectMenuInteraction(
     interaction: MentionableSelectMenuInteraction,
-    guildInfos: null | GuildComponentContextOptions,
+    locale: string,
   ): Promise<void> {
     const mentionableSelectMenus = this.getComponents(
       interaction.customId,
@@ -889,27 +725,13 @@ export class ComponentManager extends BaseManager {
       );
     }
 
-    /* Locale */
-    const locale = await this.client.localeManager.detectLanguage({
-      interaction,
-      user: interaction.user,
-      guild: interaction.guild,
-      channel: interaction.channel,
-    });
-
     const mentionableSelectMenu = mentionableSelectMenus[0];
 
-    const context = guildInfos
-      ? new GuildMentionableSelectMenuContext(this.client, interaction, {
-        ...guildInfos,
-        roles: interaction.roles.map(r => r),
-        users: interaction.users.map(u => u),
-      })
-      : new DmMentionableSelectMenuContext(this.client, interaction, {
-        roles: interaction.roles.map(r => r),
-        users: interaction.users.map(u => u),
-        locale,
-      });
+    const context = new MentionableSelectMenuContext(this.client, interaction, {
+      roles: interaction.roles.map(r => r),
+      users: interaction.users.map(u => u),
+      locale,
+    });
 
     if (mentionableSelectMenu.preReply) {
       const [, err] = await context.deferReply({
@@ -973,7 +795,7 @@ export class ComponentManager extends BaseManager {
 
   private async handleChannelSelectMenuInteraction(
     interaction: ChannelSelectMenuInteraction,
-    guildInfos: null | GuildComponentContextOptions,
+    locale: string,
   ): Promise<void> {
     const channelSelectMenus = this.getComponents(
       interaction.customId,
@@ -1008,25 +830,12 @@ export class ComponentManager extends BaseManager {
       );
     }
 
-    /* Locale */
-    const locale = await this.client.localeManager.detectLanguage({
-      interaction,
-      user: interaction.user,
-      guild: interaction.guild,
-      channel: interaction.channel,
-    });
-
     const channelSelectMenu = channelSelectMenus[0];
 
-    const context = guildInfos
-      ? new GuildChannelSelectMenuContext(this.client, interaction, {
-        ...guildInfos,
-        values: interaction.channels.map(c => c),
-      })
-      : new DmChannelSelectMenuContext(this.client, interaction, {
-        values: interaction.channels.map(c => c),
-        locale,
-      });
+    const context = new ChannelSelectMenuContext(this.client, interaction, {
+      values: interaction.channels.map(c => c),
+      locale,
+    });
 
     if (channelSelectMenu.preReply) {
       const [, err] = await context.deferReply({
