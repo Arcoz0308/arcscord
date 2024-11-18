@@ -82,7 +82,13 @@ export class BaseComponentContext<
     this.interaction = interaction;
 
     this.additional = options.additional || ({} as MiddlewaresResults<M>);
-    this.t = this.client.localeManager.i18n.getFixedT(options.locale);
+
+    if (this.client.localeManager.enabled) {
+      this.t = this.client.localeManager.i18n.getFixedT(options.locale);
+    }
+    else {
+      this.t = this.client.localeManager.t;
+    }
   }
 
   /**

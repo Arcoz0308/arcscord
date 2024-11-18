@@ -57,7 +57,12 @@ export class AutocompleteContext<InGuild extends true | false = true | false> ex
     this.interaction = interaction;
     this.resolvedCommandName = options.resolvedName;
     this.client = options.client;
-    this.t = this.client.localeManager.i18n.getFixedT(options.locale);
+    if (this.client.localeManager.enabled) {
+      this.t = this.client.localeManager.i18n.getFixedT(options.locale);
+    }
+    else {
+      this.t = this.client.localeManager.t;
+    }
   }
 
   /**
