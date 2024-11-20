@@ -72,43 +72,43 @@ export class ComponentManager extends BaseManager {
     switch (component.type) {
       case "button":
         this.components.button.set(component.matcher, component);
-        this.logger.trace(
+        this.trace(
           `loaded button with matcher ${component.matcher} with type ${component.matcherType || "begin"}`,
         );
         return;
       case "stringSelect":
         this.components.stringSelectMenu.set(component.matcher, component);
-        this.logger.trace(
+        this.trace(
           `loaded string select menu with matcher ${component.matcher} with type ${component.matcherType || "begin"}`,
         );
         return;
       case "userSelect":
         this.components.userSelectMenu.set(component.matcher, component);
-        this.logger.trace(
+        this.trace(
           `loaded user select menu with matcher ${component.matcher} with type ${component.matcherType || "begin"}`,
         );
         return;
       case "roleSelect":
         this.components.roleSelectMenu.set(component.matcher, component);
-        this.logger.trace(
+        this.trace(
           `loaded role select menu with matcher ${component.matcher} with type ${component.matcherType || "begin"}`,
         );
         return;
       case "mentionableSelect":
         this.components.mentionableSelectMenu.set(component.matcher, component);
-        this.logger.trace(
+        this.trace(
           `loaded mentionable select menu with matcher ${component.matcher} with type ${component.matcherType || "begin"}`,
         );
         return;
       case "channelSelect":
         this.components.channelSelectMenu.set(component.matcher, component);
-        this.logger.trace(
+        this.trace(
           `loaded channel select menu with matcher ${component.matcher} with type ${component.matcherType || "begin"}`,
         );
         return;
       case "modal":
         this.components.modal.set(component.matcher, component);
-        this.logger.trace(
+        this.trace(
           `loaded modal with matcher ${component.matcher} with type ${component.matcherType || "begin"}`,
         );
     }
@@ -260,7 +260,7 @@ export class ComponentManager extends BaseManager {
         );
       }
 
-      return this.logger.trace(
+      return this.trace(
         `${interaction.user.username} run modal ${modal.matcher} with success ! Result : ${result}`,
       );
     }
@@ -360,7 +360,7 @@ export class ComponentManager extends BaseManager {
         );
       }
 
-      return this.logger.trace(
+      return this.trace(
         `${interaction.user.username} run button ${button.matcher} with success! Result: ${result}`,
       );
     }
@@ -463,7 +463,7 @@ export class ComponentManager extends BaseManager {
         );
       }
 
-      return this.logger.trace(
+      return this.trace(
         `${interaction.user.username} run string select menu ${stringSelectMenu.matcher} with success! Result: ${result}`,
       );
     }
@@ -566,7 +566,7 @@ export class ComponentManager extends BaseManager {
         );
       }
 
-      return this.logger.trace(
+      return this.trace(
         `${interaction.user.username} run user select menu ${userSelectMenu.matcher} with success! Result: ${result}`,
       );
     }
@@ -669,7 +669,7 @@ export class ComponentManager extends BaseManager {
         );
       }
 
-      return this.logger.trace(
+      return this.trace(
         `${interaction.user.username} run role select menu ${roleSelectMenu.matcher} with success! Result: ${result}`,
       );
     }
@@ -773,7 +773,7 @@ export class ComponentManager extends BaseManager {
         );
       }
 
-      return this.logger.trace(
+      return this.trace(
         `${interaction.user.username} run mentionable select menu `
         + `${mentionableSelectMenu.matcher} with success! Result: ${result}`,
       );
@@ -877,7 +877,7 @@ export class ComponentManager extends BaseManager {
         );
       }
 
-      return this.logger.trace(
+      return this.trace(
         `${interaction.user.username} run channel select menu ${channelSelectMenu.matcher} with success! Result: ${result}`,
       );
     }
