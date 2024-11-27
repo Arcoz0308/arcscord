@@ -16,6 +16,7 @@ import type {
   MessageCommandContextDocs,
 } from "#/base/utils";
 import type { CommandErrorOptions } from "#/utils";
+import type { APIInteractionGuildMember } from "discord-api-types/v10";
 import type {
   ChatInputCommandInteraction,
   CommandInteraction,
@@ -30,7 +31,6 @@ import type {
   User,
   UserContextMenuCommandInteraction,
 } from "discord.js";
-import type { APIInteractionGuildMember } from "discord-api-types/v10";
 import type i18next from "i18next";
 import { CommandError } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";

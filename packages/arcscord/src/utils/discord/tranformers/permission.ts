@@ -1,5 +1,5 @@
-import type { PermissionsString } from "discord.js";
 import type { Permissions } from "discord-api-types/v10";
+import type { PermissionsString } from "discord.js";
 import { PermissionsBitField } from "discord.js";
 
 export function permissionToAPI(

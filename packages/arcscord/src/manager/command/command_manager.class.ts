@@ -10,6 +10,7 @@ import type {
   CommandResultHandlerInfos,
 } from "#/manager/command/command_manager.type";
 import type { Result } from "@arcscord/error";
+import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import type {
   ApplicationCommand,
   ApplicationCommandDataResolvable,
@@ -17,7 +18,6 @@ import type {
   BaseMessageOptions,
   CommandInteraction,
 } from "discord.js";
-import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 import {
   AutocompleteContext,
   commandInteractionToString,

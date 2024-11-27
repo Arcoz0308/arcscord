@@ -5,6 +5,7 @@ import type {
   textInputStyleEnum,
 } from "#/base/components/component.enum";
 import type { ChannelType } from "#/utils/discord/type/channel.type";
+import type { ButtonStyle, ComponentType } from "discord-api-types/v10";
 import type {
   ChannelSelectMenuComponentData,
   ComponentEmojiResolvable,
@@ -13,7 +14,6 @@ import type {
   StringSelectMenuComponentData,
   UserSelectMenuComponentData,
 } from "discord.js";
-import type { ButtonStyle, ComponentType } from "discord-api-types/v10";
 
 /**
  * Type for Discord component types by name

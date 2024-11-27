@@ -1,5 +1,5 @@
-import type { BaseInteraction, Guild, GuildMember, GuildTextBasedChannel, TextBasedChannel, User } from "discord.js";
 import type { APIInteractionGuildMember } from "discord-api-types/v10";
+import type { BaseInteraction, Guild, GuildMember, GuildTextBasedChannel, TextBasedChannel, User } from "discord.js";
 import type { ArcClient } from "../client";
 
 export class InteractionContext<InGuild extends true | false = true | false> {

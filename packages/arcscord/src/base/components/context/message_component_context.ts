@@ -1,6 +1,7 @@
 import type { ArcClient, BaseComponentContextOptions } from "#/base";
 import type { ComponentRunResult } from "#/base/components";
 import type { ComponentMiddleware } from "#/base/components/component_middleware";
+import type { APIActionRowComponent, APIMessageActionRowComponent } from "discord-api-types/v10";
 import type {
   ActionRow,
   Message,
@@ -9,7 +10,6 @@ import type {
   MessageEditOptions,
   ModalComponentData,
 } from "discord.js";
-import type { APIActionRowComponent, APIMessageActionRowComponent } from "discord-api-types/v10";
 import { BaseComponentContext } from "#/base/components/context/base_context";
 import { ComponentError } from "#/utils";
 import { anyToError, error, ok } from "@arcscord/error";

@@ -4,11 +4,11 @@ import type { CommandMiddleware } from "#/base/command/command_middleware";
 import type { CommandError } from "#/utils/error/class/command_error";
 import type { MaybePromise } from "#/utils/type/util.type";
 import type { Result } from "@arcscord/error";
-import type { PermissionsString } from "discord.js";
 import type {
   RESTPostAPIChatInputApplicationCommandsJSONBody,
   RESTPostAPIContextMenuApplicationCommandsJSONBody,
 } from "discord-api-types/v10";
+import type { PermissionsString } from "discord.js";
 
 /**
  * Options for a command.

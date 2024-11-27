@@ -10,6 +10,7 @@ import type {
   StringSelectMenuContext,
   UserSelectMenuContext,
 } from "#/base/components/context/select_menu_context";
+import type { ComponentType } from "discord-api-types/v10";
 import type {
   ActionRowData,
   ChannelSelectMenuComponentData,
@@ -19,7 +20,6 @@ import type {
   StringSelectMenuComponentData,
   UserSelectMenuComponentData,
 } from "discord.js";
-import type { ComponentType } from "discord-api-types/v10";
 
 /**
  * the type of match for custom id

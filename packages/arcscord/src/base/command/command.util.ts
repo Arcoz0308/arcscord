@@ -16,8 +16,8 @@ import type {
 } from "discord.js";
 import { BaseError } from "@arcscord/better-error";
 import { anyToError, error, ok } from "@arcscord/error";
-import { BaseChannel, GuildMember, Role, User } from "discord.js";
 import { ApplicationCommandOptionType } from "discord-api-types/v10";
+import { BaseChannel, GuildMember, Role, User } from "discord.js";
 
 /**
  * @internal

@@ -11,8 +11,8 @@ import type {
 import type { ComponentError } from "#/utils";
 import type { BaseError } from "@arcscord/better-error";
 import type { Result } from "@arcscord/error";
-import type { MessageComponentInteraction, ModalSubmitInteraction } from "discord.js";
 import type { ComponentType } from "discord-api-types/v10";
+import type { MessageComponentInteraction, ModalSubmitInteraction } from "discord.js";
 
 /**
  * @internal
