@@ -23,7 +23,7 @@ import type {
   UserSelectMenuComponentData,
 } from "discord.js";
 import { buttonToAPI, selectMenuToAPI, textInputToAPI } from "#/base/components/build_component.util";
-import { ComponentType } from "discord.js";
+import { ButtonStyle, ComponentType } from "discord-api-types/v10";
 
 /**
  * Build a link button
@@ -59,8 +59,8 @@ export function buildLinkButton(
 ): LinkButton {
   return {
     ...options,
-    type: "button",
-    style: "link",
+    type: ComponentType.Button,
+    style: ButtonStyle.Link,
   };
 }
 
@@ -102,7 +102,7 @@ export function buildClickableButton(
 ): ClickableButton {
   return {
     ...options,
-    type: "button",
+    type: ComponentType.Button,
   };
 }
 
@@ -151,7 +151,7 @@ export function buildStringSelectMenu(
     components: [
       selectMenuToAPI({
         ...options,
-        type: "stringSelect",
+        type: ComponentType.StringSelect,
       }) as StringSelectMenuComponentData,
     ],
   };
@@ -175,7 +175,7 @@ export function buildUserSelectMenu(
     components: [
       selectMenuToAPI({
         ...option,
-        type: "userSelect",
+        type: ComponentType.UserSelect,
       }) as UserSelectMenuComponentData,
     ],
   };
@@ -201,7 +201,7 @@ export function buildRoleSelectMenu(
     components: [
       selectMenuToAPI({
         ...option,
-        type: "roleSelect",
+        type: ComponentType.RoleSelect,
       }) as RoleSelectMenuComponentData,
     ],
   };
@@ -231,7 +231,7 @@ export function buildMentionableSelectMenu(
     components: [
       selectMenuToAPI({
         ...option,
-        type: "mentionableSelect",
+        type: ComponentType.MentionableSelect,
       }) as MentionableSelectMenuComponentData,
     ],
   };
@@ -257,7 +257,7 @@ export function buildChannelSelectMenu(
     components: [
       selectMenuToAPI({
         ...option,
-        type: "channelSelect",
+        type: ComponentType.ChannelSelect,
       }) as ChannelSelectMenuComponentData,
     ],
   };
@@ -332,7 +332,7 @@ export function buildModal(
     components = textInputs.map((input) => {
       return {
         type: ComponentType.ActionRow,
-        components: [textInputToAPI({ ...input, type: "textInput" })],
+        components: [textInputToAPI({ ...input, type: ComponentType.TextInput })],
       };
     });
   }
@@ -344,7 +344,7 @@ export function buildModal(
           textInputToAPI({
             ...textInput[key],
             customId: key,
-            type: "textInput",
+            type: ComponentType.TextInput,
           }),
         ],
       };

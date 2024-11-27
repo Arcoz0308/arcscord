@@ -1,5 +1,5 @@
 import type { ComponentRunResult } from "#/base/components/component.type";
-import type { Button, ComponentType, TypedSelectMenuOptions } from "#/base/components/component_definer.type";
+import type { Button, TypedSelectMenuOptions } from "#/base/components/component_definer.type";
 import type { ComponentMiddleware } from "#/base/components/component_middleware";
 import type { ButtonContext } from "#/base/components/context/button_context";
 import type { ModalContext } from "#/base/components/context/modal_context";
@@ -19,6 +19,7 @@ import type {
   StringSelectMenuComponentData,
   UserSelectMenuComponentData,
 } from "discord.js";
+import type { ComponentType } from "discord-api-types/v10";
 
 /**
  * the type of match for custom id
@@ -32,7 +33,7 @@ export type BaseComponentHandler<Middlewares extends ComponentMiddleware[] = Com
   /**
    * The type of the component.
    */
-  type: Exclude<ComponentType, "actionRow" | "textInput"> | "modal";
+  type: Exclude<ComponentType, ComponentType.ActionRow>;
 
   /**
    * The matcher string, it compares with customId by type defined in {@link BaseComponentProps.matcherType|matcherType}.
@@ -65,7 +66,7 @@ export type ButtonComponentHandler<
   O extends string[] = string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
 > = BaseComponentHandler<M> & {
-  type: Extract<BaseComponentHandler["type"], "button">;
+  type: ComponentType.Button;
 
   /**
    * Function to build the button.
@@ -86,7 +87,7 @@ export type StringSelectMenuComponentHandler<
   M extends ComponentMiddleware[] = ComponentMiddleware[],
   Typed extends TypedSelectMenuOptions | undefined = undefined,
 > = BaseComponentHandler<M> & {
-  type: Extract<BaseComponentHandler["type"], "stringSelect">;
+  type: ComponentType.StringSelect;
 
   /**
    * Function to build the string select menu.
@@ -106,7 +107,7 @@ export type UserSelectMenuComponentHandler<
   O extends string[] = string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
 > = BaseComponentHandler & {
-  type: Extract<BaseComponentHandler["type"], "userSelect">;
+  type: ComponentType.UserSelect;
 
   /**
    * Function to build the user select menu.
@@ -126,7 +127,7 @@ export type RoleSelectMenuComponentHandler<
   O extends string[] = string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
 > = BaseComponentHandler & {
-  type: Extract<BaseComponentHandler["type"], "roleSelect">;
+  type: ComponentType.RoleSelect;
 
   /**
    * Function to build the role select menu.
@@ -146,7 +147,7 @@ export type MentionableSelectMenuComponentHandler<
   O extends string[] = string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
 > = BaseComponentHandler & {
-  type: Extract<BaseComponentHandler["type"], "mentionableSelect">;
+  type: ComponentType.MentionableSelect;
 
   /**
    * Function to build the mentionable select menu.
@@ -166,7 +167,7 @@ export type ChannelSelectMenuComponentHandler<
   O extends string[] = string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
 > = BaseComponentHandler & {
-  type: Extract<BaseComponentHandler["type"], "channelSelect">;
+  type: ComponentType.ChannelSelect;
 
   /**
    * Function to build the channel select menu.
@@ -186,7 +187,7 @@ export type ModalComponentHandler<
   O extends string[] = string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
 > = BaseComponentHandler & {
-  type: Extract<BaseComponentHandler["type"], "modal">;
+  type: ComponentType.TextInput;
 
   /**
    * Function to build the modal.

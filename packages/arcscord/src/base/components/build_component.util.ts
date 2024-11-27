@@ -15,17 +15,16 @@ import type {
 } from "discord.js";
 import {
   buttonTypeEnum,
-  componentTypesEnum,
   textInputStyleEnum,
 } from "#/base/components/component.enum";
 import { channelTypeEnum } from "#/utils/discord/type/channel.enum";
-import { ComponentType } from "discord.js";
+import { ComponentType } from "discord-api-types/v10";
 
 export function buttonToAPI(button: Button): ButtonComponentData {
   if ("customId" in button) {
     return {
       type: ComponentType.Button,
-      style: buttonTypeEnum[button.style],
+      style: typeof button.style === "string" ? buttonTypeEnum[button.style] : button.style,
       customId: button.customId,
       label: button.label,
       emoji: button.emoji,
@@ -34,7 +33,7 @@ export function buttonToAPI(button: Button): ButtonComponentData {
   }
   return {
     type: ComponentType.Button,
-    style: buttonTypeEnum[button.style],
+    style: typeof button.style === "string" ? buttonTypeEnum[button.style] : button.style,
     url: button.url,
     label: button.label,
     emoji: button.emoji,
@@ -76,7 +75,7 @@ export function selectMenuOptionsToAPI(
 export function selectMenuToAPI(
   selectMenu: SelectMenu,
 ): AnySelectMenuComponentData {
-  if (selectMenu.type === "stringSelect") {
+  if (selectMenu.type === ComponentType.StringSelect) {
     return {
       type: ComponentType.StringSelect,
       customId: selectMenu.customId,
@@ -88,7 +87,7 @@ export function selectMenuToAPI(
     };
   }
 
-  if (selectMenu.type === "channelSelect") {
+  if (selectMenu.type === ComponentType.ChannelSelect) {
     return {
       type: ComponentType.ChannelSelect,
       customId: selectMenu.customId,
@@ -105,18 +104,43 @@ export function selectMenuToAPI(
     };
   }
 
+  if (selectMenu.type === ComponentType.UserSelect) {
+    return {
+      type: ComponentType.UserSelect,
+      customId: selectMenu.customId,
+      placeholder: selectMenu.placeholder,
+      disabled: selectMenu.disabled,
+      minValues: selectMenu.minValues,
+      maxValues: selectMenu.maxValues,
+      defaultValues: selectMenu.defaultValues as
+      | APISelectMenuDefaultValue<DJSSelectMenuDefaultValueType.User>[]
+      | undefined,
+    };
+  }
+
+  if (selectMenu.type === ComponentType.RoleSelect) {
+    return {
+      type: ComponentType.RoleSelect,
+      customId: selectMenu.customId,
+      placeholder: selectMenu.placeholder,
+      disabled: selectMenu.disabled,
+      minValues: selectMenu.minValues,
+      maxValues: selectMenu.maxValues,
+      defaultValues: selectMenu.defaultValues as
+      | APISelectMenuDefaultValue<DJSSelectMenuDefaultValueType.Role>[]
+      | undefined,
+    };
+  }
+
   return {
-    type: componentTypesEnum[selectMenu.type],
+    type: ComponentType.MentionableSelect,
     customId: selectMenu.customId,
     placeholder: selectMenu.placeholder,
     disabled: selectMenu.disabled,
     minValues: selectMenu.minValues,
     maxValues: selectMenu.maxValues,
-    defaultValues: selectMenu.defaultValues as // fix error with enum
-    | APISelectMenuDefaultValue<
-      | DJSSelectMenuDefaultValueType.Role
-      | DJSSelectMenuDefaultValueType.User
-    >[]
+    defaultValues: selectMenu.defaultValues as
+    | APISelectMenuDefaultValue<DJSSelectMenuDefaultValueType.User | DJSSelectMenuDefaultValueType.Role>[]
     | undefined,
   };
 }

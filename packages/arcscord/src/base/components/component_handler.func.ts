@@ -4,6 +4,7 @@ import type {
   SelectMenuComponentHandler,
 } from "#/base/components/component_handlers.type";
 import type { ComponentMiddleware } from "#/base/components/component_middleware";
+import { ComponentType } from "discord-api-types/v10";
 
 /**
  * Create a select menu
@@ -57,7 +58,7 @@ export function createButton<
   O extends string[],
   M extends ComponentMiddleware[] = ComponentMiddleware[],
 >(options: Omit<ButtonComponentHandler<O, M>, "type">): ButtonComponentHandler<O, M> {
-  return { ...options, type: "button" };
+  return { ...options, type: ComponentType.Button };
 }
 
 /**
@@ -85,5 +86,5 @@ export function createModal<
   O extends string[],
   M extends ComponentMiddleware[] = [],
 >(options: Omit<ModalComponentHandler<O, M>, "type">): ModalComponentHandler<O, M> {
-  return { ...options, type: "modal" };
+  return { ...options, type: ComponentType.TextInput };
 }

@@ -1,8 +1,8 @@
 import { buildUserSelectMenu, createSelectMenu } from "arcscord";
-import { EmbedBuilder } from "discord.js";
+import { ComponentType, EmbedBuilder } from "discord.js";
 
 export const userSelectMenu = createSelectMenu({
-  type: "userSelect",
+  type: ComponentType.UserSelect,
   matcher: "user_select_menu",
   build: () =>
     buildUserSelectMenu({

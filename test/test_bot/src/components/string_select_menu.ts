@@ -1,7 +1,8 @@
 import { buildStringSelectMenu, createSelectMenu } from "arcscord";
+import { ComponentType } from "discord.js";
 
 export const stringSelectMenu = createSelectMenu({
-  type: "stringSelect",
+  type: ComponentType.StringSelect,
   matcher: "string_select_menu",
   build: (...options) =>
     buildStringSelectMenu({

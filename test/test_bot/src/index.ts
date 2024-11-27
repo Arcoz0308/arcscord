@@ -28,6 +28,7 @@ const client = new ArcClient(process.env.TOKEN as string, {
         },
         defaultNS: "test",
       },
+      enabled: true,
     },
   },
 });

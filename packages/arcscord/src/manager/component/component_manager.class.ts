@@ -1,5 +1,5 @@
 import type { ArcClient, ComponentContext } from "#/base";
-import type { ComponentHandler } from "#/base/components/component_handlers.type";
+import type { ComponentHandler, ModalComponentHandler } from "#/base/components/component_handlers.type";
 import type { ComponentList } from "#/manager/component/component_manager.type";
 import type { Result } from "@arcscord/error";
 import type {
@@ -26,6 +26,7 @@ import { BaseManager } from "#/base/manager/manager.class";
 import { ComponentError, internalErrorEmbed } from "#/utils";
 import { BaseError } from "@arcscord/better-error";
 import { anyToError, error, ok } from "@arcscord/error";
+import { ComponentType } from "discord-api-types/v10";
 
 /**
  * Manages and handles interactive components
@@ -34,18 +35,17 @@ export class ComponentManager extends BaseManager {
   name = "components";
 
   components: ComponentList = {
-    button: new Map(),
-    stringSelectMenu: new Map(),
-    userSelectMenu: new Map(),
-    roleSelectMenu: new Map(),
-    mentionableSelectMenu: new Map(),
-    channelSelectMenu: new Map(),
-    modal: new Map(),
+    [ComponentType.Button]: new Map(),
+    [ComponentType.StringSelect]: new Map(),
+    [ComponentType.UserSelect]: new Map(),
+    [ComponentType.RoleSelect]: new Map(),
+    [ComponentType.MentionableSelect]: new Map(),
+    [ComponentType.ChannelSelect]: new Map(),
+    [ComponentType.TextInput]: new Map<string, ModalComponentHandler>(),
   };
 
   constructor(client: ArcClient) {
     super(client);
-
     client.on("interactionCreate", (interaction) => {
       if (interaction.isMessageComponent() || interaction.isModalSubmit()) {
         void this.handleInteraction(interaction);
@@ -69,68 +69,12 @@ export class ComponentManager extends BaseManager {
    * @param component - component to load
    */
   loadComponent(component: ComponentHandler): void {
-    switch (component.type) {
-      case "button":
-        this.components.button.set(component.matcher, component);
-        this.trace(
-          `loaded button with matcher ${component.matcher} with type ${component.matcherType || "begin"}`,
-        );
-        return;
-      case "stringSelect":
-        this.components.stringSelectMenu.set(component.matcher, component);
-        this.trace(
-          `loaded string select menu with matcher ${component.matcher} with type ${component.matcherType || "begin"}`,
-        );
-        return;
-      case "userSelect":
-        this.components.userSelectMenu.set(component.matcher, component);
-        this.trace(
-          `loaded user select menu with matcher ${component.matcher} with type ${component.matcherType || "begin"}`,
-        );
-        return;
-      case "roleSelect":
-        this.components.roleSelectMenu.set(component.matcher, component);
-        this.trace(
-          `loaded role select menu with matcher ${component.matcher} with type ${component.matcherType || "begin"}`,
-        );
-        return;
-      case "mentionableSelect":
-        this.components.mentionableSelectMenu.set(component.matcher, component);
-        this.trace(
-          `loaded mentionable select menu with matcher ${component.matcher} with type ${component.matcherType || "begin"}`,
-        );
-        return;
-      case "channelSelect":
-        this.components.channelSelectMenu.set(component.matcher, component);
-        this.trace(
-          `loaded channel select menu with matcher ${component.matcher} with type ${component.matcherType || "begin"}`,
-        );
-        return;
-      case "modal":
-        this.components.modal.set(component.matcher, component);
-        this.trace(
-          `loaded modal with matcher ${component.matcher} with type ${component.matcherType || "begin"}`,
-        );
-    }
-  }
+    // @ts-expect-error fix error with others context types
+    this.components[component.type].set(component.matcher, component);
 
-  /**
-   * @internal
-   */
-  private getComponents<K extends string, V extends ComponentHandler>(
-    id: string,
-    components: Map<K, V>,
-  ): V[] {
-    const result: V[] = [];
-    for (const [, component] of components.entries()) {
-      if (component.matcherType === "full" && id === component.matcher) {
-        result.push(component);
-      }
-      else if (id.startsWith(component.matcher)) {
-        result.push(component);
-      }
-    }
-    return result;
+    this.trace(
+      `loaded ${component.type} with matcher ${component.matcher} with type ${component.matcherType || "begin"}`,
+    );
   }
 
   /**
@@ -139,7 +83,79 @@ export class ComponentManager extends BaseManager {
   private async handleInteraction(
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
   ): Promise<void> {
-    /* Locale */
+    /* Modal submit */
+    if (interaction.isModalSubmit()) {
+      return this.handleComponentInteraction(interaction, ComponentType.TextInput);
+    }
+
+    switch (true) {
+      case interaction.isButton(): {
+        return this.handleComponentInteraction(interaction, ComponentType.Button);
+      }
+
+      case interaction.isStringSelectMenu(): {
+        return this.handleComponentInteraction(interaction, ComponentType.StringSelect);
+      }
+
+      case interaction.isUserSelectMenu(): {
+        return this.handleComponentInteraction(interaction, ComponentType.UserSelect);
+      }
+
+      case interaction.isRoleSelectMenu(): {
+        return this.handleComponentInteraction(interaction, ComponentType.RoleSelect);
+      }
+
+      case interaction.isMentionableSelectMenu(): {
+        return this.handleComponentInteraction(interaction, ComponentType.MentionableSelect);
+      }
+
+      case interaction.isChannelSelectMenu(): {
+        return this.handleComponentInteraction(interaction, ComponentType.ChannelSelect);
+      }
+    }
+  }
+
+  private createContext(interaction: MessageComponentInteraction | ModalSubmitInteraction, type: ComponentType, locale: string): ComponentContext {
+    switch (type) {
+      case ComponentType.Button:
+        return new ButtonContext(this.client, interaction as ButtonInteraction, { locale });
+      case ComponentType.StringSelect:
+        return new StringSelectMenuContext(this.client, interaction as StringSelectMenuInteraction, {
+          locale,
+          values: (interaction as StringSelectMenuInteraction).values,
+        });
+      case ComponentType.UserSelect:
+        return new UserSelectMenuContext(this.client, interaction as UserSelectMenuInteraction, {
+          locale,
+          values: (interaction as UserSelectMenuInteraction).users.map(u => u),
+        });
+      case ComponentType.RoleSelect:
+        return new RoleSelectMenuContext(this.client, interaction as RoleSelectMenuInteraction, {
+          locale,
+          values: (interaction as RoleSelectMenuInteraction).roles.map(r => r),
+        });
+      case ComponentType.MentionableSelect:
+        return new MentionableSelectMenuContext(this.client, interaction as MentionableSelectMenuInteraction, {
+          locale,
+          users: (interaction as MentionableSelectMenuInteraction).users.map(u => u),
+          roles: (interaction as MentionableSelectMenuInteraction).roles.map(r => r),
+        });
+      case ComponentType.ChannelSelect:
+        return new ChannelSelectMenuContext(this.client, interaction as ChannelSelectMenuInteraction, {
+          locale,
+          values: (interaction as ChannelSelectMenuInteraction).channels.map(c => c),
+        });
+      case ComponentType.TextInput:
+        return new ModalContext(this.client, interaction as ModalSubmitInteraction, { locale });
+      default:
+        throw new Error(`Unknown component type: ${type}`);
+    }
+  }
+
+  private async handleComponentInteraction(
+    interaction: MessageComponentInteraction | ModalSubmitInteraction,
+    type: Exclude<ComponentType, ComponentType.ActionRow>,
+  ): Promise<void> {
     const locale = await this.client.localeManager.detectLanguage({
       interaction,
       user: interaction.user,
@@ -147,749 +163,133 @@ export class ComponentManager extends BaseManager {
       channel: interaction.channel,
     });
 
-    /* Modal submit */
-    if (interaction.isModalSubmit()) {
-      return this.handleModalInteraction(interaction, locale);
-    }
+    const components = this.findMatchingComponents(interaction, type);
+    if (!components)
+      return;
 
-    switch (true) {
-      case interaction.isButton(): {
-        return this.handleButtonInteraction(interaction, locale);
-      }
+    const context = this.createContext(interaction, type, locale);
+    const component = components[0];
 
-      case interaction.isStringSelectMenu(): {
-        return this.handleStringSelectMenuInteraction(interaction, locale);
-      }
+    if (await this.handlePreReply(component, context))
+      return;
 
-      case interaction.isUserSelectMenu(): {
-        return this.handleUserSelectMenuInteraction(interaction, locale);
-      }
+    const middlewareResult = await this.runMiddleware(component, context);
+    if (!this.handleMiddlewareResult(middlewareResult, context))
+      return;
 
-      case interaction.isRoleSelectMenu(): {
-        return this.handleRoleSelectMenuInteraction(interaction, locale);
-      }
-
-      case interaction.isMentionableSelectMenu(): {
-        return this.handleMentionableSelectMenuInteraction(interaction, locale);
-      }
-
-      case interaction.isChannelSelectMenu(): {
-        return this.handleChannelSelectMenuInteraction(interaction, locale);
-      }
-    }
+    await this.executeComponent(component, context);
   }
 
-  private async handleModalInteraction(
-    interaction: ModalSubmitInteraction,
-    locale: string,
-  ): Promise<void> {
-    const modals = this.getComponents(
-      interaction.customId,
-      this.components.modal,
-    );
-    if (modals.length === 0) {
+  private findMatchingComponents(
+    interaction: MessageComponentInteraction | ModalSubmitInteraction,
+    type: Exclude<ComponentType, ComponentType.ActionRow>,
+  ): ComponentHandler[] | null {
+    const components: ComponentHandler[] = [];
+    const componentsList = this.components[type];
+
+    for (const [, component] of componentsList.entries()) {
+      if (component.matcherType === "full" && interaction.customId === component.matcher) {
+        components.push(component);
+      }
+      else if (interaction.customId.startsWith(component.matcher)) {
+        components.push(component);
+      }
+    }
+
+    if (components.length === 0) {
       const bError = new BaseError({
-        message: `didn't found modal with id ${interaction.customId}`,
+        message: `didn't found component with id ${interaction.customId}`,
         debugs: {
-          availableMatcher: this.components.modal.keys(),
+          availableMatcher: componentsList.keys(),
+          type,
         },
       });
       this.logger.logError(bError.generateId());
-      return this.sendInternalError(
+      this.sendInternalError(
         interaction,
         internalErrorEmbed(this.client, bError.id),
       );
+      return null;
     }
 
-    if (modals.length > 1) {
+    if (components.length > 1) {
       const bError = new BaseError({
-        message: `found more that one modal that match with ${interaction.customId}`,
-        debugs: {
-          matchedModal: modals.map(m => m.matcher),
-          availableMatcher: this.components.modal.keys(),
-        },
+        message: `found more than one component that matches with ${interaction.customId}`,
       });
       this.logger.logError(bError.generateId());
-      return this.sendInternalError(
+      this.sendInternalError(
         interaction,
         internalErrorEmbed(this.client, bError.id),
       );
+      return null;
     }
 
-    const modal = modals[0];
+    return components;
+  }
 
-    const context = new ModalContext(this.client, interaction, { locale });
-
-    if (modal.preReply) {
+  private async handlePreReply(component: ComponentHandler, context: ComponentContext): Promise<boolean> {
+    if (component.preReply) {
       const [, err] = await context.deferReply({
-        ephemeral: modal.ephemeralPreReply,
+        ephemeral: component.ephemeralPreReply,
       });
       if (err) {
         this.logger.logError(err.generateId());
-        return this.sendInternalError(
-          interaction,
+        await this.sendInternalError(
+          context.interaction,
           internalErrorEmbed(this.client, err.id),
         );
+        return true;
       }
     }
+    return false;
+  }
 
-    const [result, err] = await this.runMiddleware(modal, context);
+  private handleMiddlewareResult(middlewareResult: Result<object | false, ComponentError>, context: ComponentContext): boolean {
+    const [result, err] = middlewareResult;
     if (err) {
       this.logger.logError(err.generateId());
-      return this.sendInternalError(
-        interaction,
+      this.sendInternalError(
+        context.interaction,
         internalErrorEmbed(this.client, err.id),
         context.defer,
       );
+      return false;
     }
 
     if (!result) {
-      return;
+      return false;
     }
 
     context.additional = result as typeof context.additional;
+    return true;
+  }
 
+  private async executeComponent(component: ComponentHandler, context: ComponentContext): Promise<void> {
     try {
-      const [result, err] = await modal.run(context);
+      // @ts-expect-error fix error with others context types
+      const [result, err] = await component.run(context);
       if (err) {
         this.logger.logError(err.generateId());
         return this.sendInternalError(
-          interaction,
+          context.interaction,
           internalErrorEmbed(this.client, err.id),
           context.defer,
         );
       }
 
       return this.trace(
-        `${interaction.user.username} run modal ${modal.matcher} with success ! Result : ${result}`,
+        `${context.interaction.user.username} run component ${component.matcher} with success! Result: ${result}`,
       );
     }
     catch (e) {
       const bError = new ComponentError({
-        interaction,
-        message: `failed to run component with match ${modal.matcher}`,
+        interaction: context.interaction,
+        message: `failed to run component with match ${component.matcher}`,
         originalError: anyToError(e),
       });
       this.logger.logError(bError.generateId());
       return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-        context.defer,
-      );
-    }
-  }
-
-  private async handleButtonInteraction(
-    interaction: ButtonInteraction,
-    locale: string,
-  ): Promise<void> {
-    const buttons = this.getComponents(
-      interaction.customId,
-      this.components.button,
-    );
-    if (buttons.length === 0) {
-      const bError = new BaseError({
-        message: `didn't find button with id ${interaction.customId}`,
-        debugs: {
-          availableMatcher: this.components.button.keys(),
-        },
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-      );
-    }
-
-    if (buttons.length > 1) {
-      const bError = new BaseError({
-        message: `found more than one button that matches ${interaction.customId}`,
-        debugs: {
-          matchedButtons: buttons.map(b => b.matcher),
-          availableMatcher: this.components.button.keys(),
-        },
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-      );
-    }
-
-    const button = buttons[0];
-
-    const context = new ButtonContext(this.client, interaction, { locale });
-
-    if (button.preReply) {
-      const [, err] = await context.deferReply({
-        ephemeral: button.ephemeralPreReply,
-      });
-      if (err) {
-        this.logger.logError(err.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, err.id),
-        );
-      }
-    }
-
-    const [result, err] = await this.runMiddleware(button, context);
-    if (err) {
-      this.logger.logError(err.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, err.id),
-        context.defer,
-      );
-    }
-
-    if (!result) {
-      return;
-    }
-
-    context.additional = result as typeof context.additional;
-
-    try {
-      const [result, err] = await button.run(context);
-      if (err) {
-        this.logger.logError(err.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, err.id),
-          context.defer,
-        );
-      }
-
-      return this.trace(
-        `${interaction.user.username} run button ${button.matcher} with success! Result: ${result}`,
-      );
-    }
-    catch (e) {
-      const bError = new ComponentError({
-        interaction,
-        message: `failed to run button with match ${button.matcher}`,
-        originalError: anyToError(e),
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-        context.defer,
-      );
-    }
-  }
-
-  private async handleStringSelectMenuInteraction(
-    interaction: StringSelectMenuInteraction,
-    locale: string,
-  ): Promise<void> {
-    const stringSelectMenus = this.getComponents(
-      interaction.customId,
-      this.components.stringSelectMenu,
-    );
-    if (stringSelectMenus.length === 0) {
-      const bError = new BaseError({
-        message: `didn't find string select menu with id ${interaction.customId}`,
-        debugs: {
-          availableMatcher: this.components.stringSelectMenu.keys(),
-        },
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-      );
-    }
-
-    if (stringSelectMenus.length > 1) {
-      const bError = new BaseError({
-        message: `found more than one string select menu that matches ${interaction.customId}`,
-        debugs: {
-          matchedMenus: stringSelectMenus.map(m => m.matcher),
-          availableMatcher: this.components.stringSelectMenu.keys(),
-        },
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-      );
-    }
-
-    const stringSelectMenu = stringSelectMenus[0];
-
-    const context = new StringSelectMenuContext(this.client, interaction, {
-      values: interaction.values,
-      locale,
-    });
-
-    if (stringSelectMenu.preReply) {
-      const [, err] = await context.deferReply({
-        ephemeral: stringSelectMenu.ephemeralPreReply,
-      });
-      if (err) {
-        this.logger.logError(err.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, err.id),
-        );
-      }
-    }
-
-    const [result, err] = await this.runMiddleware(stringSelectMenu, context);
-    if (err) {
-      this.logger.logError(err.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, err.id),
-        context.defer,
-      );
-    }
-
-    if (!result) {
-      return;
-    }
-
-    context.additional = result as typeof context.additional;
-
-    try {
-      const [result, err] = await stringSelectMenu.run(context);
-      if (err) {
-        this.logger.logError(err.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, err.id),
-          context.defer,
-        );
-      }
-
-      return this.trace(
-        `${interaction.user.username} run string select menu ${stringSelectMenu.matcher} with success! Result: ${result}`,
-      );
-    }
-    catch (e) {
-      const bError = new ComponentError({
-        interaction,
-        message: `failed to run string select menu with match ${stringSelectMenu.matcher}`,
-        originalError: anyToError(e),
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-        context.defer,
-      );
-    }
-  }
-
-  private async handleUserSelectMenuInteraction(
-    interaction: UserSelectMenuInteraction,
-    locale: string,
-  ): Promise<void> {
-    const userSelectMenus = this.getComponents(
-      interaction.customId,
-      this.components.userSelectMenu,
-    );
-    if (userSelectMenus.length === 0) {
-      const bError = new BaseError({
-        message: `didn't find user select menu with id ${interaction.customId}`,
-        debugs: {
-          availableMatcher: this.components.userSelectMenu.keys(),
-        },
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-      );
-    }
-
-    if (userSelectMenus.length > 1) {
-      const bError = new BaseError({
-        message: `found more than one user select menu that matches ${interaction.customId}`,
-        debugs: {
-          matchedMenus: userSelectMenus.map(m => m.matcher),
-          availableMatcher: this.components.userSelectMenu.keys(),
-        },
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-      );
-    }
-
-    const userSelectMenu = userSelectMenus[0];
-
-    const context = new UserSelectMenuContext(this.client, interaction, {
-      values: interaction.users.map(u => u),
-      locale,
-    });
-
-    if (userSelectMenu.preReply) {
-      const [, err] = await context.deferReply({
-        ephemeral: userSelectMenu.ephemeralPreReply,
-      });
-      if (err) {
-        this.logger.logError(err.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, err.id),
-        );
-      }
-    }
-
-    const [result, err] = await this.runMiddleware(userSelectMenu, context);
-    if (err) {
-      this.logger.logError(err.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, err.id),
-        context.defer,
-      );
-    }
-
-    if (!result) {
-      return;
-    }
-
-    context.additional = result as typeof context.additional;
-
-    try {
-      const [result, err] = await userSelectMenu.run(context);
-      if (err) {
-        this.logger.logError(err.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, err.id),
-          context.defer,
-        );
-      }
-
-      return this.trace(
-        `${interaction.user.username} run user select menu ${userSelectMenu.matcher} with success! Result: ${result}`,
-      );
-    }
-    catch (e) {
-      const bError = new ComponentError({
-        interaction,
-        message: `failed to run user select menu with match ${userSelectMenu.matcher}`,
-        originalError: anyToError(e),
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-        context.defer,
-      );
-    }
-  }
-
-  private async handleRoleSelectMenuInteraction(
-    interaction: RoleSelectMenuInteraction,
-    locale: string,
-  ): Promise<void> {
-    const roleSelectMenus = this.getComponents(
-      interaction.customId,
-      this.components.roleSelectMenu,
-    );
-    if (roleSelectMenus.length === 0) {
-      const bError = new BaseError({
-        message: `didn't find role select menu with id ${interaction.customId}`,
-        debugs: {
-          availableMatcher: this.components.roleSelectMenu.keys(),
-        },
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-      );
-    }
-
-    if (roleSelectMenus.length > 1) {
-      const bError = new BaseError({
-        message: `found more than one role select menu that matches ${interaction.customId}`,
-        debugs: {
-          matchedMenus: roleSelectMenus.map(m => m.matcher),
-          availableMatcher: this.components.roleSelectMenu.keys(),
-        },
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-      );
-    }
-
-    const roleSelectMenu = roleSelectMenus[0];
-
-    const context = new RoleSelectMenuContext(this.client, interaction, {
-      values: interaction.roles.map(r => r),
-      locale,
-    });
-
-    if (roleSelectMenu.preReply) {
-      const [, err] = await context.deferReply({
-        ephemeral: roleSelectMenu.ephemeralPreReply,
-      });
-      if (err) {
-        this.logger.logError(err.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, err.id),
-        );
-      }
-    }
-
-    const [result, err] = await this.runMiddleware(roleSelectMenu, context);
-    if (err) {
-      this.logger.logError(err.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, err.id),
-        context.defer,
-      );
-    }
-
-    if (!result) {
-      return;
-    }
-
-    context.additional = result as typeof context.additional;
-
-    try {
-      const [result, err] = await roleSelectMenu.run(context);
-      if (err) {
-        this.logger.logError(err.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, err.id),
-          context.defer,
-        );
-      }
-
-      return this.trace(
-        `${interaction.user.username} run role select menu ${roleSelectMenu.matcher} with success! Result: ${result}`,
-      );
-    }
-    catch (e) {
-      const bError = new ComponentError({
-        interaction,
-        message: `failed to run role select menu with match ${roleSelectMenu.matcher}`,
-        originalError: anyToError(e),
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-        context.defer,
-      );
-    }
-  }
-
-  private async handleMentionableSelectMenuInteraction(
-    interaction: MentionableSelectMenuInteraction,
-    locale: string,
-  ): Promise<void> {
-    const mentionableSelectMenus = this.getComponents(
-      interaction.customId,
-      this.components.mentionableSelectMenu,
-    );
-    if (mentionableSelectMenus.length === 0) {
-      const bError = new BaseError({
-        message: `didn't find mentionable select menu with id ${interaction.customId}`,
-        debugs: {
-          availableMatcher: this.components.mentionableSelectMenu.keys(),
-        },
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-      );
-    }
-
-    if (mentionableSelectMenus.length > 1) {
-      const bError = new BaseError({
-        message: `found more than one mentionable select menu that matches ${interaction.customId}`,
-        debugs: {
-          matchedMenus: mentionableSelectMenus.map(m => m.matcher),
-          availableMatcher: this.components.mentionableSelectMenu.keys(),
-        },
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-      );
-    }
-
-    const mentionableSelectMenu = mentionableSelectMenus[0];
-
-    const context = new MentionableSelectMenuContext(this.client, interaction, {
-      roles: interaction.roles.map(r => r),
-      users: interaction.users.map(u => u),
-      locale,
-    });
-
-    if (mentionableSelectMenu.preReply) {
-      const [, err] = await context.deferReply({
-        ephemeral: mentionableSelectMenu.ephemeralPreReply,
-      });
-      if (err) {
-        this.logger.logError(err.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, err.id),
-        );
-      }
-    }
-
-    const [result, err] = await this.runMiddleware(mentionableSelectMenu, context);
-    if (err) {
-      this.logger.logError(err.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, err.id),
-        context.defer,
-      );
-    }
-
-    if (!result) {
-      return;
-    }
-
-    context.additional = result as typeof context.additional;
-
-    try {
-      const [result, err] = await mentionableSelectMenu.run(context);
-      if (err) {
-        this.logger.logError(err.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, err.id),
-          context.defer,
-        );
-      }
-
-      return this.trace(
-        `${interaction.user.username} run mentionable select menu `
-        + `${mentionableSelectMenu.matcher} with success! Result: ${result}`,
-      );
-    }
-    catch (e) {
-      const bError = new ComponentError({
-        interaction,
-        message: `failed to run mentionable select menu with match ${mentionableSelectMenu.matcher}`,
-        originalError: anyToError(e),
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-        context.defer,
-      );
-    }
-  }
-
-  private async handleChannelSelectMenuInteraction(
-    interaction: ChannelSelectMenuInteraction,
-    locale: string,
-  ): Promise<void> {
-    const channelSelectMenus = this.getComponents(
-      interaction.customId,
-      this.components.channelSelectMenu,
-    );
-    if (channelSelectMenus.length === 0) {
-      const bError = new BaseError({
-        message: `didn't find channel select menu with id ${interaction.customId}`,
-        debugs: {
-          availableMatcher: this.components.channelSelectMenu.keys(),
-        },
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-      );
-    }
-
-    if (channelSelectMenus.length > 1) {
-      const bError = new BaseError({
-        message: `found more than one channel select menu that matches ${interaction.customId}`,
-        debugs: {
-          matchedMenus: channelSelectMenus.map(m => m.matcher),
-          availableMatcher: this.components.channelSelectMenu.keys(),
-        },
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-      );
-    }
-
-    const channelSelectMenu = channelSelectMenus[0];
-
-    const context = new ChannelSelectMenuContext(this.client, interaction, {
-      values: interaction.channels.map(c => c),
-      locale,
-    });
-
-    if (channelSelectMenu.preReply) {
-      const [, err] = await context.deferReply({
-        ephemeral: channelSelectMenu.ephemeralPreReply,
-      });
-      if (err) {
-        this.logger.logError(err.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, err.id),
-        );
-      }
-    }
-
-    const [result, err] = await this.runMiddleware(channelSelectMenu, context);
-    if (err) {
-      this.logger.logError(err.generateId());
-      return this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, err.id),
-        context.defer,
-      );
-    }
-
-    if (!result) {
-      return;
-    }
-
-    context.additional = result as typeof context.additional;
-
-    try {
-      const [result, err] = await channelSelectMenu.run(context);
-      if (err) {
-        this.logger.logError(err.generateId());
-        return this.sendInternalError(
-          interaction,
-          internalErrorEmbed(this.client, err.id),
-          context.defer,
-        );
-      }
-
-      return this.trace(
-        `${interaction.user.username} run channel select menu ${channelSelectMenu.matcher} with success! Result: ${result}`,
-      );
-    }
-    catch (e) {
-      const bError = new ComponentError({
-        interaction,
-        message: `failed to run channel select menu with match ${channelSelectMenu.matcher}`,
-        originalError: anyToError(e),
-      });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        interaction,
+        context.interaction,
         internalErrorEmbed(this.client, bError.id),
         context.defer,
       );

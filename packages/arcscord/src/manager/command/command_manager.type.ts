@@ -5,7 +5,7 @@ import type { Result } from "@arcscord/error";
 import type { AutocompleteInteraction, CommandInteraction } from "discord.js";
 
 /**
- * Information required for handling command results.
+ * all infos that you have aces to handle a command result
  */
 export type CommandResultHandlerInfos = {
   /**
@@ -14,12 +14,12 @@ export type CommandResultHandlerInfos = {
   result: Result<string | true, CommandError>;
 
   /**
-   * The interaction associated with the command.
+   * The DJS interaction object
    */
   interaction: CommandInteraction;
 
   /**
-   * The command properties associated with the command.
+   * The command properties
    */
   command: CommandHandler;
 

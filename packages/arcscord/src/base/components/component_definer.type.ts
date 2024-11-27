@@ -13,55 +13,56 @@ import type {
   StringSelectMenuComponentData,
   UserSelectMenuComponentData,
 } from "discord.js";
+import type { ButtonStyle, ComponentType } from "discord-api-types/v10";
 
 /**
  * Type for Discord component types by name
  * [Discord Docs](https://discord.com/developers/docs/interactions/message-components#component-object-component-types).
  */
-export type ComponentType = keyof typeof componentTypesEnum;
+export type StringComponentType = keyof typeof componentTypesEnum;
 
 /**
  * Type for Discord button styles by name.
  * @see [Discord Docs](https://discord.com/developers/docs/interactions/message-components#button-object-button-styles)
  */
-export type ButtonStyle = keyof typeof buttonStyleEnum;
+export type StringButtonStyle = keyof typeof buttonStyleEnum;
 
 /**
  * Type for renamed button styles by color.
  */
-export type ButtonColor = keyof typeof buttonColorEnum;
+export type StringButtonColor = keyof typeof buttonColorEnum;
 
 /**
  * Base type for a UI component.
  */
 export type BaseComponent = {
-  type: ComponentType;
+  readonly type: Exclude<ComponentType, ComponentType.ActionRow>;
 };
 
 /**
  * Base type for a button component.
  */
 export type BaseButton = BaseComponent & {
-  type: Extract<ComponentType, "button">;
-  label?: string;
-  emoji?: ComponentEmojiResolvable;
-  disabled?: boolean;
+  readonly type: ComponentType.Button;
+  readonly label?: string;
+  readonly emoji?: ComponentEmojiResolvable;
+  readonly disabled?: boolean;
 };
 
 /**
  * Type for a clickable button.
  */
 export type ClickableButton = BaseButton & {
-  style: Exclude<ButtonStyle, "link"> | ButtonColor;
-  customId: string;
+  readonly style: Exclude<StringButtonStyle, "link"> | StringButtonColor | Exclude<ButtonStyle, ButtonStyle.Link>;
+  readonly customId: string;
 };
 
 /**
  * Type for a link button.
  */
 export type LinkButton = BaseButton & {
-  style: Extract<ButtonStyle, "link">;
-  url: string;
+  readonly style: Extract<StringButtonStyle, "link"> | ButtonStyle.Link;
+  readonly url: string;
 };
 
 /**
@@ -73,12 +74,12 @@ export type Button = LinkButton | ClickableButton;
  * Base type for a select menu component.
  */
 export type BaseSelectMenu = BaseComponent & {
-  type: Exclude<ComponentType, "button" | "actionRow" | "textInput">;
-  customId: string;
-  minValues?: number;
-  maxValues?: number;
-  placeholder?: string;
-  disabled?: boolean;
+  readonly type: Exclude<ComponentType, ComponentType.Button | ComponentType.ActionRow | ComponentType.TextInput>;
+  readonly customId: string;
+  readonly minValues?: number;
+  readonly maxValues?: number;
+  readonly placeholder?: string;
+  readonly disabled?: boolean;
 };
 
 /**
@@ -93,19 +94,19 @@ export type SelectMenuDefaultValueType = "user" | "role" | "channel";
 export type SelectMenuDefaultValue<
   AllowedType extends SelectMenuDefaultValueType,
 > = {
-  id: string;
-  type: AllowedType;
+  readonly id: string;
+  readonly type: AllowedType;
 };
 
 /**
  * Type for select menu options.
  */
 export type SelectOptions = {
-  label: string;
-  value: string;
-  description?: string;
-  emoji?: ComponentEmojiResolvable;
-  default?: boolean;
+  readonly label: string;
+  readonly value: string;
+  readonly description?: string;
+  readonly emoji?: ComponentEmojiResolvable;
+  readonly default?: boolean;
 };
 
 /**
@@ -120,8 +121,8 @@ export type TypedSelectMenuOptions = Record<
  * Type for a string select menu.
  */
 export type StringSelectMenu = BaseSelectMenu & {
-  type: Extract<ComponentType, "stringSelect">;
-  options: SelectOptions[] | string[] | TypedSelectMenuOptions;
+  readonly type: ComponentType.StringSelect;
+  readonly options: SelectOptions[] | string[] | TypedSelectMenuOptions;
 };
 
 /**
@@ -134,33 +135,33 @@ export type StringSelectMenuValues<T extends TypedSelectMenuOptions> =
  * Type for a user select menu.
  */
 export type UserSelectMenu = BaseSelectMenu & {
-  type: Extract<ComponentType, "userSelect">;
-  defaultValues?: SelectMenuDefaultValue<"user">[];
+  readonly type: ComponentType.UserSelect;
+  readonly defaultValues?: SelectMenuDefaultValue<"user">[];
 };
 
 /**
  * Type for a role select menu.
  */
 export type RoleSelectMenu = BaseSelectMenu & {
-  type: Extract<ComponentType, "roleSelect">;
-  defaultValues?: SelectMenuDefaultValue<"role">[];
+  readonly type: ComponentType.RoleSelect;
+  readonly defaultValues?: SelectMenuDefaultValue<"role">[];
 };
 
 /**
  * Type for a mentionable select menu.
  */
 export type MentionableSelectMenu = BaseSelectMenu & {
-  type: Extract<ComponentType, "mentionableSelect">;
-  defaultValues?: SelectMenuDefaultValue<"user" | "role">[];
+  readonly type: ComponentType.MentionableSelect;
+  readonly defaultValues?: SelectMenuDefaultValue<"user" | "role">[];
 };
 
 /**
  * Type for a channel select menu.
  */
 export type ChannelSelectMenu = BaseSelectMenu & {
-  type: Extract<ComponentType, "channelSelect">;
-  defaultValues?: SelectMenuDefaultValue<"channel">[];
-  channelTypes?: ChannelType[];
+  readonly type: ComponentType.ChannelSelect;
+  readonly defaultValues?: SelectMenuDefaultValue<"channel">[];
+  readonly channelTypes?: ChannelType[];
 };
 
 /**
@@ -193,15 +194,15 @@ export type TextInputStyle = keyof typeof textInputStyleEnum;
  * Type for a text input component.
  */
 export type TextInput = BaseComponent & {
-  type: Extract<ComponentType, "textInput">;
-  customId: string;
-  style: TextInputStyle;
-  label: string;
-  minLength?: number;
-  maxLength?: number;
-  required?: boolean;
-  value?: string;
-  placeholder?: string;
+  readonly type: ComponentType.TextInput;
+  readonly customId: string;
+  readonly style: TextInputStyle;
+  readonly label: string;
+  readonly minLength?: number;
+  readonly maxLength?: number;
+  readonly required?: boolean;
+  readonly value?: string;
+  readonly placeholder?: string;
 };
 
 /**

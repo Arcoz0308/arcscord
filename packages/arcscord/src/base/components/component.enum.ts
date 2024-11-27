@@ -3,40 +3,40 @@
  * @enum {number}
  * @see [Discord Docs](https://discord.com/developers/docs/interactions/message-components#component-object-component-types)
  */
-export const componentTypesEnum = {
+export enum componentTypesEnum {
   /**
    * Represents an action row component.
    */
-  actionRow: 1,
+  actionRow = 1,
   /**
    * Represents a button component.
    */
-  button: 2,
+  button = 2,
   /**
    * Represents a string select component.
    */
-  stringSelect: 3,
+  stringSelect = 3,
   /**
    * Represents a text input component.
    */
-  textInput: 4,
+  textInput = 4,
   /**
    * Represents a user select component.
    */
-  userSelect: 5,
+  userSelect = 5,
   /**
    * Represents a role select component.
    */
-  roleSelect: 6,
+  roleSelect = 6,
   /**
    * Represents a mentionable select component.
    */
-  mentionableSelect: 7,
+  mentionableSelect = 7,
   /**
    * Represents a channel select component.
    */
-  channelSelect: 8,
-};
+  channelSelect = 8,
+}
 
 /**
  * Enum for button styles.

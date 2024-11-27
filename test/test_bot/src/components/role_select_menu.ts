@@ -1,8 +1,8 @@
 import { buildRoleSelectMenu, createSelectMenu } from "arcscord";
-import { EmbedBuilder } from "discord.js";
+import { ComponentType, EmbedBuilder } from "discord.js";
 
 export const roleSelectMenu = createSelectMenu({
-  type: "roleSelect",
+  type: ComponentType.RoleSelect,
   matcher: "role_select_menu",
   build: placeHolder =>
     buildRoleSelectMenu({
