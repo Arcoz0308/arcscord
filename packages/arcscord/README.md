@@ -112,10 +112,11 @@ client.loadComponents([simpleButton]);
 ```ts
 // declaration
 import { buildRoleSelectMenu, createSelectMenu } from "arcscord";
+import { ComponentType } from "discord-api-types/v10";
 import { EmbedBuilder } from "discord.js";
 
 export const roleSelectMenu = createSelectMenu({
-  type: "roleSelect",
+  type: ComponentType.RoleSelect,
   matcher: "role_select_menu",
   build: placeHolder => buildRoleSelectMenu({
     placeholder: placeHolder,
