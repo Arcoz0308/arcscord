@@ -134,7 +134,7 @@ export class ArcClient extends DJSClient {
 
     this.commandManager = new CommandManager(this, options.managers?.command);
     this.taskManager = new TaskManager(this);
-    this.eventManager = new EventManager(this);
+    this.eventManager = new EventManager(this, options.managers?.event);
     this.componentManager = new ComponentManager(this);
     this.localeManager = new LocaleManager(this, options.managers?.locale);
 

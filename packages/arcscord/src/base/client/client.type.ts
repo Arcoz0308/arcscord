@@ -1,3 +1,4 @@
+import type { EventManagerOptions } from "#/manager";
 import type { CommandManagerOptions } from "#/manager/command/command_manager.type";
 import type { LocaleManagerOptions } from "#/manager/locale/locale_manager.type";
 import type { LoggerConstructor } from "#/utils/logger/logger.type";
@@ -74,6 +75,11 @@ export type ManagersOptions = {
    * Configuration of {@link CommandManager} for customize command behavior
    */
   command?: CommandManagerOptions;
+
+  /**
+   * Configuration of {@link EventManager} for customize event behavior
+   */
+  event?: EventManagerOptions;
 };
 
 /**
