@@ -152,7 +152,6 @@ export class ArcClient extends DJSClient {
 
     this.on("ready", () => {
       this.ready = true;
-      this.logger.info("bot connected...");
     });
   }
 
