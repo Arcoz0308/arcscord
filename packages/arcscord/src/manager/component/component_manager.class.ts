@@ -56,11 +56,13 @@ export class ComponentManager extends BaseManager {
    * Loads an array of component properties and initializes the components.
    *
    * @param components - components to loads
+   * @returns the number of components loaded
    */
-  loadComponents(components: ComponentHandler[]): void {
+  loadComponents(components: ComponentHandler[]): number {
     for (const component of components) {
       this.loadComponent(component);
     }
+    return components.length;
   }
 
   /**
