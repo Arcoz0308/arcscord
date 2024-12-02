@@ -1,7 +1,6 @@
 import type { ArcClient, ComponentContext } from "#/base";
 import type { ComponentHandler, ModalComponentHandler } from "#/base/components/component_handlers.type";
-import type { ComponentList } from "#/manager/component/component_manager.type";
-import type { Result } from "@arcscord/error";
+import type { ComponentErrorHandlerInfos, ComponentList, ComponentResultHandlerInfos } from "#/manager/component/component_manager.type";
 import type {
   BaseMessageOptions,
   ButtonInteraction,
@@ -25,7 +24,7 @@ import {
 import { BaseManager } from "#/base/manager/manager.class";
 import { ComponentError, internalErrorEmbed } from "#/utils";
 import { BaseError } from "@arcscord/better-error";
-import { anyToError, error, ok } from "@arcscord/error";
+import { anyToError, error, ok, type Result } from "@arcscord/error";
 import { ComponentType } from "discord-api-types/v10";
 
 /**
@@ -115,40 +114,43 @@ export class ComponentManager extends BaseManager {
     }
   }
 
-  private createContext(interaction: MessageComponentInteraction | ModalSubmitInteraction, type: ComponentType, locale: string): ComponentContext {
+  private createContext(interaction: MessageComponentInteraction | ModalSubmitInteraction, type: ComponentType, locale: string): Result<ComponentContext, ComponentError> {
     switch (type) {
       case ComponentType.Button:
-        return new ButtonContext(this.client, interaction as ButtonInteraction, { locale });
+        return ok(new ButtonContext(this.client, interaction as ButtonInteraction, { locale }));
       case ComponentType.StringSelect:
-        return new StringSelectMenuContext(this.client, interaction as StringSelectMenuInteraction, {
+        return ok(new StringSelectMenuContext(this.client, interaction as StringSelectMenuInteraction, {
           locale,
           values: (interaction as StringSelectMenuInteraction).values,
-        });
+        }));
       case ComponentType.UserSelect:
-        return new UserSelectMenuContext(this.client, interaction as UserSelectMenuInteraction, {
+        return ok(new UserSelectMenuContext(this.client, interaction as UserSelectMenuInteraction, {
           locale,
           values: (interaction as UserSelectMenuInteraction).users.map(u => u),
-        });
+        }));
       case ComponentType.RoleSelect:
-        return new RoleSelectMenuContext(this.client, interaction as RoleSelectMenuInteraction, {
+        return ok(new RoleSelectMenuContext(this.client, interaction as RoleSelectMenuInteraction, {
           locale,
           values: (interaction as RoleSelectMenuInteraction).roles.map(r => r),
-        });
+        }));
       case ComponentType.MentionableSelect:
-        return new MentionableSelectMenuContext(this.client, interaction as MentionableSelectMenuInteraction, {
+        return ok(new MentionableSelectMenuContext(this.client, interaction as MentionableSelectMenuInteraction, {
           locale,
           users: (interaction as MentionableSelectMenuInteraction).users.map(u => u),
           roles: (interaction as MentionableSelectMenuInteraction).roles.map(r => r),
-        });
+        }));
       case ComponentType.ChannelSelect:
-        return new ChannelSelectMenuContext(this.client, interaction as ChannelSelectMenuInteraction, {
+        return ok(new ChannelSelectMenuContext(this.client, interaction as ChannelSelectMenuInteraction, {
           locale,
           values: (interaction as ChannelSelectMenuInteraction).channels.map(c => c),
-        });
+        }));
       case ComponentType.TextInput:
-        return new ModalContext(this.client, interaction as ModalSubmitInteraction, { locale });
+        return ok(new ModalContext(this.client, interaction as ModalSubmitInteraction, { locale }));
       default:
-        throw new Error(`Unknown component type: ${type}`);
+        return error(new ComponentError({
+          message: `Unknown component type: ${type}`,
+          interaction,
+        }));
     }
   }
 
@@ -163,19 +165,65 @@ export class ComponentManager extends BaseManager {
       channel: interaction.channel,
     });
 
-    const components = this.findMatchingComponents(interaction, type);
-    if (!components)
-      return;
+    const [components, err] = this.findMatchingComponents(interaction, type);
+    if (err) {
+      return this.handleError({
+        error: err,
+        component: undefined,
+        context: undefined,
+        internal: true,
+        interaction,
+      });
+    }
 
-    const context = this.createContext(interaction, type, locale);
+    if (components.length < 1) {
+      return this.handleError({
+        interaction,
+        error: new BaseError(`No found components with custom id match with ${interaction.customId}`),
+        internal: false,
+      });
+    }
+
+    if (components.length > 1) {
+      return this.handleError({
+        interaction,
+        internal: false,
+        error: new BaseError(`Find multiple match with custom id ${interaction.customId}`),
+      });
+    }
+
+    const [context, err2] = this.createContext(interaction, type, locale);
+    if (err2) {
+      return this.handleError({
+        error: err2,
+        internal: true,
+      });
+    }
+
     const component = components[0];
 
-    if (await this.handlePreReply(component, context))
-      return;
+    const [, err3] = await this.handlePreReply(component, context);
+    if (err3) {
+      return this.handleError({
+        error: err3,
+        component,
+        context,
+        internal: true,
+      });
+    }
 
-    const middlewareResult = await this.runMiddleware(component, context);
-    if (!this.handleMiddlewareResult(middlewareResult, context))
+    const [middlewareResult, err4] = await this.runMiddleware(component, context);
+    if (err4) {
+      return this.handleError({
+        error: err4,
+        component,
+        context,
+        internal: false,
+      });
+    }
+    if (!this.handleMiddlewareResult(middlewareResult, context)) {
       return;
+    }
 
     await this.executeComponent(component, context);
   }
@@ -183,7 +231,7 @@ export class ComponentManager extends BaseManager {
   private findMatchingComponents(
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
     type: Exclude<ComponentType, ComponentType.ActionRow>,
-  ): ComponentHandler[] | null {
+  ): Result<ComponentHandler[], ComponentError> {
     const components: ComponentHandler[] = [];
     const componentsList = this.components[type];
 
@@ -197,89 +245,64 @@ export class ComponentManager extends BaseManager {
     }
 
     if (components.length === 0) {
-      const bError = new BaseError({
+      return error(new ComponentError({
         message: `didn't found component with id ${interaction.customId}`,
+        interaction,
         debugs: {
           availableMatcher: componentsList.keys(),
           type,
         },
-      });
-      this.logger.logError(bError.generateId());
-      this.sendInternalError(
-        interaction,
-        internalErrorEmbed(this.client, bError.id),
-      );
-      return null;
+      }));
     }
 
     if (components.length > 1) {
-      const bError = new BaseError({
+      return error(new ComponentError({
         message: `found more than one component that matches with ${interaction.customId}`,
-      });
-      this.logger.logError(bError.generateId());
-      this.sendInternalError(
         interaction,
-        internalErrorEmbed(this.client, bError.id),
-      );
-      return null;
+      }));
     }
 
-    return components;
+    return ok(components);
   }
 
-  private async handlePreReply(component: ComponentHandler, context: ComponentContext): Promise<boolean> {
+  private async handlePreReply(component: ComponentHandler, context: ComponentContext): Promise<Result<true, ComponentError>> {
     if (component.preReply) {
       const [, err] = await context.deferReply({
         ephemeral: component.ephemeralPreReply,
       });
       if (err) {
-        this.logger.logError(err.generateId());
-        await this.sendInternalError(
-          context.interaction,
-          internalErrorEmbed(this.client, err.id),
-        );
-        return true;
+        return error(new ComponentError({
+          message: "Failed to defer reply",
+          interaction: context.interaction,
+          originalError: err,
+        }));
       }
     }
-    return false;
+    return ok(true);
   }
 
-  private handleMiddlewareResult(middlewareResult: Result<object | false, ComponentError>, context: ComponentContext): boolean {
-    const [result, err] = middlewareResult;
-    if (err) {
-      this.logger.logError(err.generateId());
-      this.sendInternalError(
-        context.interaction,
-        internalErrorEmbed(this.client, err.id),
-        context.defer,
-      );
+  private handleMiddlewareResult(middlewareResult: object | false, context: ComponentContext): boolean {
+    if (!middlewareResult) {
       return false;
     }
 
-    if (!result) {
-      return false;
-    }
-
-    context.additional = result as typeof context.additional;
+    context.additional = middlewareResult as typeof context.additional;
     return true;
   }
 
   private async executeComponent(component: ComponentHandler, context: ComponentContext): Promise<void> {
+    const start = Date.now();
     try {
       // @ts-expect-error fix error with others context types
-      const [result, err] = await component.run(context);
-      if (err) {
-        this.logger.logError(err.generateId());
-        return this.sendInternalError(
-          context.interaction,
-          internalErrorEmbed(this.client, err.id),
-          context.defer,
-        );
-      }
-
-      return this.trace(
-        `${context.interaction.user.username} run component ${component.matcher} with success! Result: ${result}`,
-      );
+      const result = await component.run(context);
+      return this.handleResult({
+        result,
+        component,
+        interaction: context.interaction,
+        defer: context.defer,
+        start,
+        end: Date.now(),
+      });
     }
     catch (e) {
       const bError = new ComponentError({
@@ -287,12 +310,14 @@ export class ComponentManager extends BaseManager {
         message: `failed to run component with match ${component.matcher}`,
         originalError: anyToError(e),
       });
-      this.logger.logError(bError.generateId());
-      return this.sendInternalError(
-        context.interaction,
-        internalErrorEmbed(this.client, bError.id),
-        context.defer,
-      );
+      return this.handleResult({
+        result: error(bError),
+        component,
+        interaction: context.interaction,
+        defer: context.defer,
+        start,
+        end: Date.now(),
+      });
     }
   }
 
@@ -302,51 +327,70 @@ export class ComponentManager extends BaseManager {
       return ok({});
     }
     for (const middleware of props.use) {
-      try {
-        const result = await middleware.run(context);
-        if (result.cancel) {
-          const [, err] = await result.cancel;
-          if (err) {
-            return error(err);
-          }
-          return ok(false);
+      const result = await middleware.run(context);
+      if (result.cancel) {
+        const [, err] = await result.cancel;
+        if (err) {
+          return error(err);
         }
-        additional[middleware.name] = result.next;
+        return ok(false);
       }
-      catch (e) {
-        return error(new ComponentError({
-          message: `Failed to run middleware : ${anyToError(e).message}`,
-          interaction: context.interaction,
-          originalError: anyToError(e),
-        }));
-      }
+      additional[middleware.name] = result.next;
     }
     return ok(additional);
-  };
+  }
 
-  /**
-   * Send a internal error
-   */
   async sendInternalError(
     interaction: MessageComponentInteraction | ModalSubmitInteraction,
     message: BaseMessageOptions,
     defer: boolean = false,
   ): Promise<void> {
-    try {
-      if (defer) {
-        await interaction.editReply(message);
-      }
-      else {
-        await interaction.reply({
-          ...message,
-          ephemeral: true,
-        });
-      }
-    }
-    catch (e) {
+    const replyResult = defer
+      ? await interaction.editReply(message).then(ok).catch(error)
+      : await interaction.reply({
+        ...message,
+        ephemeral: true,
+      }).then(ok).catch(error);
+
+    if (!replyResult[0]) {
       this.logger.error("failed to send error message", {
-        baseError: anyToError(e).message,
+        baseError: replyResult[1].message,
       });
+    }
+  }
+
+  async handleResult(infos: ComponentResultHandlerInfos): Promise<void> {
+    const [result, err] = infos.result;
+    if (err !== null) {
+      err.generateId();
+      this.logger.logError(err);
+      return this.sendInternalError(
+        infos.interaction,
+        internalErrorEmbed(this.client, err.id),
+        infos.defer,
+      );
+    }
+
+    this.logger.info(
+      `${infos.interaction.user.username} used component ${infos.component.matcher}. Result : ${
+        typeof result === "string" ? result : "success"
+      }`,
+    );
+  }
+
+  async handleError(infos: ComponentErrorHandlerInfos): Promise<void> {
+    this.logger.logError(infos.error.generateId());
+
+    if (!infos.interaction) {
+      return;
+    }
+
+    if (!infos.internal) {
+      return this.sendInternalError(
+        infos.interaction,
+        internalErrorEmbed(this.client, infos.error.generateId().id),
+        infos.context?.defer,
+      );
     }
   }
 }

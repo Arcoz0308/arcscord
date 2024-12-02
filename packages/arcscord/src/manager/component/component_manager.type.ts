@@ -8,6 +8,7 @@ import type {
   StringSelectMenuComponentHandler,
   UserSelectMenuComponentHandler,
 } from "#/base/components/component_handlers.type";
+import type { ComponentContext } from "#/base/components/context";
 import type { ComponentError } from "#/utils";
 import type { BaseError } from "@arcscord/better-error";
 import type { Result } from "@arcscord/error";
@@ -70,6 +71,11 @@ export type ComponentResultHandlerInfos = {
    * The end time of the component execution.
    */
   end: number;
+
+  /**
+   * The context associated with the component.
+   */
+  context?: ComponentContext;
 };
 
 /**
@@ -95,6 +101,11 @@ export type ComponentErrorHandlerInfos = {
    * Whether the error is internal in arcscord (true) or from the component code (false)
    */
   internal: boolean;
+
+  /**
+   * The context associated with the component.
+   */
+  context?: ComponentContext;
 };
 
 /**
