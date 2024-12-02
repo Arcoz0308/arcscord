@@ -49,8 +49,8 @@ export class ComponentManager extends BaseManager {
     super(client);
 
     this.options = {
-      resultHandler: this.handleResult,
-      errorHandler: this.handleError,
+      resultHandler: this.handleResult.bind(this),
+      errorHandler: this.handleError.bind(this),
       ...options,
     };
     client.on("interactionCreate", (interaction) => {
