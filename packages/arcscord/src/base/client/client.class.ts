@@ -244,7 +244,7 @@ export class ArcClient extends DJSClient {
    *
    * @param components - The components to load
    */
-  loadComponents(components: ComponentHandler[]): void {
+  loadComponents(components: ComponentHandler[]): number {
     return this.componentManager.loadComponents(components);
   }
 
