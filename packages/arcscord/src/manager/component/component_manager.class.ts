@@ -1,6 +1,6 @@
 import type { ArcClient, ComponentContext } from "#/base";
 import type { ComponentHandler, ModalComponentHandler } from "#/base/components/component_handlers.type";
-import type { ComponentErrorHandlerInfos, ComponentList, ComponentResultHandlerInfos } from "#/manager/component/component_manager.type";
+import type { ComponentErrorHandlerInfos, ComponentList, ComponentManagerOptions, ComponentResultHandlerInfos } from "#/manager/component/component_manager.type";
 import type {
   BaseMessageOptions,
   ButtonInteraction,
@@ -43,8 +43,16 @@ export class ComponentManager extends BaseManager {
     [ComponentType.TextInput]: new Map<string, ModalComponentHandler>(),
   };
 
-  constructor(client: ArcClient) {
+  options: Required<ComponentManagerOptions>;
+
+  constructor(client: ArcClient, options?: ComponentManagerOptions) {
     super(client);
+
+    this.options = {
+      resultHandler: this.handleResult,
+      errorHandler: this.handleError,
+      ...options,
+    };
     client.on("interactionCreate", (interaction) => {
       if (interaction.isMessageComponent() || interaction.isModalSubmit()) {
         void this.handleInteraction(interaction);
@@ -169,7 +177,7 @@ export class ComponentManager extends BaseManager {
 
     const [components, err] = this.findMatchingComponents(interaction, type);
     if (err) {
-      return this.handleError({
+      return this.options.errorHandler({
         error: err,
         component: undefined,
         context: undefined,
@@ -179,7 +187,7 @@ export class ComponentManager extends BaseManager {
     }
 
     if (components.length < 1) {
-      return this.handleError({
+      return this.options.errorHandler({
         interaction,
         error: new BaseError(`No found components with custom id match with ${interaction.customId}`),
         internal: false,
@@ -187,7 +195,7 @@ export class ComponentManager extends BaseManager {
     }
 
     if (components.length > 1) {
-      return this.handleError({
+      return this.options.errorHandler({
         interaction,
         internal: false,
         error: new BaseError(`Find multiple match with custom id ${interaction.customId}`),
@@ -196,7 +204,7 @@ export class ComponentManager extends BaseManager {
 
     const [context, err2] = this.createContext(interaction, type, locale);
     if (err2) {
-      return this.handleError({
+      return this.options.errorHandler({
         error: err2,
         internal: true,
       });
@@ -206,7 +214,7 @@ export class ComponentManager extends BaseManager {
 
     const [, err3] = await this.handlePreReply(component, context);
     if (err3) {
-      return this.handleError({
+      return this.options.errorHandler({
         error: err3,
         component,
         context,
@@ -216,7 +224,7 @@ export class ComponentManager extends BaseManager {
 
     const [middlewareResult, err4] = await this.runMiddleware(component, context);
     if (err4) {
-      return this.handleError({
+      return this.options.errorHandler({
         error: err4,
         component,
         context,
@@ -297,7 +305,7 @@ export class ComponentManager extends BaseManager {
     try {
       // @ts-expect-error fix error with others context types
       const result = await component.run(context);
-      return this.handleResult({
+      return this.options.resultHandler({
         result,
         component,
         interaction: context.interaction,
@@ -312,7 +320,7 @@ export class ComponentManager extends BaseManager {
         message: `failed to run component with match ${component.matcher}`,
         originalError: anyToError(e),
       });
-      return this.handleResult({
+      return this.options.resultHandler({
         result: error(bError),
         component,
         interaction: context.interaction,

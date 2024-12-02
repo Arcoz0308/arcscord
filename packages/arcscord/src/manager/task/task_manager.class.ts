@@ -1,6 +1,9 @@
-import type { TaskHandler } from "#/base";
+import type { ArcClient, TaskHandler } from "#/base";
+import type { Result } from "@arcscord/error";
+import type { TaskErrorHandlerInfos, TaskManagerOptions } from "./task_manager.type";
 import { BaseManager, TaskContext } from "#/base";
-import { anyToError } from "@arcscord/error";
+import { BaseError } from "@arcscord/better-error";
+import { anyToError, error, ok } from "@arcscord/error";
 import { CronJob } from "cron";
 
 /**
@@ -15,22 +18,43 @@ export class TaskManager extends BaseManager {
   crons: Map<string, CronJob | CronJob[] | NodeJS.Timeout> = new Map();
 
   /**
+   * task manager options
+   */
+  options: Required<TaskManagerOptions>;
+
+  constructor(client: ArcClient, options?: TaskManagerOptions) {
+    super(client);
+
+    this.options = {
+      errorHandler: this.errorHandler,
+      ...options,
+    };
+  }
+
+  /**
    * Loads multiple tasks into the TaskManager.
    *
    * @param tasks - An array of tasks to load.
    */
-  loadTasks(tasks: TaskHandler[]): void {
-    tasks.forEach(task => this.loadTask(task));
+  loadTasks(tasks: TaskHandler[]): Result<number, BaseError> {
+    for (const task of tasks) {
+      const [,err] = this.loadTask(task);
+      if (err) {
+        return error(err);
+      }
+    }
+    return ok(tasks.length);
   }
 
   /**
    * Loads a single task into the TaskManager.
    *
    * @param task - The task to load.
+   * @returns the date of next run in milliseconds
    */
-  loadTask(task: TaskHandler): void {
+  loadTask(task: TaskHandler): Result<number, BaseError> {
     if (this.crons.has(task.name)) {
-      return this.logger.fatal(`a task with name ${task.name} already exist !`);
+      return error(new BaseError(`a task with name ${task.name} already exist !`));
     }
 
     if (Array.isArray(task.interval)) {
@@ -49,11 +73,9 @@ export class TaskManager extends BaseManager {
       }
       this.crons.set(task.name, crons);
 
-      const nextRuns = crons.map(cron => cron.nextDate().toISO()).join(", ");
-      this.logger.info(
-        `loaded multi cron task ${task.name}, next runs : ${nextRuns}`,
-      );
-      return;
+      const nextRuns = crons.map(cron => cron.nextDate().toMillis());
+      this.trace(`loaded multi cron task ${task.name}, next runs : ${nextRuns}`);
+      return ok(Math.min(...nextRuns));
     }
 
     if (typeof task.interval === "string") {
@@ -67,11 +89,11 @@ export class TaskManager extends BaseManager {
       );
       this.crons.set(task.name, cron);
 
-      const nextRun = cron.nextDate().toISO();
-      this.logger.trace(
+      const nextRun = cron.nextDate().toMillis();
+      this.trace(
         `loaded cron task ${task.name} (${task.interval}), next execute : ${nextRun}`,
       );
-      return;
+      return ok(nextRun);
     }
 
     const interval = setInterval(() => {
@@ -79,16 +101,17 @@ export class TaskManager extends BaseManager {
     }, task.interval);
 
     this.crons.set(task.name, interval);
-    this.logger.info(
+    this.trace(
       `Loaded interval task ${task.name}, next runs ${new Date(Date.now() + task.interval).toISOString()}`,
     );
+    return ok(Date.now() + task.interval);
   }
 
   private async runTask(task: TaskHandler): Promise<void> {
     try {
       const cron = this.crons.get(task.name);
       if (!cron) {
-        this.logger.warning("task run but not registered !");
+        this.trace("task run but not registered !");
       }
 
       const next = Array.isArray(cron)
@@ -108,16 +131,28 @@ export class TaskManager extends BaseManager {
       });
       const [result, err] = await task.run(context);
       if (err) {
-        err.generateId();
-        return this.logger.error(err.message);
+        this.options.errorHandler({
+          error: err,
+          task,
+          taskName: task.name,
+        });
       }
 
-      this.logger.trace(`executed task ${task.name} with result : ${result}`);
+      this.trace(`executed task ${task.name} with result : ${result}`);
     }
     catch (e) {
-      this.logger.error(
-        `Error running task ${task.name}: ${anyToError(e).message}`,
-      );
+      this.options.errorHandler({
+        error: new BaseError({
+          message: `Error running task ${task.name}: ${anyToError(e).message}`,
+          originalError: anyToError(e),
+        }),
+        task,
+        taskName: task.name,
+      });
     }
+  }
+
+  errorHandler(infos: TaskErrorHandlerInfos): void {
+    this.logger.logError(infos.error.generateId());
   }
 }

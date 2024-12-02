@@ -5,6 +5,7 @@ import type { ComponentHandler } from "#/base/components/component_handlers.type
 import type { EventHandler } from "#/base/event/event.type";
 import type { InternalError } from "#/utils/error/class/internal_error";
 import type { LoggerConstructor, LoggerInterface } from "#/utils/logger/logger.type";
+import type { BaseError } from "@arcscord/better-error";
 import type { Result } from "@arcscord/error";
 import type { BaseMessageOptions, BitFieldResolvable, GatewayIntentsString, PermissionsString } from "discord.js";
 import * as process from "node:process";
@@ -12,7 +13,7 @@ import { ComponentManager } from "#/manager";
 import { CommandManager } from "#/manager/command/command_manager.class";
 import { EventManager } from "#/manager/event/event_manager.class";
 import { LocaleManager } from "#/manager/locale/locale_manager.class";
-import { TaskManager } from "#/manager/task/task_manager";
+import { TaskManager } from "#/manager/task/task_manager.class";
 import { ArcLogger } from "#/utils/logger/logger.class";
 import { createLogger } from "#/utils/logger/logger.util";
 import { error, ok } from "@arcscord/error";
@@ -133,9 +134,9 @@ export class ArcClient extends DJSClient {
     };
 
     this.commandManager = new CommandManager(this, options.managers?.command);
-    this.taskManager = new TaskManager(this);
+    this.taskManager = new TaskManager(this, options.managers?.task);
     this.eventManager = new EventManager(this, options.managers?.event);
-    this.componentManager = new ComponentManager(this);
+    this.componentManager = new ComponentManager(this, options.managers?.component);
     this.localeManager = new LocaleManager(this, options.managers?.locale);
 
     this.logger = createLogger(
@@ -233,8 +234,9 @@ export class ArcClient extends DJSClient {
    * Loads and registers tasks
    *
    * @param tasks - The tasks to load
+   * @returns the number of tasks loaded
    */
-  loadTasks(tasks: TaskHandler[]): void {
+  loadTasks(tasks: TaskHandler[]): Result<number, BaseError> {
     return this.taskManager.loadTasks(tasks);
   }
 
