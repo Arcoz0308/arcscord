@@ -138,6 +138,7 @@ export class ArcClient extends DJSClient {
     this.eventManager = new EventManager(this, options.managers?.event);
     this.componentManager = new ComponentManager(this, options.managers?.component);
     this.localeManager = new LocaleManager(this, options.managers?.locale);
+    this.trace("created managers");
 
     this.logger = createLogger(
       this.loggerConstructor,
@@ -152,6 +153,7 @@ export class ArcClient extends DJSClient {
     }).setToken(token);
 
     this.on("ready", () => {
+      this.trace("bot connected...");
       this.ready = true;
     });
   }
@@ -279,5 +281,11 @@ export class ArcClient extends DJSClient {
 
   addIntents(intents: BitFieldResolvable<GatewayIntentsString, number>): void {
     this.options.intents = this.options.intents.add(intents);
+  }
+
+  trace(message: string): void {
+    if (this.arcOptions.enableInternalTrace) {
+      this.logger.trace(message);
+    }
   }
 }
