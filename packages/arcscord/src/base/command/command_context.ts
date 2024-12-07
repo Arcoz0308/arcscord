@@ -281,7 +281,7 @@ export class BaseCommandContext<
     ...funcList: Promise<CommandRunResult>[]
   ): Promise<CommandRunResult> {
     for (const func of funcList) {
-      const [, err] = await func;
+      const [err] = await func;
 
       if (err) {
         return error(err);

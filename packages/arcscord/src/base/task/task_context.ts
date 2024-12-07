@@ -64,7 +64,7 @@ export class TaskContext {
    */
   async multiple(...funcList: Promise<TaskResult>[]): Promise<TaskResult> {
     for (const func of funcList) {
-      const [, err] = await func;
+      const [err] = await func;
 
       if (err) {
         return error(err);

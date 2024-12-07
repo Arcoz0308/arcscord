@@ -82,7 +82,7 @@ export class EventManager extends BaseManager {
   }
 
   async handleResult(infos: EventResultHandlerInfos): Promise<void> {
-    const [result, err] = infos.result;
+    const [err, result] = infos.result;
     if (err !== null) {
       err.generateId();
       this.logger.logError(err);

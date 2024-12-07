@@ -38,7 +38,7 @@ export class TaskManager extends BaseManager {
    */
   loadTasks(tasks: TaskHandler[]): Result<number, BaseError> {
     for (const task of tasks) {
-      const [,err] = this.loadTask(task);
+      const [err] = this.loadTask(task);
       if (err) {
         return error(err);
       }
@@ -129,7 +129,7 @@ export class TaskManager extends BaseManager {
       const context = new TaskContext(this.client, task, {
         nextRun: next,
       });
-      const [result, err] = await task.run(context);
+      const [err, result] = await task.run(context);
       if (err) {
         this.options.errorHandler({
           error: err,

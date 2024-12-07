@@ -475,7 +475,7 @@ export class CommandManager
 
   private async handleInteraction(interaction: CommandInteraction): Promise<void> {
     /* INITIALIZATION */
-    const [infos, err] = this.getCommand(interaction);
+    const [err, infos] = this.getCommand(interaction);
 
     if (err) {
       return this.handleError({
@@ -488,7 +488,7 @@ export class CommandManager
     const command = infos.cmd;
 
     /* PRECHECK */
-    const [next, err2] = await preCheck(
+    const [err2, next] = await preCheck(
       command.options || {},
       this.client,
       interaction,
@@ -521,7 +521,7 @@ export class CommandManager
     /* Slash Commands */
     if (interaction.isChatInputCommand()) {
       if ("name" in command.build) {
-        const [options, err] = command.build.options
+        const [err, options] = command.build.options
           ? await parseOptions<typeof command.build.options>(
             interaction,
             command.build.options,
@@ -545,7 +545,7 @@ export class CommandManager
         });
       }
       else if (command.build.slash) {
-        const [options, err] = command.build.slash.options
+        const [err, options] = command.build.slash.options
           ? await parseOptions<typeof command.build.slash.options>(
             interaction,
             command.build.slash.options,
@@ -641,7 +641,7 @@ export class CommandManager
     }
 
     if (command.options?.preReply) {
-      const [, err3] = await context.deferReply({
+      const [err3] = await context.deferReply({
         ephemeral: command.options?.preReplyEphemeral,
       });
 
@@ -663,7 +663,7 @@ export class CommandManager
           // @ts-expect-error fix generics with middleware
           const result = await middleware.run(context);
           if (result.cancel) {
-            const [result2, err4] = await result.cancel;
+            const [err4, result2] = await result.cancel;
             if (err4) {
               return this.handleError({
                 error: err4,
@@ -747,7 +747,7 @@ export class CommandManager
     interaction: AutocompleteInteraction,
   ): Promise<void> {
     /* INITIALIZATION */
-    const [infos, err] = this.getCommand(interaction);
+    const [err, infos] = this.getCommand(interaction);
 
     if (err) {
       return this.handleError({
@@ -781,7 +781,7 @@ export class CommandManager
     });
 
     try {
-      const [result, err2] = await command.autocomplete(context);
+      const [err2, result] = await command.autocomplete(context);
       if (err2) {
         return this.handleError({
           error: err2,
@@ -833,7 +833,7 @@ export class CommandManager
   }
 
   async resultHandler(infos: CommandResultHandlerInfos): Promise<void> {
-    const [result, err] = infos.result;
+    const [err, result] = infos.result;
     if (err !== null) {
       err.generateId();
       this.logger.logError(err);

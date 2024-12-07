@@ -175,7 +175,7 @@ export class ComponentManager extends BaseManager {
       channel: interaction.channel,
     });
 
-    const [components, err] = this.findMatchingComponents(interaction, type);
+    const [err, components] = this.findMatchingComponents(interaction, type);
     if (err) {
       return this.options.errorHandler({
         error: err,
@@ -202,7 +202,7 @@ export class ComponentManager extends BaseManager {
       });
     }
 
-    const [context, err2] = this.createContext(interaction, type, locale);
+    const [err2, context] = this.createContext(interaction, type, locale);
     if (err2) {
       return this.options.errorHandler({
         error: err2,
@@ -212,7 +212,7 @@ export class ComponentManager extends BaseManager {
 
     const component = components[0];
 
-    const [, err3] = await this.handlePreReply(component, context);
+    const [err3] = await this.handlePreReply(component, context);
     if (err3) {
       return this.options.errorHandler({
         error: err3,
@@ -222,7 +222,7 @@ export class ComponentManager extends BaseManager {
       });
     }
 
-    const [middlewareResult, err4] = await this.runMiddleware(component, context);
+    const [err4, middlewareResult] = await this.runMiddleware(component, context);
     if (err4) {
       return this.options.errorHandler({
         error: err4,
@@ -277,7 +277,7 @@ export class ComponentManager extends BaseManager {
 
   private async handlePreReply(component: ComponentHandler, context: ComponentContext): Promise<Result<true, ComponentError>> {
     if (component.preReply) {
-      const [, err] = await context.deferReply({
+      const [err] = await context.deferReply({
         ephemeral: component.ephemeralPreReply,
       });
       if (err) {
@@ -339,7 +339,7 @@ export class ComponentManager extends BaseManager {
     for (const middleware of props.use) {
       const result = await middleware.run(context);
       if (result.cancel) {
-        const [, err] = await result.cancel;
+        const [err] = await result.cancel;
         if (err) {
           return error(err);
         }
@@ -362,15 +362,15 @@ export class ComponentManager extends BaseManager {
         ephemeral: true,
       }).then(ok).catch(error);
 
-    if (!replyResult[0]) {
+    if (!replyResult[1]) {
       this.logger.error("failed to send error message", {
-        baseError: replyResult[1].message,
+        baseError: replyResult[0].message,
       });
     }
   }
 
   async handleResult(infos: ComponentResultHandlerInfos): Promise<void> {
-    const [result, err] = infos.result;
+    const [err, result] = infos.result;
     if (err !== null) {
       err.generateId();
       this.logger.logError(err);

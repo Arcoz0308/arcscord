@@ -57,7 +57,7 @@ export class EventContext implements Pick<ContextDocs, "client"> {
     ...funcList: Promise<EventHandleResult>[]
   ): Promise<EventHandleResult> {
     for (const func of funcList) {
-      const [, err] = await func;
+      const [err] = await func;
 
       if (err) {
         return error(err);

@@ -232,7 +232,7 @@ export class BaseComponentContext<
     ...funcList: Promise<ComponentRunResult>[]
   ): Promise<ComponentRunResult> {
     for (const func of funcList) {
-      const [, err] = await func;
+      const [err] = await func;
 
       if (err) {
         return error(err);

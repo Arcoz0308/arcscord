@@ -207,11 +207,11 @@ export class ArcClient extends DJSClient {
     group = "default",
     guild?: string,
   ): Promise<Result<true, InternalError>> {
-    const [data, err] = this.commandManager.loadCommands(commands, group);
+    const [err, data] = this.commandManager.loadCommands(commands, group);
     if (err) {
       return error(err);
     }
-    const [data2, err2] = guild
+    const [err2, data2] = guild
       ? await this.commandManager.pushGuildCommands(guild, data)
       : await this.commandManager.pushGlobalCommands(data);
 
