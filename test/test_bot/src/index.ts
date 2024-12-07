@@ -40,7 +40,7 @@ client.on("ready", async () => {
   await client.loadCommands(commands);
   client.loadComponents(components);
   client.loadTasks(tasks);
-  const [count, err] = await client.commandManager.deleteUnloadedCommands();
+  const [err, count] = await client.commandManager.deleteUnloadedCommands();
   if (err) {
     return client.logger.fatalError(err);
   }
