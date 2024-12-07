@@ -36,7 +36,8 @@
   "dependencies": {
     "@arcscord/error": "^1.0.1",
     "commander": "^12.1.0",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "typescript": "^5.7.2"
   },
   "type": "module",
   "files": [
