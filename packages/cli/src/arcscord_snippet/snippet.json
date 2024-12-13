@@ -81,7 +81,8 @@
           "enum": [true],
           "description": "Whether the snippet is a template, for example a global descriptor snippet"
         }
-      }
+      },
+      "required": ["template"]
     }
   ]
 }
