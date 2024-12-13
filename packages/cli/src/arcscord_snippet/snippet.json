@@ -7,6 +7,7 @@
   "required": [
     "name"
   ],
+  "additionalProperties": false,
   "properties": {
     "name": {
       "type": "string",
@@ -61,7 +62,8 @@
           "type": "string",
           "description": "The file of the snippet"
         }
-      }
+      },
+      "required": ["file"]
     },
     {
       "properties": {
@@ -69,7 +71,8 @@
           "type": "string",
           "description": "The file content of the snippet"
         }
-      }
+      },
+      "required": ["fileContent"]
     },
     {
       "properties": {
