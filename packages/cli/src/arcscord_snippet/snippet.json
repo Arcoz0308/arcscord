@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Snippet",
+  "description": "A snippet for arcscord",
+  "type": "object",
+  "required": [
+    "name"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the snippet"
+    },
+    "description": {
+      "type": "string",
+      "description": "The description of the snippet"
+    },
+    "version": {
+      "type": "string",
+      "description": "The version of the snippet"
+    },
+    "author": {
+      "type": "string",
+      "description": "The author of the snippet"
+    },
+    "license": {
+      "type": "string",
+      "description": "The license of the snippet"
+    },
+    "homepage": {
+      "type": "string",
+      "description": "The homepage of the snippet"
+    },
+    "repository": {
+      "type": "string",
+      "description": "The repository of the snippet"
+    },
+    "bugs": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "description": "The url of the bug tracker"
+        },
+        "email": {
+          "type": "string",
+          "description": "The email of the bug tracker"
+        }
+      }
+    },
+    "extends": {
+      "type": "string",
+      "description": "The extends of the snippet"
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "The file of the snippet"
+        }
+      }
+    },
+    {
+      "properties": {
+        "fileContent": {
+          "type": "string",
+          "description": "The file content of the snippet"
+        }
+      }
+    },
+    {
+      "properties": {
+        "template": {
+          "type": "boolean",
+          "enum": [true],
+          "description": "Whether the snippet is a template, for example a global descriptor snippet"
+        }
+      }
+    }
+  ]
+}
