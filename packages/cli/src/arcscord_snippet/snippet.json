@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://github.com/arcscord/arcscord/blob/main/packages/cli/src/arcscord_snippet/snippet.json",
+  "$id": "https://raw.githubusercontent.com/arcscord/arcscord/refs/heads/main/packages/cli/src/arcscord_snippet/snippet.json",
   "title": "Snippet",
   "description": "A snippet for arcscord",
   "type": "object",
