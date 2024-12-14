@@ -4,9 +4,7 @@
   "title": "Snippet",
   "description": "A snippet for arcscord",
   "type": "object",
-  "required": [
-    "name"
-  ],
+  "required": ["name"],
   "additionalProperties": false,
   "properties": {
     "name": {
@@ -19,11 +17,33 @@
     },
     "version": {
       "type": "string",
-      "description": "The version of the snippet"
+      "pattern": "^\\d+\\.\\d+\\.\\d+(?:-[\\w.-]+)?(?:\\+[\\w.-]+)?$",
+      "description": "The version of the snippet (semver)"
     },
     "author": {
-      "type": "string",
-      "description": "The author of the snippet"
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "The author of the snippet"
+        },
+        {
+          "type": "object",
+          "required": ["name"],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string",
+              "format": "email"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        }
+      ]
     },
     "license": {
       "type": "string",
@@ -31,57 +51,77 @@
     },
     "homepage": {
       "type": "string",
-      "description": "The homepage of the snippet"
+      "format": "uri",
+      "description": "The homepage URL of the snippet"
     },
     "repository": {
-      "type": "string",
-      "description": "The repository of the snippet"
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "description": "The repository URL"
+        },
+        {
+          "type": "object",
+          "required": ["type", "url"],
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri"
+            }
+          }
+        }
+      ],
+      "description": "The repository information"
     },
     "bugs": {
       "type": "object",
       "properties": {
         "url": {
           "type": "string",
-          "description": "The url of the bug tracker"
+          "format": "uri",
+          "description": "The URL of the bug tracker"
         },
         "email": {
           "type": "string",
-          "description": "The email of the bug tracker"
+          "format": "email",
+          "description": "The email address for bug reports"
         }
       }
     },
     "extends": {
       "type": "string",
-      "description": "The extends of the snippet"
+      "description": "The base snippet this extends from"
+    },
+    "$schema": {
+      "type": "string",
+      "description": "The JSON Schema URL"
+    },
+    "template": {
+      "type": "boolean",
+      "const": true,
+      "description": "Whether the snippet is a template, for example a global descriptor snippet"
+    },
+    "file": {
+      "type": "string",
+      "description": "The path to the snippet file"
+    },
+    "fileContent": {
+      "type": "string",
+      "description": "The direct content of the snippet"
     }
   },
   "oneOf": [
     {
-      "properties": {
-        "file": {
-          "type": "string",
-          "description": "The file of the snippet"
-        }
-      },
       "required": ["file"]
     },
     {
-      "properties": {
-        "fileContent": {
-          "type": "string",
-          "description": "The file content of the snippet"
-        }
-      },
       "required": ["fileContent"]
     },
     {
-      "properties": {
-        "template": {
-          "type": "boolean",
-          "enum": [true],
-          "description": "Whether the snippet is a template, for example a global descriptor snippet"
-        }
-      },
       "required": ["template"]
     }
   ]
